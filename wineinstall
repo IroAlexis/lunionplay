@@ -130,10 +130,11 @@ winewait
 # ================================
 #  Translation layer Installation
 # ================================
+
 if [ "$?" ]; then
   mkdir -p $GAME/shaders
 
-  if [ ! -z "$_dxvk_path"]; then
+  if [ ! -z "$_dxvk_path" ]; then
     dialog "Do you want install DXVK for Direct3D 9/10/11 ?"
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
@@ -142,7 +143,7 @@ if [ "$?" ]; then
     fi
   fi
 
-  if [ ! -z "$_vkd3dproton_path"]; then
+  if [ ! -z "$_vkd3dproton_path" ]; then
     dialog "Do you want install VKD3D Proton for Direct3D 12 ?"
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
@@ -155,6 +156,7 @@ if [ "$?" ]; then
   # ===================
   #  Game Installation
   # ===================
+
   if [ "$2" ]; then
     if [ ! -f "$2" ]; then
       exit 1
@@ -187,6 +189,7 @@ if [ "$?" ]; then
         msg "$(winepath -u C:\\GOG\ Games)"
       fi
     fi
+
 
     if [ ! -z "$_ARGS" ]; then
       wine "$2" $_ARGS

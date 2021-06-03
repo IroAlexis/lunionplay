@@ -28,6 +28,12 @@ winewait()
   wineserver --wait
 }
 
+_exit()
+{
+  echo ""
+  exit $1
+}
+
 
 
 # ==============
@@ -36,18 +42,17 @@ winewait()
 
 if [ "$#" -gt 2 ]; then
   echo "Usage: $0 game_name [/path/to/setup_exe]"
-  exit 1
+  _exit 1
 fi
 
 if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
   error "You don't must not be a path ($1)"
-  echo ""
-  exit 1
+  _exit 1
 fi
 
 if [ -z "$_games_path" ]; then
   error "\`_games_path\` is empty, please set the variable in the .cfg file"
-  exit 1
+  _exit 1
 fi
 
 if [ -z "$_dxvk_path" ]; then
@@ -67,7 +72,7 @@ dialog "Do you want install the game in $_games_path ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
   msg "Please set \`_games_path\` as you want in the .cfg file"
-  exit 1
+  _exit 1
 fi
 if [ ! -d "$_games_path/$1" ]; then
   mkdir -p "$_games_path/$1"
@@ -98,7 +103,7 @@ dialog "Proceed with this Wine version ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
   msg "Please set \`_CUSTOM_WINE\` as you want in the .cfg file"
-  exit 1
+  _exit 1
 fi
 
 
@@ -159,7 +164,8 @@ if [ "$?" ]; then
 
   if [ "$2" ]; then
     if [ ! -f "$2" ]; then
-      exit 1
+      error "$2 don't exist"
+      _exit 1
     fi
 
     dialog "Is it a GOG installer ?"
@@ -202,8 +208,7 @@ if [ "$?" ]; then
   fi
 
   msg "exit script done"
-  echo ""
-  exit 0
+  _exit 0
 fi
 
-exit 1
+_exit 1

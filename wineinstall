@@ -24,7 +24,7 @@ error()
 
 winewait()
 {
-  msg "wait all wine processes terminate"
+  msg "Waiting all wine processes terminate"
   wineserver --wait
 }
 
@@ -41,7 +41,7 @@ _exit()
 # ==============
 
 if [ "$#" -gt 2 ]; then
-  echo "Usage: $0 game_name [/path/to/setup_exe]"
+  echo "usage: $0 game_name [/path/to/setup_exe]"
   _exit 1
 fi
 
@@ -127,7 +127,7 @@ if [[ "$_CONDITION" =~ [nN] ]]; then
   export WINEDEBUG=-all
 fi
 
-msg "launch wine prefix initialization"
+msg "Running wine prefix initialization"
 wineboot --init
 winewait
 
@@ -207,7 +207,7 @@ if [ "$?" ]; then
     fi
   fi
 
-  msg "exit script done"
+  msg "Exit script done"
   _exit 0
 fi
 

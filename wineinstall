@@ -45,15 +45,23 @@ if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
   exit 1
 fi
 
-
-# ============================
-#  Games folder Configuration
-# ============================
-
 if [ -z "$_games_path" ]; then
   error "\`_games_path\` is empty, please set the variable in the .cfg file"
   exit 1
 fi
+
+if [ -z "$_dxvk_path" ]; then
+  msg "DXVK installation will not be requested"
+fi
+
+if [ -z "$_vkd3dproton_path" ]; then
+  msg "VKD3D-Proton installation will not be requested"
+fi
+
+
+# ============================
+#  Games folder Configuration
+# ============================
 
 dialog "Do you want install the game in $_games_path ?"
 read -rp " [Y/n] " _CONDITION;
@@ -125,18 +133,22 @@ winewait
 if [ "$?" ]; then
   mkdir -p $GAME/shaders
 
-  dialog "Do you want install DXVK for Direct3D 9/10/11 ?"
-  read -rp " [y/N] " _CONDITION;
-  if [[ "$_CONDITION" =~ [yY] ]]; then
-    "$_dxvk_path"/setup_dxvk.sh install
-    winewait
+  if [ ! -z "$_dxvk_path"]; then
+    dialog "Do you want install DXVK for Direct3D 9/10/11 ?"
+    read -rp " [y/N] " _CONDITION;
+    if [[ "$_CONDITION" =~ [yY] ]]; then
+      "$_dxvk_path"/setup_dxvk.sh install
+      winewait
+    fi
   fi
 
-  dialog "Do you want install VKD3D Proton for Direct3D 12 ?"
-  read -rp " [y/N] " _CONDITION;
-  if [[ "$_CONDITION" =~ [yY] ]]; then
-    "$_vkd3dproton_path"/setup_vkd3d_proton.sh install
-    winewait
+  if [ ! -z "$_vkd3dproton_path"]; then
+    dialog "Do you want install VKD3D Proton for Direct3D 12 ?"
+    read -rp " [y/N] " _CONDITION;
+    if [[ "$_CONDITION" =~ [yY] ]]; then
+      "$_vkd3dproton_path"/setup_vkd3d_proton.sh install
+      winewait
+    fi
   fi
 
 

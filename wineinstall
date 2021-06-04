@@ -41,7 +41,7 @@ _exit()
 # ==============
 
 if [ "$#" -gt 2 ]; then
-  echo "usage: $0 game_name [/path/to/setup_exe]"
+  echo "usage: $0 gamename [/path/to/setup.exe]"
   _exit 1
 fi
 
@@ -192,7 +192,7 @@ if [ "$?" ]; then
           warning "Some installers completely ignore this feature..."
           msg "$GAME/gamedata"
         fi
-        msg "$(winepath -u C:\\GOG\ Games)"
+        msg "or $(winepath -u C:\\GOG\ Games)"
       fi
     fi
 

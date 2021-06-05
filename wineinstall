@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname $0)"/customization.cfg
+source "$(dirname "$(which "$0")")"/customization.cfg
 
 msg()
 {

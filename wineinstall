@@ -83,26 +83,25 @@ fi
 #  Wine Configuration
 # ====================
 
-if [ ! -z "$_CUSTOM_WINE" ]; then
+if [ ! -z "$CUSTOM_WINE" ]; then
   if [ -z "$PATH" ]; then
-    export PATH="$_CUSTOM_WINE"
+    export PATH="$CUSTOM_WINE"
   else
-    export PATH="$_CUSTOM_WINE:$PATH"
+    export PATH="$CUSTOM_WINE:$PATH"
   fi
 
   if [ -z "$LD_LIBRARY_PATH" ]; then
-    export LD_LIBRARY_PATH="$_CUSTOM_WINE/../lib64:$_CUSTOM_WINE/../lib32:$_CUSTOM_WINE/../lib"
+    export LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib"
   else
-    export LD_LIBRARY_PATH="$_CUSTOM_WINE/../lib64:$_CUSTOM_WINE/../lib32:$_CUSTOM_WINE/../lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib:$LD_LIBRARY_PATH"
   fi
 fi
-
 
 echo "[+] info:: lunion-play: $(wine --version)"
 dialog "Proceed with this Wine version ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
-  msg "Please set \`_CUSTOM_WINE\` as you want in the .cfg file"
+  msg "Please set \`CUSTOM_WINE\` as you want in the .cfg file"
   _exit 1
 fi
 

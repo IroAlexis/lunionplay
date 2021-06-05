@@ -83,6 +83,9 @@ fi
 #  Wine Configuration
 # ====================
 
+if [ -z "$CUSTOM_WINE" ] & [ ! -z "$_custom_wine" ]; then
+  CUSTOM_WINE="$_custom_wine"
+fi
 if [ ! -z "$CUSTOM_WINE" ]; then
   if [ -z "$PATH" ]; then
     export PATH="$CUSTOM_WINE"
@@ -101,7 +104,10 @@ echo "[+] info:: lunion-play: $(wine --version)"
 dialog "Proceed with this Wine version ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
-  msg "Please set \`CUSTOM_WINE\` as you want in the .cfg file"
+  if [ -z "$_custom_wine" ] & [ -z "$CUSTOM_WINE" ]; then
+    msg "Please set \`_custom_wine\` as you want in the .cfg file"
+    msg "Or set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"
+  fi
   _exit 1
 fi
 

@@ -24,7 +24,7 @@ error()
 
 winewait()
 {
-  msg "Waiting all wine processes terminate"
+  msg "Waiting all wine processes terminate..."
   wineserver --wait
 }
 
@@ -132,7 +132,7 @@ if [[ "$_CONDITION" =~ [nN] ]]; then
   export WINEDEBUG=-all
 fi
 
-msg "Running wine prefix initialization"
+msg "Running wine prefix initialization..."
 wineboot --init
 winewait
 
@@ -212,8 +212,8 @@ if [ "$?" ]; then
     fi
   fi
 
-  msg "./lunion-play $1 /path/to/game.exe"
-  msg "Exit script done"
+  msg "### You can launch the game with $(dirname "$(which "$0")")/lunion-play"
+  msg "exit script done"
   _exit 0
 fi
 

@@ -1,48 +1,171 @@
 #!/usr/bin/env bash
 
-export GAMEDIR=Games
-export BINDIR=/opt/lunion-play-git/bin
-export PATH=$BINDIR:$PATH
-export LD_LIBRARY_PATH=$BINDIR/../lib64:$BINDIR/../lib32:$BINDIR/../lib:$LD_LIBRARY_PATH
+_where="$(dirname $(which $0))"
+source "$_where"/customization.cfg 2> /dev/null
+_return=$?
 
-export WINEPREFIX=$HOME/$GAMEDIR/pfx
-export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
-export WINEDEBUG=-all
 
-echo "[+] info:: lunion-play: Preparing to launch ..."
-wineboot &> /dev/null && wineserver --wait
+msg()
+{
+  echo -e "[+] info:: lunion-play: $1" >&2
+}
 
-unset WINEDLLOVERRIDES
-unset WINEDEBUG
+error()
+{
+  echo -e "[-] error:: lunion-play: $1" >&2
+}
+
+_pfx_update()
+{
+  export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
+  export WINEDEBUG=-all
+
+  msg "Preparing to launch the game..."
+  wineboot
+  wineserver -w
+
+  unset WINEDLLOVERRIDES
+  unset WINEDEBUG
+}
+
+
+# ==============
+#  Verification
+# ==============
+
+if [[ "$1" =~ -h ]] | [[ "$1" =~ --help ]] | [ "$#" -ne 2 ]; then
+  echo "usage: lunion-play gamename /path/to/game.exe"
+  exit 1
+fi
+
+
+# ========================================
+#  Lunion Play configuration Verification
+# ========================================
+
+if [ "$_return" = 1 ]; then
+  msg "customization.cfg not found"
+  if [ -z "$GAMEDIR" ]; then
+    msg "Set the variable \`GAMEDIR=/home/frog\`"
+    exit 1
+  fi
+  if [ -z "$CUSTOM_WINE" ]; then
+    msg "Set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"
+    exit 1
+  fi
+fi
+if [ ! -z "$GAMEDIR" ]; then
+  GAMEDIR="$GAMEDIR/$1"
+elif [ ! -z "$_games_path" ]; then
+  GAMEDIR="$_games_path/$1"
+else
+  exit 1
+fi
+msg "$GAMEDIR"
+
+
+# ====================
+#  Wine Configuration
+# ====================
+
+if [ -z "$CUSTOM_WINE" ] & [ ! -z "$_custom_wine" ]; then
+  CUSTOM_WINE="$_custom_wine"
+fi
+if [ ! -z "$CUSTOM_WINE" ]; then
+  if [ -z "$PATH" ]; then
+    PATH="$CUSTOM_WINE"
+  else
+    PATH="$CUSTOM_WINE:$PATH"
+  fi
+
+  if [ -z "$LD_LIBRARY_PATH" ]; then
+    LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib"
+  else
+    LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib:$LD_LIBRARY_PATH"
+  fi
+fi
+msg "$(wine --version)"
+read -p "Press enter to continue. "
+
+
+# ====================
+#  Wine prefix Update
+# ====================
+
+export WINEPREFIX="$GAMEDIR/pfx"
+_pfx_update
+
+
+# ======================
+#  Wine Synchronisation
+# ======================
+
+if [ -z "$LUNION_PLAY_SYNC" ]; then
+  LUNION_PLAY_SYNC=fsync
+fi
+
+if [[ "$LUNION_PLAY_SYNC" =~ esync ]]; then
+  export WINEESYNC=1
+elif [[ "$LUNION_PLAY_SYNC" =~ fsync ]]; then
+  export WINEFSYNC=1
+elif [[ "$LUNION_PLAY_SYNC" =~ nofastsync ]]; then
+  export WINE_DISABLE_FAST_SYNC=1
+fi
+
+
+# ========================
+#  Wine log Configuration
+# ========================
 
 export WINEDLLOVERRIDES="winemenubuilder.exe="
-#export WINEESYNC=1
-export WINEFSYNC=1
-#export WINE_DISABLE_FAST_SYNC=1
-export WINEDEBUG=fixme-all
-#export WINEDEBUG=-all
+if [ -z "$WINEDEBUG" ]; then
+  export WINEDEBUG=-all
+
+  if [[ "$LUNION_PLAY_LOG" =~ err ]]; then
+    export WINEDEBUG=fixme-all
+  elif [[ "$LUNION_PLAY_LOG" =~ all ]]; then
+    unset WINEDEBUG
+  fi
+fi
 
 
-# DXVK
+# ====================
+#  DXVK Configuration
+# ====================
+
 #export DXVK_HUD=devinfo,fps,version,api
 #export DXVK_HUD=full
 export DXVK_LOG_LEVEL=none
 
-#VKD3D
-export VKD3D_DEBUG=none
-export VKD3D_CONFIG=dxr,force_static_cbv
 
+# ============================
+#  VKD3D-Proton Configuration
+# ============================
+
+export VKD3D_DEBUG=none
+#export VKD3D_CONFIG=dxr,force_static_cbv
+
+# Nvidia
 export __GL_SHADER_DISK_CACHE=1
 export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
-export __GL_SHADER_DISK_CACHE_PATH=$HOME/$GAMEDIR/shaders
+export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaders"
 
+# MangoHUD
 export MANGOHUD_CONFIGFILE=$HOME/Games/mangohud.config
 
 
-# Prevention en reference au probleme que j'ai eu avec The Witcher 3
-cd $HOME/$GAMEDIR
+# =============
+#  Game Launch
+# =============
 
-echo "[+] info:: lunion-play: Starting..."
-echo "[-] info:: lunion-play: $(wine --version)"
-wine .exe && wineserver --wait
-#wine64 .exe && wineserver --wait
+msg "Starting..."
+
+cd $(dirname "$(which "$2")")
+
+GAMEEXE="$(basename "$2")"
+wine "$GAMEEXE"
+
+msg "Waiting all wine processes terminate"
+wineserver --wait
+
+exit 0

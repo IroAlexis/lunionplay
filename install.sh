@@ -4,7 +4,7 @@ source "$(dirname "$(which "$0")")"/customization.cfg
 
 msg()
 {
-  echo -e " \033[1;34m->\033[1;0m \033[1;1m$1\033[1;0m" >&2
+  echo -e "  \033[1;34m->\033[1;0m \033[1;1m$1\033[1;0m" >&2
 }
 
 dialog()

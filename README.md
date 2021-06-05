@@ -11,5 +11,6 @@ This is a first draft that allows me to have an overview for the Wine use and wh
 
 ## Usage
 ```bash
-./wineinstall gamename [path/to/setup.exe]
+$ ./install.sh gamename [/path/to/setup.exe]
+$ ./lunion-play gamename /path/to/game.exe
 ```

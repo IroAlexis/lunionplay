@@ -40,7 +40,7 @@ _exit()
 #  Verification
 # ==============
 
-if [ "$#" -gt 2 ]; then
+if [ $# -eq 0 ] || [ $# -gt 2 ]; then
   echo "usage: $0 gamename [/path/to/setup.exe]"
   _exit 1
 fi
@@ -83,7 +83,7 @@ fi
 #  Wine Configuration
 # ====================
 
-if [ -z "$CUSTOM_WINE" ] & [ ! -z "$_custom_wine" ]; then
+if [ -z "$CUSTOM_WINE" ] && [ ! -z "$_custom_wine" ]; then
   CUSTOM_WINE="$_custom_wine"
 fi
 if [ ! -z "$CUSTOM_WINE" ]; then
@@ -104,7 +104,7 @@ echo "[+] info:: lunion-play: $(wine --version)"
 dialog "Proceed with this Wine version ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
-  if [ -z "$_custom_wine" ] & [ -z "$CUSTOM_WINE" ]; then
+  if [ -z "$_custom_wine" ] && [ -z "$CUSTOM_WINE" ]; then
     msg "Please set \`_custom_wine\` as you want in the .cfg file"
     msg "Or set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"
   fi
@@ -212,6 +212,7 @@ if [ "$?" ]; then
     fi
   fi
 
+  msg "./lunion-play $1 /path/to/game.exe"
   msg "Exit script done"
   _exit 0
 fi

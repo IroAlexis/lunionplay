@@ -33,7 +33,7 @@ _pfx_update()
 #  Verification
 # ==============
 
-if [[ "$1" =~ -h ]] | [[ "$1" =~ --help ]] | [ "$#" -ne 2 ]; then
+if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]] || [ "$#" -ne 2 ]; then
   echo "usage: lunion-play gamename /path/to/game.exe"
   exit 1
 fi
@@ -68,7 +68,7 @@ msg "$GAMEDIR"
 #  Wine Configuration
 # ====================
 
-if [ -z "$CUSTOM_WINE" ] & [ ! -z "$_custom_wine" ]; then
+if [ -z "$CUSTOM_WINE" ] && [ ! -z "$_custom_wine" ]; then
   CUSTOM_WINE="$_custom_wine"
 fi
 if [ ! -z "$CUSTOM_WINE" ]; then

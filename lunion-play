@@ -101,16 +101,37 @@ _pfx_update
 # ======================
 
 if [ -z "$LUNION_PLAY_SYNC" ]; then
-  LUNION_PLAY_SYNC=fsync
+  LUNION_PLAY_SYNC=futex2
 fi
 
-if [[ "$LUNION_PLAY_SYNC" =~ esync ]]; then
-  export WINEESYNC=1
-elif [[ "$LUNION_PLAY_SYNC" =~ fsync ]]; then
-  export WINEFSYNC=1
-elif [[ "$LUNION_PLAY_SYNC" =~ nofastsync ]]; then
-  export WINE_DISABLE_FAST_SYNC=1
-fi
+case "$LUNION_PLAY_SYNC" in
+  esync)
+    export WINEESYNC=1
+    ;;
+  fsync)
+    export WINEFSYNC_FUTEX2=0
+    export WINEFSYNC=1
+    ;;
+  futex2)
+    export WINEFSYNC=1
+    ;;
+  nofastsync)
+    export WINE_DISABLE_FAST_SYNC=1
+    ;;
+  fastsync)
+    ;;
+  disable)
+    export WINEESYNC=0
+    export WINEFSYNC=0
+    export WINE_DISABLE_FAST_SYNC=1
+    ;;
+  *)
+    export WINEESYNC=0
+    export WINEFSYNC=0
+    export WINE_DISABLE_FAST_SYNC=1
+    error "$LUNION_PLAY_SYNC is not reconnized"
+    ;;
+esac
 
 
 # ========================

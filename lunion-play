@@ -95,12 +95,6 @@ if [ ! -z "$CUSTOM_WINE" ]; then
   fi
 fi
 msg "$(wine --version)"
-read -p "Press enter to continue. "
-
-
-# ======================
-#  Wine Synchronisation
-# ======================
 
 if [ -z "$LUNION_PLAY_SYNC" ]; then
   LUNION_PLAY_SYNC=futex2
@@ -109,18 +103,23 @@ fi
 case "$LUNION_PLAY_SYNC" in
   esync)
     export WINEESYNC=1
+    msg "esync will be used"
     ;;
   fsync)
     export WINEFSYNC_FUTEX2=0
     export WINEFSYNC=1
+    msg "fsync will be used"
     ;;
   futex2)
     export WINEFSYNC=1
+    msg "futex2 will be used"
     ;;
   nofastsync)
     export WINE_DISABLE_FAST_SYNC=1
+    msg "wineserver will be used"
     ;;
   fastsync)
+    msg "fastsync will be used"
     ;;
   disable)
     export WINEESYNC=0
@@ -134,6 +133,8 @@ case "$LUNION_PLAY_SYNC" in
     error "$LUNION_PLAY_SYNC is not reconnized"
     ;;
 esac
+
+read -p "Press enter to continue. "
 
 
 # ====================

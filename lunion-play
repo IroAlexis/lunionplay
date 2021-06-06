@@ -15,6 +15,32 @@ error()
   echo -e "[-] error:: lunion-play: $1" >&2
 }
 
+is_futex2_supported()
+{
+  if [ -d /sys/kernel/futex2 ]; then
+    if [ -f /sys/kernel/futex2/wait ] && [ -f /sys/kernel/futex2/waitv ] && [ -f /sys/kernel/futex2/wake ]; then
+      msg "futex2 will be used"
+      return 0
+    fi
+  fi
+
+  msg "futex2 not supported"
+  msg "wineserver will be used"
+  return 1
+}
+
+is_winesync_supported()
+{
+  if [ -f /dev/winesync ]; then
+    msg "fastsync will be used"
+    return 0
+  fi
+
+  msg "fastsync not supported"
+  msg "wineserver will be used"
+  return 1
+}
+
 _pfx_update()
 {
   export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
@@ -111,27 +137,30 @@ case "$LUNION_PLAY_SYNC" in
     export WINEESYNC=1
     msg "esync will be used"
     ;;
+
   fsync)
     export WINEFSYNC_FUTEX2=0
     export WINEFSYNC=1
     msg "fsync will be used"
     ;;
+
   futex2)
-    export WINEFSYNC=1
-    msg "futex2 will be used"
+    is_futex2_supported
+    if [ $? ]; then
+      export WINEFSYNC=1
+    fi
     ;;
-  nofastsync)
-    export WINE_DISABLE_FAST_SYNC=1
-    msg "wineserver will be used"
-    ;;
+
   fastsync)
-    msg "fastsync will be used"
+    is_winesync_supported
     ;;
+
   disable)
     export WINEESYNC=0
     export WINEFSYNC=0
     export WINE_DISABLE_FAST_SYNC=1
     ;;
+
   *)
     export WINEESYNC=0
     export WINEFSYNC=0

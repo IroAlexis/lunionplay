@@ -98,14 +98,6 @@ msg "$(wine --version)"
 read -p "Press enter to continue. "
 
 
-# ====================
-#  Wine prefix Update
-# ====================
-
-export WINEPREFIX="$GAMEDIR/pfx"
-_pfx_update
-
-
 # ======================
 #  Wine Synchronisation
 # ======================
@@ -142,6 +134,14 @@ case "$LUNION_PLAY_SYNC" in
     error "$LUNION_PLAY_SYNC is not reconnized"
     ;;
 esac
+
+
+# ====================
+#  Wine prefix Update
+# ====================
+
+export WINEPREFIX="$GAMEDIR/pfx"
+_pfx_update
 
 
 # ========================

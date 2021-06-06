@@ -39,12 +39,18 @@ if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]] || [ "$#" -ne 2 ]; then
 fi
 
 if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
-  echo "==> You don't must not be a path ($1)"
+  error "Don't pass a path: $1"
   exit 1
 fi
 
 if [[ ! "$2" =~ ^\/$|(\/[a-zA-Z_0-9 -]+)+.exe$ ]]; then
-  echo "==> /path/to/game.exe"
+  error "Need to pass a Windows game (/path/to/game.exe)"
+  exit 1
+fi
+
+GAMEEXE="$(basename "$2")"
+if [ ! -f "$GAMEEXE" ]; then
+  error "The game executable doesn't exist"
   exit 1
 fi
 
@@ -193,8 +199,6 @@ export MANGOHUD_CONFIGFILE=$HOME/Games/mangohud.config
 msg "Starting..."
 
 cd $(dirname "$(which "$2")")
-
-GAMEEXE="$(basename "$2")"
 wine "$GAMEEXE"
 
 msg "Waiting all wine processes terminate"

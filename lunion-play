@@ -38,6 +38,16 @@ if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]] || [ "$#" -ne 2 ]; then
   exit 1
 fi
 
+if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
+  echo "==> You don't must not be a path ($1)"
+  exit 1
+fi
+
+if [[ ! "$2" =~ ^\/$|(\/[a-zA-Z_0-9 -]+)+.exe$ ]]; then
+  echo "==> /path/to/game.exe"
+  exit 1
+fi
+
 
 # ========================================
 #  Lunion Play configuration Verification

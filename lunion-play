@@ -161,8 +161,8 @@ case "$LUNION_PLAY_SYNC" in
     ;;
 
   *)
-    export WINE_DISABLE_FAST_SYNC=1
-    error "$LUNION_PLAY_SYNC is not reconnized"
+    error "LUNION_PLAY_SYNC=$LUNION_PLAY_SYNC is a unknown value"
+    exit 1
     ;;
 esac
 

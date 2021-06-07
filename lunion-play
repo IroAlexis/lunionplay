@@ -125,6 +125,9 @@ if [ ! -z "$CUSTOM_WINE" ]; then
     LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib:$LD_LIBRARY_PATH"
   fi
 fi
+
+export WINEPREFIX="$GAMEDIR/pfx"
+msg "WINEPREFIX=$WINEPREFIX"
 msg "$(wine --version)"
 
 if [ -z "$LUNION_PLAY_SYNC" ]; then
@@ -168,24 +171,14 @@ esac
 
 read -p "Press enter to continue. "
 
-
-# ====================
-#  Wine prefix Update
-# ====================
-
-export WINEPREFIX="$GAMEDIR/pfx"
+# Wine prefix update
 _pfx_update
-
-
-# ========================
-#  Wine log Configuration
-# ========================
 
 export WINEDLLOVERRIDES="winemenubuilder.exe=d"
 if [ -z "$WINEDEBUG" ]; then
   export WINEDEBUG=-all
 
-  if [[ "$LUNION_PLAY_LOG" =~ err ]]; then
+  if [[ "$LUNION_PLAY_LOG" =~ error ]]; then
     export WINEDEBUG=fixme-all
   elif [[ "$LUNION_PLAY_LOG" =~ all ]]; then
     unset WINEDEBUG

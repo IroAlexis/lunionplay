@@ -53,9 +53,9 @@ _pfx_update()
 }
 
 
-# ==============
-#  Verification
-# ==============
+# ========================
+#  Arguments Verification
+# ========================
 
 if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]] || [ "$#" -ne 2 ]; then
   echo "usage: lunion-play gamename /path/to/game.exe"
@@ -72,8 +72,9 @@ if [[ ! "$2" =~ ^\/$|(\/[a-zA-Z_0-9 -]+)+.exe$ ]]; then
   exit 1
 fi
 
-GAMEEXE="$(basename "$2")"
-if [ ! -f "$GAMEEXE" ]; then
+if [ -f "$2" ]; then
+  GAMEEXE="$(basename "$2")"
+else
   error "The game executable does not exist"
   exit 1
 fi
@@ -133,11 +134,13 @@ fi
 case "$LUNION_PLAY_SYNC" in
   esync)
     export WINEESYNC=1
+    msg "Verify the presence of \"esync: up and running\" message"
     ;;
 
   fsync)
     export WINEFSYNC_FUTEX2=0
     export WINEFSYNC=1
+    msg "Verify the presence of \"fsync: up and running\" message"
     ;;
 
   futex2)
@@ -224,7 +227,7 @@ msg "Starting..."
 cd $(dirname "$(which "$2")")
 wine "$GAMEEXE"
 
-msg "Waiting all wine processes terminate"
+msg "Waiting all wine processes terminate..."
 wineserver --wait
 
 exit 0

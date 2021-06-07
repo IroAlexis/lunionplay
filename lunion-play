@@ -19,31 +19,29 @@ is_futex2_supported()
 {
   if [ -d /sys/kernel/futex2 ]; then
     if [ -f /sys/kernel/futex2/wait ] && [ -f /sys/kernel/futex2/waitv ] && [ -f /sys/kernel/futex2/wake ]; then
-      msg "futex2 will be used"
+      msg "futex2 is supported"
       return 0
     fi
   fi
 
-  msg "futex2 not supported"
-  msg "wineserver will be used"
+  msg "futex2 is not supported"
   return 1
 }
 
 is_winesync_supported()
 {
   if [ -f /dev/winesync ]; then
-    msg "fastsync will be used"
+    msg "fastsync is supported"
     return 0
   fi
 
-  msg "fastsync not supported"
-  msg "wineserver will be used"
+  msg "fastsync is not supported"
   return 1
 }
 
 _pfx_update()
 {
-  export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
+  export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe=d"
   export WINEDEBUG=-all
 
   msg "Preparing to launch the game..."
@@ -65,7 +63,7 @@ if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]] || [ "$#" -ne 2 ]; then
 fi
 
 if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
-  error "Don't pass a path: $1"
+  error "Do not pass a path: $1"
   exit 1
 fi
 
@@ -76,7 +74,7 @@ fi
 
 GAMEEXE="$(basename "$2")"
 if [ ! -f "$GAMEEXE" ]; then
-  error "The game executable doesn't exist"
+  error "The game executable does not exist"
   exit 1
 fi
 
@@ -106,9 +104,9 @@ fi
 msg "$GAMEDIR"
 
 
-# ====================
-#  Wine Configuration
-# ====================
+# =======================
+#  Runtime Configuration
+# =======================
 
 if [ -z "$CUSTOM_WINE" ] && [ ! -z "$_custom_wine" ]; then
   CUSTOM_WINE="$_custom_wine"
@@ -135,13 +133,11 @@ fi
 case "$LUNION_PLAY_SYNC" in
   esync)
     export WINEESYNC=1
-    msg "esync will be used"
     ;;
 
   fsync)
     export WINEFSYNC_FUTEX2=0
     export WINEFSYNC=1
-    msg "fsync will be used"
     ;;
 
   futex2)
@@ -162,8 +158,6 @@ case "$LUNION_PLAY_SYNC" in
     ;;
 
   *)
-    export WINEESYNC=0
-    export WINEFSYNC=0
     export WINE_DISABLE_FAST_SYNC=1
     error "$LUNION_PLAY_SYNC is not reconnized"
     ;;
@@ -184,7 +178,7 @@ _pfx_update
 #  Wine log Configuration
 # ========================
 
-export WINEDLLOVERRIDES="winemenubuilder.exe="
+export WINEDLLOVERRIDES="winemenubuilder.exe=d"
 if [ -z "$WINEDEBUG" ]; then
   export WINEDEBUG=-all
 

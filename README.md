@@ -23,13 +23,16 @@ $ ./lunion-play gamename /path/to/game.exe
 
 ## Runtime Configuration Options
 All of the below are runtime options. You can use normally the runtime options others programms (Wine, graphical driver, ...). Removing the option will revert to the previous behavior.
-* `GAMEDIR=/path/to/game`
-* `CUSTOM_WINE=/path/to/wine/bin`
+* `GAMEDIR=/path/to/game`, the directory where is configured the Wine prefix.
+* `CUSTOM_WINE=/path/to/wine/bin`, the directory where is located binaries of custom Wine.
 * `LUNION_PLAY_SYNC=value`, the possibles values list is available below :
-  * `esync` eventfd-based in-process synchronization primitives
-  * `fsync` or `futex2` futex-based in-process synchronization primitives. (Automatically disabled on systems with no `FUTEX_WAIT_MULTIPLE` support.)
-  * `fastsync` reimplementation of the NT synchronization primitives for Wine, this time using a new kernel module. This implementation mimics the original from Windows perfectly (bar any bugs), in contrast to esync and fsync which had some hackily implemented operations. Performance shouldn't be much different from esync and fsync.
+  * `esync`, eventfd-based in-process synchronization primitives.
+  * `fsync` or `futex2`, futex-based in-process synchronization primitives. (enable by default if your kernel is compatible ; automatically disabled on systems with no `FUTEX_WAIT_MULTIPLE` support.)
+  * `fastsync`, reimplementation of the NT synchronization primitives for Wine, this time using a new kernel module. This implementation mimics the original from Windows perfectly (bar any bugs), in contrast to esync and fsync which had some hackily implemented operations. Performance shouldn't be much different from esync and fsync.
   * `disable`
+* `LUNION_PLAY_LOG=value`, debugging information in stdout (disable by default). The possibles values list is available below :
+  * `error`, display only the error Wine messages.
+  * `all`, use the default Wine comportement.
 
 
 

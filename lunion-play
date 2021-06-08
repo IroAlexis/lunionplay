@@ -30,7 +30,7 @@ is_futex2_supported()
 
 is_winesync_supported()
 {
-  if [ -f /dev/winesync ]; then
+  if [ -e /dev/winesync ]; then
     msg "fastsync is supported"
     return 0
   fi

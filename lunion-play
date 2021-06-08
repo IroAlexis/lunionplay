@@ -244,7 +244,7 @@ export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
 export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaders"
 
 # MangoHUD
-export MANGOHUD_CONFIGFILE=$HOME/Games/mangohud.config
+export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
 
 
 # =============

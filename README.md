@@ -23,7 +23,7 @@ $ ./lunion-play gamename /path/to/game.exe
 
 ## Runtime Configuration Options
 All of the below are runtime options. You can use normally the runtime options others programms (Wine, graphical driver, ...). Removing the option will revert to the previous behavior.
-* `GAMEDIR=/path/to/game`, the directory where is configured the Wine prefix.
+* `GAMEDIR=/path/to/game`, the directory where are installed the games.
 * `CUSTOM_WINE=/path/to/wine/bin`, the directory where is located binaries of custom Wine.
 * `LUNION_PLAY_SYNC=value`, the possibles values list is available below :
   * `esync`, eventfd-based in-process synchronization primitives.

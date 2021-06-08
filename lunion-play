@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 _where="$(dirname $(which $0))"
-source "$_where"/customization.cfg 2> /dev/null
-_return=$?
 
 
 msg()
@@ -79,6 +77,32 @@ display_runtime_options()
 }
 
 
+# ========================================
+#  Lunion Play configuration Verification
+# ========================================
+
+source "$_where"/customization.cfg 2> /dev/null
+
+if [ "$?" = 1 ]; then
+  msg "customization.cfg not found"
+  if [ -z "$GAMEDIR" ]; then
+    msg "Set the variable \`GAMEDIR=/home/frog\`"
+    exit 1
+  fi
+  if [ -z "$CUSTOM_WINE" ]; then
+    msg "Set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"
+    exit 1
+  fi
+fi
+if [ ! -z "$GAMEDIR" ]; then
+  GAMEDIR="$GAMEDIR/$1"
+elif [ ! -z "$_games_path" ]; then
+  GAMEDIR="$_games_path/$1"
+else
+  exit 1
+fi
+
+
 # ========================
 #  Arguments Verification
 # ========================
@@ -102,30 +126,6 @@ if [ -f "$2" ]; then
   GAMEEXE="$(basename "$2")"
 else
   error "The game executable does not exist"
-  exit 1
-fi
-
-
-# ========================================
-#  Lunion Play configuration Verification
-# ========================================
-
-if [ "$_return" = 1 ]; then
-  msg "customization.cfg not found"
-  if [ -z "$GAMEDIR" ]; then
-    msg "Set the variable \`GAMEDIR=/home/frog\`"
-    exit 1
-  fi
-  if [ -z "$CUSTOM_WINE" ]; then
-    msg "Set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"
-    exit 1
-  fi
-fi
-if [ ! -z "$GAMEDIR" ]; then
-  GAMEDIR="$GAMEDIR/$1"
-elif [ ! -z "$_games_path" ]; then
-  GAMEDIR="$_games_path/$1"
-else
   exit 1
 fi
 

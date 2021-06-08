@@ -19,23 +19,23 @@ is_futex2_supported()
 {
   if [ -d /sys/kernel/futex2 ]; then
     if [ -f /sys/kernel/futex2/wait ] && [ -f /sys/kernel/futex2/waitv ] && [ -f /sys/kernel/futex2/wake ]; then
-      msg "futex2 is supported"
+      msg "kernel: futex2 is supported"
       return 0
     fi
   fi
 
-  msg "futex2 is not supported"
+  msg "kernel: futex2 is not supported"
   return 1
 }
 
 is_winesync_supported()
 {
   if [ -e /dev/winesync ]; then
-    msg "fastsync is supported"
+    msg "kernel: fastsync is supported"
     return 0
   fi
 
-  msg "fastsync is not supported"
+  msg "kernel: fastsync is not supported"
   return 1
 }
 
@@ -51,6 +51,7 @@ update_winepfx()
 
   msg "Preparing to launch the game..."
   wineboot
+  ret=$?
   wineserver -w
 
   unset WINEDLLOVERRIDES
@@ -58,34 +59,23 @@ update_winepfx()
 
   WINEDLLOVERRIDES="$OLD"
   unset OLD
+
+  return $ret
 }
 
-display_runtime_conf_options()
+display_runtime_options()
 {
-  echo "PATH=$PATH"
+  type="runtime_option:"
+
+  msg "$type PATH=$PATH"
   if [ ! -z "$LD_LIBRARY_PATH" ]; then
-    echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+    msg "$type LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
   fi
-  # if [ ! -z "$WINEESYNC" ]; then
-    # echo "WINEESYNC=$WINEESYNC"
-  # fi
-  # if [ ! -z "$WINEFSYNC" ]; then
-    # echo "WINEFSYNC=$WINEFSYNC"
-    # if [ ! -z "$WINEFSYNC_FUTEX2" ]; then
-      # echo "WINEFSYNC_FUTEX2=$WINEFSYNC_FUTEX2"
-    # fi
-  # fi
-  # if [ ! -z "$WINE_DISABLE_FAST_SYNC" ]; then
-    # echo "WINE_DISABLE_FAST_SYNC=$WINE_DISABLE_FAST_SYNC"
-  # fi
-  # echo "WINEPREFIX=$WINEPREFIX"
-  # if [ ! -z "$WINEDEBUG" ]; then
-    # echo "WINEDEBUG=$WINEDEBUG"
-  # fi
-  # if [ ! -z "$WINEDLLOVERRIDES" ]; then
-    # echo "WINEDLLOVERRIDES=$WINEDLLOVERRIDES"
-  # fi
-  env | grep -e "WINE\|DXVK\|VKD3D"
+
+  ENV_WINE=$(env | grep -e "WINE\|DXVK\|VKD3D")
+  for var in $ENV_WINE; do
+    msg "$type $var"
+  done
 }
 
 
@@ -163,50 +153,54 @@ fi
 msg "$(wine --version)"
 export WINEPREFIX="$GAMEDIR/pfx"
 
+is_futex2_supported
+is_winesync_supported
+
 if [ -z "$LUNION_PLAY_SYNC" ]; then
-  LUNION_PLAY_SYNC=futex2
-fi
+  export WINEESYNC=1
+  export WINEFSYNC=1
+else
+  case "$LUNION_PLAY_SYNC" in
+    esync)
+      export WINEESYNC=1
+      ;;
 
-case "$LUNION_PLAY_SYNC" in
-  esync)
-    export WINEESYNC=1
-    msg "Verify the presence of \"esync: up and running\" message"
-    ;;
-
-  fsync)
-    export WINEFSYNC_FUTEX2=0
-    export WINEFSYNC=1
-    msg "Verify the presence of \"fsync: up and running\" message"
-    ;;
-
-  futex2)
-    is_futex2_supported
-    if [ $? ]; then
+    fsync)
+      export WINEFSYNC_FUTEX2=0
       export WINEFSYNC=1
-    fi
-    ;;
+      ;;
 
-  fastsync)
-    is_winesync_supported
-    ;;
+    futex2)
+      if [ "$?" ]; then
+        export WINEFSYNC=1
+      fi
+      ;;
 
-  disable)
-    export WINEESYNC=0
-    export WINEFSYNC=0
-    export WINE_DISABLE_FAST_SYNC=1
-    msg "wineserver will be used"
-    ;;
+    fastsync)
+      ;;
 
-  *)
-    error "LUNION_PLAY_SYNC=$LUNION_PLAY_SYNC is a unknown value"
-    exit 1
-    ;;
-esac
+    none)
+      export WINEESYNC=0
+      export WINEFSYNC=0
+      export WINE_DISABLE_FAST_SYNC=1
+      msg "wineserver will be used"
+      ;;
+
+    *)
+      error "LUNION_PLAY_SYNC=$LUNION_PLAY_SYNC is a unknown value"
+      exit 1
+      ;;
+  esac
+fi
 
 read -p "Press enter to continue. "
 
 # Wine prefix update
 update_winepfx
+if [ "$?" = 1 ]; then
+  error "Problem Wine prefix update"
+  exit 1
+fi
 
 if [ -z "$WINEDLLOVERRIDES" ]; then
   export WINEDLLOVERRIDES="winemenubuilder.exe=d"
@@ -257,7 +251,7 @@ export MANGOHUD_CONFIGFILE=$HOME/Games/mangohud.config
 #  Game Launch
 # =============
 
-display_runtime_conf_options
+display_runtime_options
 msg "Starting..."
 
 cd $(dirname "$(which "$2")")

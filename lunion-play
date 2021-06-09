@@ -209,9 +209,9 @@ fi
 if [ -z "$WINEDEBUG" ]; then
   export WINEDEBUG=-all
 
-  if [[ "$LUNION_PLAY_LOG" =~ error ]]; then
+  if [[ "$LUNION_PLAY_DEBUG" =~ error ]]; then
     export WINEDEBUG=fixme-all
-  elif [[ "$LUNION_PLAY_LOG" =~ all ]]; then
+  elif [[ "$LUNION_PLAY_DEBUG" =~ all ]]; then
     unset WINEDEBUG
   fi
 fi

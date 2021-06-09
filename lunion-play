@@ -81,7 +81,11 @@ display_runtime_options()
 #  Lunion Play configuration Verification
 # ========================================
 
-source "$_where"/customization.cfg 2> /dev/null
+command -v source 1> /dev/null
+if [ ! $? ]; then
+  msg "Need install the tcl package"
+  exit 1
+fi
 
 if [ "$?" = 1 ]; then
   msg "customization.cfg not found"

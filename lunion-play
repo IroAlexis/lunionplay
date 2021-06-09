@@ -45,15 +45,16 @@ update_winepfx()
     OLD=$WINEDLLOVERRIDES
     WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe=d"
   fi
-  export WINEDEBUG=-all
 
-  msg "Preparing to launch the game..."
-  wineboot
-  ret=$?
+  if [ -d $WINEPREFIX ]; then
+    msg "Preparing to launch the game..."
+  else
+    msg "Prefix not found. $WINEPREFIX"
+    msg "Creating the wine prefix..."
+  fi
+
+  wineboot | ret=$?
   wineserver -w
-
-  unset WINEDLLOVERRIDES
-  unset WINEDEBUG
 
   WINEDLLOVERRIDES="$OLD"
   unset OLD
@@ -105,6 +106,7 @@ elif [ ! -z "$_games_path" ]; then
 else
   exit 1
 fi
+msg "game_directory: $GAMEDIR"
 
 
 # ========================
@@ -155,6 +157,7 @@ if [ ! -z "$CUSTOM_WINE" ]; then
   fi
 fi
 msg "$(wine --version)"
+
 export WINEPREFIX="$GAMEDIR/pfx"
 
 is_futex2_supported
@@ -197,19 +200,6 @@ else
   esac
 fi
 
-read -p "Press enter to continue. "
-
-# Wine prefix update
-update_winepfx
-if [ "$?" = 1 ]; then
-  error "Problem Wine prefix update"
-  exit 1
-fi
-
-if [ -z "$WINEDLLOVERRIDES" ]; then
-  export WINEDLLOVERRIDES="winemenubuilder.exe=d"
-fi
-
 if [ -z "$WINEDEBUG" ]; then
   export WINEDEBUG=-all
 
@@ -218,6 +208,20 @@ if [ -z "$WINEDEBUG" ]; then
   elif [[ "$LUNION_PLAY_DEBUG" =~ all ]]; then
     unset WINEDEBUG
   fi
+fi
+
+read -p "Press enter to continue. "
+
+# Wine prefix update
+update_winepfx
+
+if [ "$?" = 1 ]; then
+  error "Problem Wine prefix update"
+  exit 1
+fi
+
+if [ -z "$WINEDLLOVERRIDES" ]; then
+  export WINEDLLOVERRIDES="winemenubuilder.exe=d"
 fi
 
 

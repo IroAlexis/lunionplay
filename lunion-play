@@ -224,9 +224,6 @@ fi
 if [[ "$WINEDEBUG" =~ -all ]]; then
   export DXVK_LOG_LEVEL=none
 fi
-if [[ "$LUNION_HUD" =~ dxvk ]]; then
-  export DXVK_HUD=1
-fi
 
 
 # ============================

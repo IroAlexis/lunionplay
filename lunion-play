@@ -88,11 +88,16 @@ if [ ! $? ]; then
   exit 1
 fi
 
-if [ "$?" = 1 ]; then
+if [[ "$_where" != /usr/bin ]]; then
+  source "$_where"/customization.cfg 2> /dev/null
+elif [ -d /etc/lunion-play ]; then
+  source /etc/lunion-play/customization.cfg 2> /dev/null
+fi
+
+if [ ! "$?" ]; then
   msg "customization.cfg not found"
   if [ -z "$GAMEDIR" ]; then
     msg "Set the variable \`GAMEDIR=/home/frog\`"
-    exit 1
   fi
   if [ -z "$CUSTOM_WINE" ]; then
     msg "Set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"

@@ -246,7 +246,6 @@ fi
 if [[ "$WINEDEBUG" =~ -all ]]; then
   export VKD3D_DEBUG=none
 fi
-export VKD3D_CONFIG=dxr,force_static_cbv
 
 # Nvidia
 export __GL_SHADER_DISK_CACHE=1
@@ -254,7 +253,7 @@ export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
 export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaders"
 
 # MangoHUD
-export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
+#export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
 
 
 # =============

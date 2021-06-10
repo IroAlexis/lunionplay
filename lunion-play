@@ -251,6 +251,14 @@ if [[ "$WINEDEBUG" =~ -all ]]; then
   export VKD3D_DEBUG=none
 fi
 
+if [ ! -z "$_ray_tracing" ] && [[ "$_ray_tracing" =~ true ]]; then
+  if [ -z "$VKD3D_CONFIG" ]; then
+    export VKD3D_CONFIG=dxr
+  else
+    VKD3D_CONFIG+=,dxr
+  fi
+fi
+
 # ======================
 #  Driver Configuration
 # ======================

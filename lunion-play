@@ -101,10 +101,10 @@ fi
 if [ ! "$?" ]; then
   msg "customization.cfg not found"
   if [ -z "$GAMES_PATH" ]; then
-    msg "Set the variable \`GAMES_PATH=/home/frog\`"
+    msg "Set the variable 'GAMES_PATH=/home/frog'"
   fi
   if [ -z "$CUSTOM_WINE" ]; then
-    msg "Set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"
+    msg "Set the variable 'CUSTOM_WINE=/path/to/wine/bin'"
     exit 1
   fi
 fi
@@ -258,6 +258,7 @@ if [ ! -z "$_ray_tracing" ] && [[ "$_ray_tracing" =~ true ]]; then
     VKD3D_CONFIG+=,dxr
   fi
 fi
+
 
 # ======================
 #  Driver Configuration

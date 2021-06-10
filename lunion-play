@@ -4,6 +4,7 @@ where="$(dirname "$(which "$0")")"
 
 if [ "$#" -ne 2 ]; then
   echo "usage: lunion-play gamename /path/to/game.exe"
+  echo ""
   exit 1
 fi
 
@@ -75,7 +76,7 @@ display_runtime_options()
     msg "$type LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
   fi
 
-  ENV_WINE=$(env | grep -e "WINE\|DXVK\|VKD3D")
+  ENV_WINE=$(env | grep -e "WINE\|DXVK\|VKD3D\|GL")
   for var in $ENV_WINE; do
     msg "$type $var"
   done

@@ -1,0 +1,13 @@
+## arg 1:  the new package version
+post_install()
+{
+  echo "  -> Keep a close look in /etc/lunion-play"
+}
+
+## arg 1:  the new package version
+## arg 2:  the old package version
+post_upgrade()
+{
+  echo "  -> Keep a close look in /etc/lunion-play"
+
+}

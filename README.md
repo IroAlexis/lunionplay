@@ -13,18 +13,38 @@ This is a first draft that allows me to have an overview for the Wine use and wh
 
 
 
+## Installation
+Clone this repository (as below) and if you want, follow the instructions 'Usage' section.
+```bash
+$ git clone https://github.com/IroAlexis/lunion-play.git
+$ cd lunion-play
+```
+
+### Source
+```bash
+$ sudo make install
+```
+
+### Pre-packaged binaries
+For the moment, just on Arch-based distributions :
+```bash
+$ makepkg -si
+```
+
+
+
 ## Usage
 ```bash
 $ ./lunion-gamesetup gamename [/path/to/setup.exe]
 $ ./lunion-play gamename /path/to/game.exe
 ```
-The wrapper require that your wine prefix is in `$GAMEDIR/pfx/` directory. By default, `_games_path` is set on `$HOME/Games` but you can edit him in `customization.cfg` (`/etc/lunion-play` or `/opt/lunion-play`) or use `$GAMEDIR` like the runtime option.
+The wrapper require that your wine prefix is in `$_games_path/pfx/` directory (may be generate with `lunion-gamesetup`). By default, `_games_path` is set on `$HOME/Games` but you can edit him in `customization.cfg` (`/etc/lunion-play` or `$HOME/.config/lunion-play`).
 
 
 
 ## Runtime Configuration Options
 All of the below are runtime options. You can use normally the runtime options others programms (Wine, graphical driver, ...). Removing the option will revert to the previous behavior.
-* `GAMEDIR=/path/to/game`, the directory where are installed the games.
+* `GAMES_PATH=/path/to/games`, the directory where are installed the games (override `$_games_path`)
 * `CUSTOM_WINE=/path/to/wine/bin`, the directory where is located binaries of custom Wine.
 * `LUNION_PLAY_SYNC=value`, the possibles values list is available below :
   * `esync`, eventfd-based in-process synchronization primitives.

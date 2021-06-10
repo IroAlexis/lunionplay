@@ -15,7 +15,7 @@ This is a first draft that allows me to have an overview for the Wine use and wh
 
 ## Usage
 ```bash
-$ ./install.sh gamename [/path/to/setup.exe]
+$ ./lunion-gamesetup gamename [/path/to/setup.exe]
 $ ./lunion-play gamename /path/to/game.exe
 ```
 The wrapper require that your wine prefix is in `$GAMEDIR/pfx/` directory. By default, `_games_path` is set on `$HOME/Games` but you can edit him in `customization.cfg` (`/etc/lunion-play` or `/opt/lunion-play`) or use `$GAMEDIR` like the runtime option.

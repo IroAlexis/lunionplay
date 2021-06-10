@@ -132,7 +132,7 @@ if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
   exit 1
 fi
 
-if [[ ! "$2" =~ ^\/$|(\/[a-zA-Z_0-9 -]+)+.exe$ ]]; then
+if [[ ! "$2" =~ ^\/$|(\/[a-zA-Z_0-9 -.]+)+.exe$ ]]; then
   error "Need to pass a Windows game (/path/to/game.exe)"
   exit 1
 fi

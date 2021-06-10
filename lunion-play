@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
-_where="$(dirname $(which $0))"
+where="$(dirname "$(which "$0")")"
 
+if [ "$#" -ne 2 ]; then
+  echo "usage: lunion-play gamename /path/to/game.exe"
+  exit 1
+fi
 
 msg()
 {
@@ -40,10 +44,10 @@ is_winesync_supported()
 update_winepfx()
 {
   if [ -z "$WINEDLLOVERRIDES" ]; then
-    export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe=d"
+    export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
   else
     OLD=$WINEDLLOVERRIDES
-    WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe=d"
+    WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
   fi
 
   if [ -d $WINEPREFIX ]; then
@@ -96,16 +100,16 @@ fi
 
 if [ ! "$?" ]; then
   msg "customization.cfg not found"
-  if [ -z "$GAMEDIR" ]; then
-    msg "Set the variable \`GAMEDIR=/home/frog\`"
+  if [ -z "$GAMES_PATH" ]; then
+    msg "Set the variable \`GAMES_PATH=/home/frog\`"
   fi
   if [ -z "$CUSTOM_WINE" ]; then
     msg "Set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"
     exit 1
   fi
 fi
-if [ ! -z "$GAMEDIR" ]; then
-  GAMEDIR="$GAMEDIR/$1"
+if [ ! -z "$GAMES_PATH" ]; then
+  GAMEDIR="$GAMES_PATH/$1"
 elif [ ! -z "$_games_path" ]; then
   GAMEDIR="$_games_path/$1"
 else
@@ -118,7 +122,7 @@ msg "game_directory: $GAMEDIR"
 #  Arguments Verification
 # ========================
 
-if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]] || [ "$#" -ne 2 ]; then
+if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]]; then
   echo "usage: lunion-play gamename /path/to/game.exe"
   exit 1
 fi
@@ -134,7 +138,7 @@ if [[ ! "$2" =~ ^\/$|(\/[a-zA-Z_0-9 -]+)+.exe$ ]]; then
 fi
 
 if [ -f "$2" ]; then
-  GAMEEXE="$(basename "$2")"
+  GAMEEXE="$(basename "$(realpath "$2")")"
 else
   error "The game executable does not exist"
   exit 1
@@ -163,7 +167,7 @@ if [ ! -z "$CUSTOM_WINE" ]; then
 fi
 msg "$(wine --version)"
 
-export WINEPREFIX="$GAMEDIR/pfx"
+export WINEPREFIX="$GAMEDIR"/pfx
 
 is_futex2_supported
 is_winesync_supported
@@ -183,17 +187,17 @@ else
       ;;
 
     futex2)
-      if [ "$?" ]; then
-        export WINEFSYNC=1
-      fi
+      export WINEFSYNC=1
       ;;
 
     fastsync)
+      unset WINEESYNC
+      unset WINEFSYNC
       ;;
 
     none)
-      export WINEESYNC=0
-      export WINEFSYNC=0
+      unset WINEESYNC
+      unset WINEFSYNC
       export WINE_DISABLE_FAST_SYNC=1
       msg "wineserver will be used"
       ;;
@@ -226,7 +230,7 @@ if [ "$?" = 1 ]; then
 fi
 
 if [ -z "$WINEDLLOVERRIDES" ]; then
-  export WINEDLLOVERRIDES="winemenubuilder.exe=d"
+  export WINEDLLOVERRIDES="winemenubuilder.exe="
 fi
 
 
@@ -247,10 +251,17 @@ if [[ "$WINEDEBUG" =~ -all ]]; then
   export VKD3D_DEBUG=none
 fi
 
-# Nvidia
-export __GL_SHADER_DISK_CACHE=1
-export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
-export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaders"
+# ======================
+#  Driver Configuration
+# ======================
+
+# FIXME Only Nvidia but not sure on the detection method
+cat /sys/class/drm/card0/device/uevent | grep -e "nvidia" &> /dev/null
+if [ $? ]; then
+  export __GL_SHADER_DISK_CACHE=1
+  export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
+  export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaders"
+fi
 
 # MangoHUD
 #export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
@@ -263,7 +274,7 @@ export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaders"
 display_runtime_options
 msg "Starting..."
 
-cd $(dirname "$(which "$2")")
+cd "$(dirname "$(realpath "$2")")"
 wine "$GAMEEXE"
 
 msg "Waiting all wine processes terminate..."

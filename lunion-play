@@ -248,7 +248,9 @@ fi
 #  DXVK Configuration
 # ====================
 
-if [[ "$WINEDEBUG" =~ -all ]]; then
+if [ "$LUNION_PLAY_LOG" = 1 ]; then
+  export DXVK_LOG_LEVEL=info
+else
   export DXVK_LOG_LEVEL=none
 fi
 
@@ -257,7 +259,9 @@ fi
 #  VKD3D-Proton Configuration
 # ============================
 
-if [[ "$WINEDEBUG" =~ -all ]]; then
+if [ "$LUNION_PLAY_LOG" = 1 ]; then
+  export VKD3D_DEBUG=warn
+else
   export VKD3D_DEBUG=none
 fi
 

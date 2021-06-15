@@ -52,7 +52,7 @@ To enable a option that she don't require a `value`, set the variable to a non-0
   * `fsync` or `futex2`, futex-based in-process synchronization primitives. (enable by default if your kernel is compatible ; automatically disabled on systems with no `FUTEX_WAIT_MULTIPLE` support.)
   * `fastsync`, reimplementation of the NT synchronization primitives for Wine, this time using a new kernel module. This implementation mimics the original from Windows perfectly (bar any bugs), in contrast to esync and fsync which had some hackily implemented operations. Performance shouldn't be much different from esync and fsync.
   * `none`, use the default in-process synchronization primitives (wineserver).
-* `LUNION_PLAY_LOG`, convenience method for dumping a useful debug log to $HOME/gamename.log (disable by default).
+* `LUNION_PLAY_LOG`, convenience method for dumping a useful debug log to `$HOME/gamename.log` (disable by default).
 
 
 

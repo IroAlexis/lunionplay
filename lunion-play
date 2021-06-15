@@ -74,7 +74,7 @@ display_runtime_options()
   msg "$type PATH=$PATH"
   msg "$type LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
-  ENV_WINE=$(env | grep -e "WINE\|DXVK\|VKD3D\|GL")
+  ENV_WINE=$(env | grep -e "WINE\|DXVK\|VKD3D")
   for var in $ENV_WINE; do
     msg "$type $var"
   done

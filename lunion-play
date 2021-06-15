@@ -72,9 +72,7 @@ display_runtime_options()
   type="runtime_option:"
 
   msg "$type PATH=$PATH"
-  if [ ! -z "$LD_LIBRARY_PATH" ]; then
-    msg "$type LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
-  fi
+  msg "$type LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
   ENV_WINE=$(env | grep -e "WINE\|DXVK\|VKD3D\|GL")
   for var in $ENV_WINE; do

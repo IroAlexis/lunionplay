@@ -93,10 +93,10 @@ if [ ! $? ]; then
   exit 1
 fi
 
-if [[ "$where" != /usr/bin ]]; then
+if  [ -d "$HOME/.config/lunion-play" ]; then
+  source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
+elif [[ "$where" != /usr/bin ]]; then
   source "$where"/customization.cfg 2> /dev/null
-elif [ -d "$HOME/.config/lunion-play" ]; then
-  source "$HOME/.config/lunion-play/customization.cfg" 2> /dev/null
 elif [ -d "/etc/lunion-play" ]; then
   source /etc/lunion-play/customization.cfg 2> /dev/null
 fi

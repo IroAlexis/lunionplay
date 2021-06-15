@@ -69,8 +69,13 @@ update_winepfx()
 
 display_runtime_options()
 {
-  type="runtime_option:"
+  if [ "$LUNION_PLAY_LOG" = 1 ]; then
+    echo "==========================================="
+    msg "$(wine --version)"
+  fi
+  msg "command: $1"
 
+  type="runtime_option:"
   msg "$type PATH=$PATH"
   msg "$type LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
@@ -78,6 +83,10 @@ display_runtime_options()
   for var in $ENV_WINE; do
     msg "$type $var"
   done
+
+  if [ "$LUNION_PLAY_LOG" = 1 ]; then
+    echo "==========================================="
+  fi
 }
 
 
@@ -210,13 +219,13 @@ else
   esac
 fi
 
-if [ -z "$WINEDEBUG" ]; then
-  export WINEDEBUG=-all
-
-  if [[ "$LUNION_PLAY_DEBUG" =~ error ]]; then
-    export WINEDEBUG=fixme-all
-  elif [[ "$LUNION_PLAY_DEBUG" =~ all ]]; then
-    unset WINEDEBUG
+if [ "$LUNION_PLAY_LOG" = 1 ]; then
+  if [ -z "$WINEDEBUG" ]; then
+    export WINEDEBUG=+timestamp,+pid,+tid,+seh,+debugstr,+loaddll,+mscoree
+  fi
+else
+  if [ -z "$WINEDEBUG" ]; then
+    export WINEDEBUG=-all
   fi
 fi
 
@@ -274,18 +283,27 @@ if [ $? ]; then
 fi
 
 # MangoHUD
-#export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
+export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
 
 
 # =============
 #  Game Launch
 # =============
 
-display_runtime_options
+if [ "$LUNION_PLAY_LOG" = 1 ]; then
+  display_runtime_options "$2" &> $HOME/$1.log
+else
+  display_runtime_options "$2"
+fi
 msg "Starting..."
 
 cd "$(dirname "$(realpath "$2")")"
-wine "$GAMEEXE"
+if [ "$LUNION_PLAY_LOG" = 1 ]; then
+  wine "$GAMEEXE" &>> $HOME/$1.log
+else
+  wine "$GAMEEXE"
+fi
+
 
 msg "Waiting all wine processes terminate..."
 wineserver --wait

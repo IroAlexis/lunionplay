@@ -294,8 +294,10 @@ export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
 #  Game Launch
 # =============
 
+log=$HOME/lunionplay-$1.log
+
 if [ "$LUNION_PLAY_LOG" = 1 ]; then
-  display_runtime_options "$2" &> $HOME/$1.log
+  display_runtime_options "$2" &> $log
 else
   display_runtime_options "$2"
 fi
@@ -303,7 +305,7 @@ msg "Starting..."
 
 cd "$(dirname "$(realpath "$2")")"
 if [ "$LUNION_PLAY_LOG" = 1 ]; then
-  wine "$GAMEEXE" &>> $HOME/$1.log
+  wine "$GAMEEXE" &>> $log
 else
   wine "$GAMEEXE"
 fi
@@ -311,5 +313,9 @@ fi
 
 msg "Waiting all wine processes terminate..."
 wineserver --wait
+
+if [ "$LUNION_PLAY_LOG" = 1 ]; then
+  msg "Debug log available here $log"
+fi
 
 exit 0

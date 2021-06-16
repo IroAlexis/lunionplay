@@ -221,7 +221,7 @@ fi
 
 if [ "$LUNION_PLAY_LOG" = 1 ]; then
   if [ -z "$WINEDEBUG" ]; then
-    export WINEDEBUG=+timestamp,+pid,+tid,+seh,+debugstr,+loaddll,+mscoree
+    export WINEDEBUG=+tid,+seh,+debugstr,+loaddll,+mscoree
   fi
 else
   if [ -z "$WINEDEBUG" ]; then

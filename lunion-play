@@ -78,8 +78,8 @@ display_runtime_options()
   if [ "$LUNION_PLAY_LOG" = 1 ]; then
     echo "==========================================="
     msg "$(wine --version)"
+    msg "command: $1"
   fi
-  msg "command: $1"
 
   type="runtime_option:"
   msg "$type PATH=$PATH"
@@ -154,6 +154,7 @@ else
   error "The game executable does not exist"
   exit 1
 fi
+msg "command: $2"
 
 
 # =======================

@@ -77,7 +77,7 @@ display_runtime_options()
 {
   if [ "$LUNION_PLAY_LOG" = 1 ]; then
     echo "==========================================="
-    msg "$(wine --version)"
+    msg "version: $(wine --version)"
     msg "command: $1"
   fi
 
@@ -177,7 +177,7 @@ if [ ! -z "$CUSTOM_WINE" ]; then
     LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib:$LD_LIBRARY_PATH"
   fi
 fi
-msg "$(wine --version)"
+msg "version: $(wine --version)"
 
 export WINEPREFIX="$GAMEDIR"/pfx
 

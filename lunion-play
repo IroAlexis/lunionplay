@@ -58,7 +58,7 @@ update_winepfx()
     msg "Creating the wine prefix..."
   fi
 
-  wineboot | ret=$?
+  wineboot &> /dev/null | ret=$?
   wineserver -w
 
   WINEDLLOVERRIDES="$OLD"
@@ -231,7 +231,11 @@ fi
 
 read -p "Press enter to continue. "
 
-# Wine prefix update
+
+# ====================
+#  Wine prefix Update
+# ====================
+
 update_winepfx
 
 if [ "$?" = 1 ]; then

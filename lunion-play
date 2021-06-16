@@ -8,6 +8,12 @@ if [ "$#" -ne 2 ]; then
   exit 1
 fi
 
+if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]]; then
+  echo "usage: lunion-play gamename /path/to/game.exe"
+  exit 1
+fi
+
+
 msg()
 {
   echo -e "[+] info:: lunion-play: $1" >&2
@@ -131,11 +137,6 @@ msg "game_directory: $GAMEDIR"
 # ========================
 #  Arguments Verification
 # ========================
-
-if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]]; then
-  echo "usage: lunion-play gamename /path/to/game.exe"
-  exit 1
-fi
 
 if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
   error "Do not pass a path: $1"

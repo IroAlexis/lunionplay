@@ -12,8 +12,9 @@ license=('GPL3')
 depends=('bash' 'tcl')
 makedepends=('git' 'make')
 optdepends=(
-  'wine'
-  'wine-staging'
+  'wine: Windows support (stable)'
+  'wine-staging: Windows support (testing)'
+  'innoextract: For the game standalone extraction'
   'winetricks'
 )
 backup=(etc/lunion-play/customization.cfg)

@@ -10,6 +10,7 @@ This is a first draft that allows me to have an overview for the Wine use and wh
 * bash
 * tcl
 * wine
+* innoextract (*optional*)
 
 
 

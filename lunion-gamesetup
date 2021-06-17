@@ -191,6 +191,25 @@ if [ "$?" ]; then
     dialog "Is it a GOG installer ?"
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
+
+      dialog "Do install the game outside the wine prefix (require innoextract) ?"
+      read -rp " [y/N] " _CONDITION;
+      if [[ "$_CONDITION" =~ [yY] ]]; then
+        command -v innoextract 1> /dev/null
+        if [ "$?" ]; then
+          mkdir -p $GAME/gamedata
+          cd $GAME/gamedata
+          msg "Installating in progress..."
+          innoextract -sm "$2"
+        else
+          error "innoextract is not install"
+          _exit 1
+        fi
+        msg "$GAME/gamedata"
+        msg "exit script done"
+        _exit 0
+      fi
+
       dialog "Do you want the GUI ?"
       read -rp " [Y/n] " _CONDITION;
       if [[ "$_CONDITION" =~ [nN] ]]; then
@@ -203,16 +222,7 @@ if [ "$?" ]; then
         else
           _ARGS="$_ARGS /SILENT"
         fi
-
-        dialog "Do install the game outside the wine prefix ?"
-        read -rp " [y/N] " _CONDITION;
-        if [[ "$_CONDITION" =~ [yY] ]]; then
-          mkdir -p $GAME/gamedata
-          _ARGS="$_ARGS DIR=\"$(winepath -w $GAME/gamedata)\""
-          warning "Some installers completely ignore this feature..."
-          msg "$GAME/gamedata"
-        fi
-        msg "or $(winepath -u C:\\GOG\ Games)"
+        msg "$(winepath -u C:\\GOG\ Games)"
       fi
     fi
 

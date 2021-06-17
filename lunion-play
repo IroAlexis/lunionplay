@@ -75,7 +75,7 @@ update_winepfx()
 
 display_runtime_options()
 {
-  if [ "$LUNION_PLAY_LOG" = 1 ]; then
+  if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
     echo "==========================================="
     msg "version: $(wine --version)"
     msg "command: $1"
@@ -90,7 +90,7 @@ display_runtime_options()
     msg "$type $var"
   done
 
-  if [ "$LUNION_PLAY_LOG" = 1 ]; then
+  if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
     echo "==========================================="
   fi
 }
@@ -223,7 +223,11 @@ fi
 
 if [ "$LUNION_PLAY_LOG" = 1 ]; then
   if [ -z "$WINEDEBUG" ]; then
-    export WINEDEBUG=+tid,+seh,+debugstr,+loaddll,+mscoree
+    export WINEDEBUG=warn+seh
+  fi
+elif [ "$LUNION_PLAY_LOG" = 2 ]; then
+  if [ -z "$WINEDEBUG" ]; then
+    export WINEDEBUG=+timestamp,+pid,+tid,+seh,+debugstr,+loaddll,+mscoree
   fi
 else
   if [ -z "$WINEDEBUG" ]; then
@@ -256,7 +260,7 @@ fi
 #  DXVK Configuration
 # ====================
 
-if [ "$LUNION_PLAY_LOG" = 1 ]; then
+if [[ "$LUNION_PLAY_LOG" > 0 ]]; then
   export DXVK_LOG_LEVEL=info
 else
   export DXVK_LOG_LEVEL=none
@@ -267,7 +271,7 @@ fi
 #  VKD3D-Proton Configuration
 # ============================
 
-if [ "$LUNION_PLAY_LOG" = 1 ]; then
+if [[ "$LUNION_PLAY_LOG" > 0 ]]; then
   export VKD3D_DEBUG=warn
 else
   export VKD3D_DEBUG=none
@@ -304,7 +308,7 @@ export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
 
 log=$HOME/lunionplay-$1.log
 
-if [ "$LUNION_PLAY_LOG" = 1 ]; then
+if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
   display_runtime_options "$2" &> $log
 else
   display_runtime_options "$2"
@@ -312,7 +316,7 @@ fi
 msg "Starting..."
 
 cd "$(dirname "$(realpath "$2")")"
-if [ "$LUNION_PLAY_LOG" = 1 ]; then
+if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
   wine "$GAMEEXE" &>> $log
 else
   wine "$GAMEEXE"
@@ -322,7 +326,7 @@ fi
 msg "Waiting all wine processes terminate..."
 wineserver --wait
 
-if [ "$LUNION_PLAY_LOG" = 1 ]; then
+if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
   msg "Debug log available here $log"
 fi
 

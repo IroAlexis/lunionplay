@@ -38,7 +38,7 @@ $ makepkg -si
 $ ./lunion-gamesetup gamename [/path/to/setup.exe]
 $ ./lunion-play gamename /path/to/game.exe
 ```
-The wrapper require that your wine prefix is in `$_games_path/gamename/pfx/` directory (may be generate with `lunion-gamesetup`). By default, `_games_path` is set on `$HOME/Games` but you can edit him in `customization.cfg` (`/etc/lunion-play` or `$HOME/.config/lunion-play`).
+The wrapper require that your wine prefix is in `$_games_path/gamename/pfx/` directory (may be generate with `lunion-gamesetup`). By default, `_games_path` is set on `$HOME/Games` but you can edit him in `customization.cfg` (`/etc/lunion-play` or `./` or `$HOME/.config/lunion-play`).
 
 
 
@@ -52,7 +52,7 @@ To enable a option that she don't require a `value`, set the variable to a non-0
   * `fsync` or `futex2`, futex-based in-process synchronization primitives. (enable by default if your kernel is compatible ; automatically disabled on systems with no `FUTEX_WAIT_MULTIPLE` support.)
   * `fastsync`, reimplementation of the NT synchronization primitives for Wine, this time using a new kernel module. This implementation mimics the original from Windows perfectly (bar any bugs), in contrast to esync and fsync which had some hackily implemented operations. Performance shouldn't be much different from esync and fsync.
   * `none`, use the default in-process synchronization primitives (wineserver).
-* `LUNION_PLAY_LOG`, convenience method for dumping a useful debug log to `$HOME/gamename.log` (disable by default).
+* `LUNION_PLAY_LOG`, convenience method for dumping a useful debug log to `$HOME/lunionplay-gamename.log` (disable by default, `1` use `warn+seh` and `2` use `+timestamp,+pid,+tid,+seh,+debugstr,+loaddll,+mscoree`
 
 
 

@@ -106,11 +106,11 @@ if [ ! $? ]; then
   exit 1
 fi
 
-if  [ -d "$HOME/.config/lunion-play" ]; then
+if [[ "$where" == ^\/+usr\/+bin\/+.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
   source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
-elif [[ "$where" != /usr/bin ]]; then
+elif [[ "$where" != ^\/+usr\/+bin\/+.* ]] && [ -f "$where/customization.cfg" ]; then
   source "$where"/customization.cfg 2> /dev/null
-elif [ -d "/etc/lunion-play" ]; then
+elif [[ "$where" == ^\/+usr\/+bin\/+.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
   source /etc/lunion-play/customization.cfg 2> /dev/null
 fi
 

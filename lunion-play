@@ -231,7 +231,9 @@ else
   fi
 fi
 
-read -p "Press enter to continue. "
+if [[ ! "$_no_confirm" =~ true ]]; then
+  read -p "Press enter to continue. "
+fi
 
 
 # ====================

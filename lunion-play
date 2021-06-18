@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [ "$DEBUG" = 1 ]; then
+  set -x
+fi
+
 where="$(dirname "$(which "$0")")"
 
 if [ "$#" -ne 2 ]; then

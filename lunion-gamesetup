@@ -159,7 +159,15 @@ winewait
 if [ "$?" ]; then
   mkdir -p $GAME/shaders
 
-  if [ ! -z "$_dxvk_path" ]; then
+  if [ "$LUNION_PLAY_DAMAVAND" = 1 ]; then
+    wine reg add 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /d vulkan /f 1> /dev/null
+    msg "Damavand will be used"
+  else
+    wine reg delete 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /f 1> /dev/null
+    unset LUNION_PLAY_DAMAVAND
+  fi
+
+  if [ ! -z "$_dxvk_path" ] && [ ! "$LUNION_PLAY_DAMAVAND" = 1 ]; then
     dialog "Do you want install DXVK for Direct3D 9/10/11 ?"
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
@@ -168,7 +176,7 @@ if [ "$?" ]; then
     fi
   fi
 
-  if [ ! -z "$_vkd3dproton_path" ]; then
+  if [ ! -z "$_vkd3dproton_path" ] && [ ! "$LUNION_PLAY_DAMAVAND" = 1 ]; then
     dialog "Do you want install VKD3D Proton for Direct3D 12 ?"
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then

@@ -309,9 +309,8 @@ export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
 #  Game Launch
 # =============
 
-log=$HOME/lunionplay-$1.log
-
 if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
+  log=$HOME/lunionplay-$1.log
   display_runtime_options "$2" &> $log
 else
   display_runtime_options "$2"

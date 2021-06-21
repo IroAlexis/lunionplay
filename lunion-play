@@ -301,9 +301,6 @@ if [[ "$DRIVER" = nvidia ]] && [ -d /proc/driver/nvidia ]; then
   export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaders"
 fi
 
-# MangoHUD
-export MANGOHUD_CONFIGFILE=$GAMEDIR/mangohud.config
-
 
 # =============
 #  Game Launch

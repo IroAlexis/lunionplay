@@ -110,27 +110,23 @@ if [ ! $? ]; then
   exit 1
 fi
 
-if [[ "$where" == ^\/+usr\/+bin\/+.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
+if [[ "$where" =~ ^\/+usr\/+bin\/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
   source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
   msg "cfg_loader: $HOME/.config/lunion-play/customization.cfg"
-elif [[ "$where" != ^\/+usr\/+bin\/+.* ]] && [ -f "$where/customization.cfg" ]; then
+elif [[ "$where" != ^\/+usr\/+bin\/*.* ]] && [ -f "$where/customization.cfg" ]; then
   source "$where"/customization.cfg 2> /dev/null
   msg "cfg_loader: $where/customization.cfg"
-elif [[ "$where" == ^\/+usr\/+bin\/+.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
+elif [[ "$where" =~ ^\/+usr\/+bin\/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
   source /etc/lunion-play/customization.cfg 2> /dev/null
   msg "cfg_loader: /etc/lunion-play/customization.cfg"
-fi
-
-if [ ! "$?" ]; then
+else
   msg "cfg_loader: customization.cfg not found"
   if [ -z "$GAMES_PATH" ]; then
     msg "Set the variable 'GAMES_PATH=/home/frog'"
   fi
-  if [ -z "$CUSTOM_WINE" ]; then
-    msg "Set the variable 'CUSTOM_WINE=/path/to/wine/bin'"
-    exit 1
-  fi
+  exit 1
 fi
+
 if [ ! -z "$GAMES_PATH" ]; then
   GAMEDIR="$GAMES_PATH/$1"
 elif [ ! -z "$_games_path" ]; then

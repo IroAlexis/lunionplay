@@ -3,7 +3,7 @@
 
 pkgname=lunion-play
 pkgver=0.1.alpha2
-pkgrel=1
+pkgrel=2
 epoch=0
 pkgdesc="Wrapper for the Linux gaming using Wine"
 arch=(any)
@@ -14,7 +14,7 @@ makedepends=('git' 'make')
 optdepends=(
   'wine: Windows support (stable)'
   'wine-staging: Windows support (testing)'
-  'innoextract: For the game standalone extraction'
+  'innoextract: For the GOG games standalone extraction'
   'winetricks'
 )
 backup=(etc/lunion-play/customization.cfg)

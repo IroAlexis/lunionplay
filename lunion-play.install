@@ -1,13 +1,13 @@
 ## arg 1:  the new package version
 post_install()
 {
-  echo "  -> Keep a close look in /etc/lunion-play"
+  echo "  -> The configuration file is available here: /etc/lunion-play/customization.cfg"
 }
 
 ## arg 1:  the new package version
 ## arg 2:  the old package version
 post_upgrade()
 {
-  echo "  -> Keep a close look in /etc/lunion-play"
-
+  echo "  -> Keep close a look in /etc/lunion-play"
+  echo "  -> Don't forget apply changes in your configuration file (if you use one)"
 }

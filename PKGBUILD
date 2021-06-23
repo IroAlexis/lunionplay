@@ -3,7 +3,7 @@
 
 pkgname=lunion-play
 pkgver=0.1.alpha2
-pkgrel=2
+pkgrel=3
 epoch=0
 pkgdesc="Wrapper for the Linux gaming using Wine"
 arch=(any)

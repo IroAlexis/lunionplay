@@ -124,6 +124,13 @@ else
   if [ -z "$GAMES_PATH" ]; then
     msg "Set the variable 'GAMES_PATH=/home/frog'"
   fi
+
+  if [ -z "$CUSTOM_WINE" ]; then
+    command -v wine 1> /dev/null
+    if [ ! $? ]; then
+      msg "Set the variable 'CUSTOM_WINE=/path/to/wine/bin' or need install wine (mainline)"
+    fi
+  fi
   exit 1
 fi
 

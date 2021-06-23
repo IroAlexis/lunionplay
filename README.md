@@ -38,7 +38,19 @@ $ makepkg -si
 ```bash
 $ ./lunion-play gamename /path/to/game.exe
 ```
-The wrapper require that your wine prefix is in `$_games_path/gamename/pfx/` directory (may be generate with `./lunion-gamesetup gamename [/path/to/setup.exe]`). By default, `_games_path` is set on `$HOME/Games` but you can edit him with `customization.cfg` file that is in `$HOME/.config/lunion-play` or `./` or `/etc/lunion-play`.
+The wrapper require that your wine prefix is in `$_games_path/gamename/pfx/` directory. He may be generate with :
+```bash
+./lunion-gamesetup gamename [/path/to/setup.exe]
+```
+By default, `_games_path` is set on `$HOME/Games` but you can edit him with `customization.cfg` file that is in `$HOME/.config/lunion-play` or `./` or `/etc/lunion-play` otherwise use the environement variable `$GAMES_PATH`.
+
+A correct local game installation should look like this:
+
+        _games_path/gamename/
+        ├── gamedata/
+        ├── pfx/
+        └── shaders/
+Note : `gamedata` isn't mandatory, the game data can be in wine prefix but please be careful if you want to delete your prefix.
 
 
 

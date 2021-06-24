@@ -6,18 +6,14 @@ fi
 
 where="$(dirname "$(which "$0")")"
 
-command -v source 1> /dev/null
-if [ ! $? ]; then
-  msg "Need install the tcl package"
+if [ $# -eq 0 ] || [ $# -gt 2 ]; then
+  echo "usage: $0 gamename [/path/to/setup.exe]"
   exit 1
 fi
 
-if [[ "$where" == ^\/+usr\/+bin\/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
-  source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
-elif [[ "$where" != ^\/+usr\/+bin\/*.* ]] && [ -f "$where/customization.cfg" ]; then
-  source "$where"/customization.cfg 2> /dev/null
-elif [[ "$where" == ^\/+usr\/+bin\/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
-  source /etc/lunion-play/customization.cfg 2> /dev/null
+if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]]; then
+  echo "usage: $0 gamename [/path/to/setup.exe]"
+  exit 1
 fi
 
 
@@ -41,16 +37,10 @@ error()
   echo -e "\033[1;31m==> ERROR:\033[1;0m\033[1;1m $1\033[1;0m" >&2
 }
 
-winewait()
+wine_wait()
 {
   msg "Waiting all wine processes terminate..."
   wineserver --wait
-}
-
-_exit()
-{
-  echo ""
-  exit $1
 }
 
 
@@ -59,27 +49,32 @@ _exit()
 #  Verification
 # ==============
 
-if [ $# -eq 0 ] || [ $# -gt 2 ]; then
-  echo "usage: $0 gamename [/path/to/setup.exe]"
-  _exit 1
+command -v source 1> /dev/null
+if [ ! $? ]; then
+  msg "Need install the tcl package"
+  exit 1
 fi
 
-if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
-  error "You don't must not be a path ($1)"
-  _exit 1
-fi
+if [[ "$where" =~ ^\/+usr\/+bin\/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
+  source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
+elif [[ "$where" != ^\/+usr\/+bin\/*.* ]] && [ -f "$where/customization.cfg" ]; then
+  source "$where"/customization.cfg 2> /dev/null
+elif [[ "$where" =~ ^\/+usr\/+bin\/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
+  source /etc/lunion-play/customization.cfg 2> /dev/null
+else
+  msg "customization.cfg not found"
+  if [ -z "$GAMES_PATH" ]; then
+    msg "Set the variable 'GAMES_PATH=/home/frog'"
+    exit 1
+  fi
 
-if [ -z "$_games_path" ]; then
-  error "\`_games_path\` is empty, please set the variable in the .cfg file"
-  _exit 1
-fi
-
-if [ -z "$_dxvk_path" ]; then
-  warning "DXVK installation will not be requested"
-fi
-
-if [ -z "$_vkd3dproton_path" ]; then
-  warning "VKD3D-Proton installation will not be requested"
+  if [ -z "$CUSTOM_WINE" ]; then
+    command -v wine 1> /dev/null
+    if [ ! $? ]; then
+      msg "Set the variable 'CUSTOM_WINE=/path/to/wine/bin' or need install wine (mainline)"
+      exit 1
+    fi
+  fi
 fi
 
 
@@ -87,14 +82,32 @@ fi
 #  Games folder Configuration
 # ============================
 
-dialog "Do you want install the game in $_games_path ?"
+if [ ! -z "$GAMES_PATH" ]; then
+  GAMEDIR="$GAMES_PATH/$1"
+elif [ ! -z "$_games_path" ]; then
+  GAMEDIR="$_games_path/$1"
+else
+  exit 1
+fi
+
+dialog "Do you want install the game in $GAMEDIR ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
   msg "Please set \`_games_path\` as you want in the .cfg file"
-  _exit 1
+  exit 1
 fi
-if [ ! -d "$_games_path/$1" ]; then
-  mkdir -p "$_games_path/$1"
+if [ ! -d "$GAMEDIR" ]; then
+  mkdir -p "$GAMEDIR"
+fi
+
+
+# ========================
+#  Arguments Verification
+# ========================
+
+if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
+  error "You don't must not be a path ($1)"
+  exit 1
 fi
 
 
@@ -123,11 +136,7 @@ echo "[+] info:: lunion-play: $(wine --version)"
 dialog "Proceed with this Wine version ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
-  if [ -z "$_custom_wine" ] && [ -z "$CUSTOM_WINE" ]; then
-    msg "Please set \`_custom_wine\` as you want in the .cfg file"
-    msg "Or set the variable \`CUSTOM_WINE=/path/to/wine/bin\`"
-  fi
-  _exit 1
+  exit 1
 fi
 
 
@@ -152,22 +161,35 @@ if [[ "$_CONDITION" =~ [nN] ]]; then
 fi
 
 msg "Running wine prefix initialization..."
-wineboot --init
-winewait
+wineboot
+
+wine_wait
+ret=$?
 
 
 # ================================
 #  Translation layer Installation
 # ================================
 
-if [ "$?" ]; then
+if [ -z "$_dxvk_path" ]; then
+  warning "DXVK Installation skipped"
+fi
+
+if [ -z "$_vkd3dproton_path" ]; then
+  warning "VKD3D-Proton Installation skipped"
+fi
+
+if [ "$ret" ]; then
   mkdir -p $GAME/shaders
 
   if [ "$LUNION_PLAY_DAMAVAND" = 1 ]; then
     wine reg add 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /d vulkan /f 1> /dev/null
     msg "Damavand will be used"
   else
-    wine reg delete 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /f 1> /dev/null
+    wine reg query 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer &> /dev/null
+    if [ "$?" ]; then
+      wine reg delete 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /f &> /dev/null
+    fi
     unset LUNION_PLAY_DAMAVAND
   fi
 
@@ -176,7 +198,7 @@ if [ "$?" ]; then
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
       "$_dxvk_path"/setup_dxvk.sh install
-      winewait
+      wine_wait
     fi
   fi
 
@@ -185,7 +207,7 @@ if [ "$?" ]; then
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
       "$_vkd3dproton_path"/setup_vkd3d_proton.sh install
-      winewait
+      wine_wait
     fi
   fi
 
@@ -197,7 +219,7 @@ if [ "$?" ]; then
   if [ "$2" ]; then
     if [ ! -f "$2" ]; then
       error "$2 don't exist"
-      _exit 1
+      exit 1
     fi
 
     dialog "Is it a GOG installer ?"
@@ -215,11 +237,11 @@ if [ "$?" ]; then
           innoextract -sm "$2"
         else
           error "innoextract is not install"
-          _exit 1
+          exit 1
         fi
         msg "$GAME/gamedata"
         msg "exit script done"
-        _exit 0
+        exit 0
       fi
 
       dialog "Do you want the GUI ?"
@@ -241,17 +263,17 @@ if [ "$?" ]; then
 
     if [ ! -z "$_ARGS" ]; then
       wine "$2" $_ARGS
-      winewait
+      wine_wait
     else
       warning "Don't launch the game with the installer..."
       wine "$2"
-      winewait
+      wine_wait
     fi
   fi
 
   msg "### You can launch the game with $(dirname "$(which "$0")")/lunion-play"
   msg "exit script done"
-  _exit 0
+  exit 0
 fi
 
-_exit 1
+exit 1

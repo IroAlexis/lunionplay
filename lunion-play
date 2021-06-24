@@ -5,27 +5,28 @@ if [ "$DEBUG" = 1 ]; then
 fi
 
 where="$(dirname "$(which "$0")")"
+bin="$(basename "$0")"
 
 if [ "$#" -ne 2 ]; then
-  echo "usage: lunion-play gamename /path/to/game.exe"
+  echo "usage: $bin gamename /path/to/game.exe"
   echo ""
   exit 1
 fi
 
 if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]]; then
-  echo "usage: lunion-play gamename /path/to/game.exe"
+  echo "usage: $bin gamename /path/to/game.exe"
   exit 1
 fi
 
 
 msg()
 {
-  echo -e "[+] info:: lunion-play: $1" >&2
+  echo -e "[+] info:: $bin: $1" >&2
 }
 
 error()
 {
-  echo -e "[-] error:: lunion-play: $1" >&2
+  echo -e "[-] error:: $bin: $1" >&2
 }
 
 is_futex2_supported()

@@ -5,7 +5,7 @@ if [ "$DEBUG" = 1 ]; then
 fi
 
 pkgname=lunion-play
-pkgver=$(git describe --tags)
+pkgver=$(git describe --tags | sed 's|.\(.*\)|\1|g')
 _where="$(dirname "$(which "$0")")"
 
 

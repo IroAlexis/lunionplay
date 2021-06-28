@@ -9,7 +9,6 @@ bin="$(basename "$0")"
 
 if [ "$#" -ne 2 ]; then
   echo "usage: $bin gamename /path/to/game.exe"
-  echo ""
   exit 1
 fi
 
@@ -232,7 +231,11 @@ else
   esac
 fi
 
-if [ "$LUNION_PLAY_LOG" = 1 ]; then
+if [ "$LUNION_PLAY_LOG" = 0 ]; then
+  if [ -z "$WINEDEBUG" ]; then
+    export WINEDEBUG=fixme-all
+  fi
+elif [ "$LUNION_PLAY_LOG" = 1 ]; then
   if [ -z "$WINEDEBUG" ]; then
     export WINEDEBUG=warn+seh
   fi

@@ -112,15 +112,15 @@ fi
 
 if [[ "$where" =~ ^\/+usr\/+bin\/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
   source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
-  msg "cfg_loader: $HOME/.config/lunion-play/customization.cfg"
+  msg "cfg: $HOME/.config/lunion-play/customization.cfg"
 elif [[ "$where" != ^\/+usr\/+bin\/*.* ]] && [ -f "$where/customization.cfg" ]; then
   source "$where"/customization.cfg 2> /dev/null
-  msg "cfg_loader: $where/customization.cfg"
+  msg "cfg: $where/customization.cfg"
 elif [[ "$where" =~ ^\/+usr\/+bin\/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
   source /etc/lunion-play/customization.cfg 2> /dev/null
-  msg "cfg_loader: /etc/lunion-play/customization.cfg"
+  msg "cfg: /etc/lunion-play/customization.cfg"
 else
-  msg "cfg_loader: customization.cfg not found"
+  msg "cfg: customization.cfg not found"
   if [ -z "$GAMES_PATH" ]; then
     msg "Set the variable 'GAMES_PATH=/home/frog'"
   fi
@@ -187,12 +187,16 @@ if [ ! -z "$CUSTOM_WINE" ]; then
     LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib:$LD_LIBRARY_PATH"
   fi
 fi
-msg "version: $(wine --version)"
 
 export WINEPREFIX="$GAMEDIR"/pfx
 
 is_futex2_supported
 is_winesync_supported
+
+msg "version: $(wine --version)"
+if [[ ! "$_no_confirm" =~ true ]]; then
+  read -p "Press enter to continue. "
+fi
 
 if [ -z "$LUNION_PLAY_SYNC" ]; then
   export WINEESYNC=1
@@ -247,10 +251,6 @@ else
   if [ -z "$WINEDEBUG" ]; then
     export WINEDEBUG=-all
   fi
-fi
-
-if [[ ! "$_no_confirm" =~ true ]]; then
-  read -p "Press enter to continue. "
 fi
 
 

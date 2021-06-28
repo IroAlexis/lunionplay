@@ -65,7 +65,7 @@ update_winepfx()
     msg "Preparing to launch the game..."
   else
     msg "Prefix not found. $WINEPREFIX"
-    msg "Creating the wine prefix..."
+    exit 1
   fi
 
   wineboot &> /dev/null | ret=$?

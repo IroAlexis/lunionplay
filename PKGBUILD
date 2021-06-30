@@ -28,5 +28,9 @@ package()
   msg "Packaging Lunion Play..."
 
   cd "$startdir"
-  make DESTDIR="$pkgdir" install
+
+  install -Dm755 lunion-play -t $pkgdir/usr/bin
+  install -Dm755 lunion-gamesetup -t $pkgdir/usr/bin
+  install -Dm644 customization.cfg -t $pkgdir/etc/$pkgname
+  install -Dm444 LICENSE -t $pkgdir/usr/share/licenses/$pkgname
 }

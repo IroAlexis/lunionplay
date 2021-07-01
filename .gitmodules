@@ -1,0 +1,6 @@
+[submodule "dxvk"]
+	path = dxvk
+	url = https://github.com/doitsujin/dxvk
+[submodule "vkd3d-proton"]
+	path = vkd3d-proton
+	url = https://github.com/HansKristian-Work/vkd3d-proton

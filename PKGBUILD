@@ -2,7 +2,7 @@
 
 
 pkgname=lunion-play
-pkgver=0.1.alpha3
+pkgver=$(git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/v//g')
 pkgrel=1
 epoch=0
 pkgdesc="Wrapper for the Linux gaming using Wine"

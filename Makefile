@@ -1,10 +1,19 @@
+TAG=$(shell git describe --tags)
+
 pkgname=lunion-play
+pkgver=$(shell echo $(TAG) | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/v//g')
+pkgdir=/tmp/$(pkgname)-$(pkgver)
 
 BINDIR=/usr/bin
 CONFDIR=/etc/$(pkgname)
 LICENSEDIR=/usr/share/licenses/$(pkgname)
 
 all:
+
+env:
+	@echo $(pkgname)
+	@echo $(pkgver)
+	@echo $(pkgdir)
 
 install:
 	@echo "==> Installing $(pkgname) in $(BINDIR)..."

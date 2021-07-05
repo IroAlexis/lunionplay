@@ -304,7 +304,7 @@ fi
 #  Driver Configuration
 # ======================
 
-export "$(cat /sys/class/drm/card0/device/uevent | grep -e "nvidia")"
+export "$(grep -e nvidia /sys/class/drm/card0/device/uevent)"
 if [[ "$DRIVER" = nvidia ]] && [ -d /proc/driver/nvidia ]; then
   export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
   export __GL_SHADER_DISK_CACHE=1

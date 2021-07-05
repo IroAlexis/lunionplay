@@ -165,7 +165,7 @@ msg "Running wine prefix initialization..."
 wineboot
 
 wine_wait
-ret=$?
+rslt=$?
 
 
 # ================================
@@ -180,7 +180,7 @@ if [ -z "$_vkd3dproton_path" ]; then
   warning "VKD3D-Proton Installation skipped"
 fi
 
-if [ "$ret" ]; then
+if [ "$rslt" ]; then
   mkdir -p "$GAME"/shaders
 
   if [ "$LUNION_PLAY_DAMAVAND" = 1 ]; then

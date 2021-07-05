@@ -68,13 +68,14 @@ update_winepfx()
     exit 1
   fi
 
-  wineboot &> /dev/null | ret=$?
+  wineboot &> /dev/null
+  rslt=$?
   wineserver -w
 
   WINEDLLOVERRIDES="$OLD"
   unset OLD
 
-  return $ret
+  return $rslt
 }
 
 display_runtime_options()

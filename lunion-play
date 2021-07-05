@@ -61,7 +61,7 @@ update_winepfx()
     WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
   fi
 
-  if [ -d $WINEPREFIX ]; then
+  if [ -d "$WINEPREFIX" ]; then
     msg "Preparing to launch the game..."
   else
     msg "Prefix not found. $WINEPREFIX"
@@ -79,7 +79,7 @@ update_winepfx()
 
 display_runtime_options()
 {
-  if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
+  if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
     echo "==========================================="
     msg "version: $(wine --version)"
     msg "command: $1"
@@ -94,7 +94,7 @@ display_runtime_options()
     msg "$type $var"
   done
 
-  if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
+  if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
     echo "==========================================="
   fi
 }
@@ -134,9 +134,9 @@ else
   exit 1
 fi
 
-if [ ! -z "$GAMES_PATH" ]; then
+if [ -n "$GAMES_PATH" ]; then
   GAMEDIR="$GAMES_PATH/$1"
-elif [ ! -z "$_games_path" ]; then
+elif [ -n "$_games_path" ]; then
   GAMEDIR="$_games_path/$1"
 else
   exit 1
@@ -171,10 +171,10 @@ msg "command: $2"
 #  Runtime Configuration
 # =======================
 
-if [ -z "$CUSTOM_WINE" ] && [ ! -z "$_custom_wine" ]; then
+if [ -z "$CUSTOM_WINE" ] && [ -n "$_custom_wine" ]; then
   CUSTOM_WINE="$_custom_wine"
 fi
-if [ ! -z "$CUSTOM_WINE" ]; then
+if [ -n "$CUSTOM_WINE" ]; then
   if [ -z "$PATH" ]; then
     PATH="$CUSTOM_WINE"
   else
@@ -274,7 +274,7 @@ fi
 #  DXVK Configuration
 # ====================
 
-if [[ "$LUNION_PLAY_LOG" > 0 ]]; then
+if [[ "$LUNION_PLAY_LOG" -gt 0 ]]; then
   export DXVK_LOG_LEVEL=info
 else
   export DXVK_LOG_LEVEL=none
@@ -285,13 +285,13 @@ fi
 #  VKD3D-Proton Configuration
 # ============================
 
-if [[ "$LUNION_PLAY_LOG" > 0 ]]; then
+if [[ "$LUNION_PLAY_LOG" -gt 0 ]]; then
   export VKD3D_DEBUG=warn
 else
   export VKD3D_DEBUG=none
 fi
 
-if [ ! -z "$_ray_tracing" ] && [[ "$_ray_tracing" =~ true ]]; then
+if [ -n "$_ray_tracing" ] && [[ "$_ray_tracing" =~ true ]]; then
   if [ -z "$VKD3D_CONFIG" ]; then
     export VKD3D_CONFIG=dxr
   else
@@ -304,7 +304,7 @@ fi
 #  Driver Configuration
 # ======================
 
-export $(cat /sys/class/drm/card0/device/uevent | grep -e "nvidia")
+export "$(cat /sys/class/drm/card0/device/uevent | grep -e "nvidia")"
 if [[ "$DRIVER" = nvidia ]] && [ -d /proc/driver/nvidia ]; then
   export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
   export __GL_SHADER_DISK_CACHE=1
@@ -316,17 +316,17 @@ fi
 #  Game Launch
 # =============
 
-if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
+if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
   log=$HOME/lunionplay-$1.log
-  display_runtime_options "$2" &> $log
+  display_runtime_options "$2" &> "$log"
 else
   display_runtime_options "$2"
 fi
 msg "Starting..."
 
-cd "$(dirname "$(realpath "$2")")"
-if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
-  wine "$GAMEEXE" &>> $log
+cd "$(dirname "$(realpath "$2")")" || exit
+if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
+  wine "$GAMEEXE" &>> "$log"
 else
   wine "$GAMEEXE"
 fi
@@ -335,7 +335,7 @@ fi
 msg "Waiting all wine processes terminate..."
 wineserver --wait
 
-if [ ! -z "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" > 0 ]] ; then
+if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
   msg "Debug log available here $log"
 fi
 

@@ -4,7 +4,7 @@ if [ "$DEBUG" = 1 ]; then
   set -x
 fi
 
-where="$(dirname "$(which "$0")")"
+where="$(dirname "$(which "${BASH_SOURCE[0]}")")"
 
 if [ $# -eq 0 ] || [ $# -gt 2 ]; then
   echo "usage: $0 gamename [/path/to/setup.exe]"
@@ -55,11 +55,11 @@ if [ ! $? ]; then
   exit 1
 fi
 
-if [[ "$where" =~ ^\/+usr\/+bin\/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
+if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
   source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
-elif [[ "$where" != ^\/+usr\/+bin\/*.* ]] && [ -f "$where/customization.cfg" ]; then
+elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -f "$where/customization.cfg" ]; then
   source "$where"/customization.cfg 2> /dev/null
-elif [[ "$where" =~ ^\/+usr\/+bin\/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
+elif [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
   source /etc/lunion-play/customization.cfg 2> /dev/null
 else
   msg "customization.cfg not found"
@@ -82,9 +82,10 @@ fi
 #  Games folder Configuration
 # ============================
 
-if [ ! -z "$GAMES_PATH" ]; then
+# FIXME Test the path for be sure that the directory exist
+if [ -n "$GAMES_PATH" ]; then
   GAMEDIR="$GAMES_PATH/$1"
-elif [ ! -z "$_games_path" ]; then
+elif [ -n "$_games_path" ]; then
   GAMEDIR="$_games_path/$1"
 else
   exit 1
@@ -115,10 +116,10 @@ fi
 #  Wine Configuration
 # ====================
 
-if [ -z "$CUSTOM_WINE" ] && [ ! -z "$_custom_wine" ]; then
+if [ -z "$CUSTOM_WINE" ] && [ -n "$_custom_wine" ]; then
   CUSTOM_WINE="$_custom_wine"
 fi
-if [ ! -z "$CUSTOM_WINE" ]; then
+if [ -n "$CUSTOM_WINE" ]; then
   if [ -z "$PATH" ]; then
     export PATH="$CUSTOM_WINE"
   else
@@ -144,9 +145,9 @@ fi
 #  Wine prefix Installation
 # ==========================
 
-GAME=$_games_path/$1
+GAME="$_games_path"/"$1"
 
-export WINEPREFIX=$GAME/pfx
+export WINEPREFIX="$GAME"/pfx
 export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
 
 dialog "Do you want use 32 bits prefix ?"
@@ -180,7 +181,7 @@ if [ -z "$_vkd3dproton_path" ]; then
 fi
 
 if [ "$ret" ]; then
-  mkdir -p $GAME/shaders
+  mkdir -p "$GAME"/shaders
 
   if [ "$LUNION_PLAY_DAMAVAND" = 1 ]; then
     wine reg add 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /d vulkan /f 1> /dev/null
@@ -193,7 +194,7 @@ if [ "$ret" ]; then
     unset LUNION_PLAY_DAMAVAND
   fi
 
-  if [ ! -z "$_dxvk_path" ] && [ ! "$LUNION_PLAY_DAMAVAND" = 1 ]; then
+  if [ -n "$_dxvk_path" ] && [ ! "$LUNION_PLAY_DAMAVAND" = 1 ]; then
     dialog "Do you want install DXVK for Direct3D 9/10/11 ?"
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
@@ -202,7 +203,7 @@ if [ "$ret" ]; then
     fi
   fi
 
-  if [ ! -z "$_vkd3dproton_path" ] && [ ! "$LUNION_PLAY_DAMAVAND" = 1 ]; then
+  if [ -n "$_vkd3dproton_path" ] && [ ! "$LUNION_PLAY_DAMAVAND" = 1 ]; then
     dialog "Do you want install VKD3D Proton for Direct3D 12 ?"
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
@@ -231,8 +232,8 @@ if [ "$ret" ]; then
       if [[ "$_CONDITION" =~ [yY] ]]; then
         command -v innoextract 1> /dev/null
         if [ "$?" ]; then
-          mkdir -p $GAME/gamedata
-          cd $GAME/gamedata
+          mkdir -p "$GAME"/gamedata
+          cd "$GAME"/gamedata || exit
           msg "Installating in progress..."
           innoextract -sm "$2"
         else
@@ -261,8 +262,8 @@ if [ "$ret" ]; then
     fi
 
 
-    if [ ! -z "$_ARGS" ]; then
-      wine "$2" $_ARGS
+    if [ -n "$_ARGS" ]; then
+      wine "$2" "$_ARGS"
       wine_wait
     else
       warning "Don't launch the game with the installer..."
@@ -271,7 +272,7 @@ if [ "$ret" ]; then
     fi
   fi
 
-  msg "### You can launch the game with $(dirname "$(which "$0")")/lunion-play"
+  msg "### You can launch the game with $(dirname "$(which "${BASH_SOURCE[0]}")")/lunion-play"
   msg "exit script done"
   exit 0
 fi

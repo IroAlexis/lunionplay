@@ -82,10 +82,9 @@ fi
 #  Games folder Configuration
 # ============================
 
-# FIXME Test the path for be sure that the directory exist
-if [ -n "$GAMES_PATH" ]; then
+if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH" ]; then
   GAMEDIR="$GAMES_PATH/$1"
-elif [ -n "$_games_path" ]; then
+elif [ -n "$_games_path" ] && [ -d "$_games_path" ]; then
   GAMEDIR="$_games_path/$1"
 else
   exit 1

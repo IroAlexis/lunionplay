@@ -65,17 +65,22 @@ elif [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "/etc/lunion-play/customization.c
   source /etc/lunion-play/customization.cfg 2> /dev/null
   msg "cfg: /etc/lunion-play/customization.cfg"
 else
-  msg "customization.cfg not found"
+  warning "customization.cfg not found"
   if [ -z "$GAMES_PATH" ]; then
-    msg "Set the variable 'GAMES_PATH=/home/frog'"
-    exit 1
+    error "Use the variable 'GAMES_PATH=/home/frog'"
   fi
 
   if [ -z "$CUSTOM_WINE" ]; then
     command -v wine 1> /dev/null
-    if [ ! $? ]; then
-      msg "Set the variable 'CUSTOM_WINE=/path/to/wine/bin' or need install wine (mainline)"
-      exit 1
+    if [ $? ]; then
+      warning "Using the Wine system (or use the variable 'CUSTOM_WINE=/path/to/wine/bin')"
+    else
+      error "Use the variable 'CUSTOM_WINE=/path/to/wine/bin'"
+      error "Or need install wine (mainline/staging)"
+
+      if [ -z "$GAMES_PATH" ]; then
+        exit 1
+      fi
     fi
   fi
 fi

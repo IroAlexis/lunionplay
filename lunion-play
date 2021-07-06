@@ -196,7 +196,7 @@ is_futex2_supported
 is_winesync_supported
 
 msg "version: $(wine --version)"
-if [[ ! "$_no_confirm" =~ true ]]; then
+if [ -z "$_no_confirm" ] || [[ "$_no_confirm" =~ false ]]; then
   read -p "Press enter to continue. "
 fi
 

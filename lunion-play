@@ -141,16 +141,6 @@ else
   fi
 fi
 
-if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH" ]; then
-  GAMEDIR="$(realpath "$GAMES_PATH")/$1"
-elif [ -n "$_games_path" ] && [ -d "$_games_path" ]; then
-  GAMEDIR="$(realpath "$_games_path")/$1"
-else
-  error "Games directory not exists"
-  exit 1
-fi
-msg "game_directory: $GAMEDIR"
-
 
 # ========================
 #  Arguments Verification
@@ -173,6 +163,17 @@ else
   exit 1
 fi
 msg "command: $2"
+
+
+if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH" ]; then
+  GAMEDIR="$(realpath "$GAMES_PATH")/$1"
+elif [ -n "$_games_path" ] && [ -d "$_games_path" ]; then
+  GAMEDIR="$(realpath "$_games_path")/$1"
+else
+  error "Games directory not exists"
+  exit 1
+fi
+msg "game_directory: $GAMEDIR"
 
 
 # =======================

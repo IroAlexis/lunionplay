@@ -19,34 +19,30 @@ env:
 	@echo "LICENSE_DIR="$(LICENSE_DIR)
 
 package: clean
-	@echo "==> Creating package $(name)..."
-	@mkdir -vp $(buildir)
-	install -Dm755 lunion-play -t $(buildir)
-	install -Dm755 lunion-gamesetup -t $(buildir)
-	install -Dm644 customization.cfg -t $(buildir)
-	install -Dm644 README.md -t $(buildir)
-	install -Dm444 LICENSE -t $(buildir)
-	@echo "==> Compressing package..."; cd /tmp; \
+	@echo -e "\033[1;32m==>\033[1;0m\033[1;1m Creating package $(name)... \033[1;0m"
+	@install -v -Dm755 lunion-play -t $(buildir)
+	@install -v -Dm755 lunion-gamesetup -t $(buildir)
+	@install -v -Dm644 customization.cfg -t $(buildir)
+	@install -v -Dm644 README.md -t $(buildir)
+	@install -v -Dm444 LICENSE -t $(buildir)
+	@echo -e "\033[1;32m==>\033[1;0m\033[1;1m Compressing package... \033[1;0m"; cd /tmp; \
 	tar --zstd -cf $(package) $(name)-$(version)
 	@mv /tmp/$(package) .
-	@echo "==> Finished making: $(name) $(version)"
+	@echo -e "\033[1;32m==>\033[1;0m\033[1;1m Finished making: $(name) $(version) \033[1;0m"
 
 install:
-	@echo "==> Installing $(name) in $(BIN_DIR)..."
-	install -Dm755 lunion-play -t $(BIN_DIR)
-	install -Dm755 lunion-gamesetup -t $(BIN_DIR)
-	install -Dm644 customization.cfg -t $(CONF_DIR)
-	install -Dm444 LICENSE -t $(LICENSE_DIR)
+	@install -v -Dm755 lunion-play -t $(BIN_DIR)
+	@install -v -Dm755 lunion-gamesetup -t $(BIN_DIR)
+	@install -v -Dm644 customization.cfg -t $(CONF_DIR)
+	@install -v -Dm444 LICENSE -t $(LICENSE_DIR)
 
 uninstall:
-	@echo "==> Removing $(name)..."
 	@rm -vf $(BIN_DIR)/$(name)
 	@rm -vf $(BIN_DIR)/lunion-gamesetup
 	@rm -vf $(CONF_DIR)/customization.cfg
 	@rm -vf $(LICENSE_DIR)/LICENSE
 
 clean:
-	@echo "==> Removing existing buildir/ directory..."
-	@rm -vf $(package)
+	@echo -e "\033[1;32m==>\033[1;0m\033[1;1m Removing existing buildir/ directory... \033[1;0m"
 	@rm -vrf $(buildir)
 

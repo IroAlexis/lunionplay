@@ -142,9 +142,9 @@ else
 fi
 
 if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH" ]; then
-  GAMEDIR="$GAMES_PATH/$1"
+  GAMEDIR="$(realpath "$GAMES_PATH")/$1"
 elif [ -n "$_games_path" ] && [ -d "$_games_path" ]; then
-  GAMEDIR="$_games_path/$1"
+  GAMEDIR="$(realpath "$_games_path")/$1"
 else
   error "Games directory not exists"
   exit 1

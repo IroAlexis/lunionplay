@@ -106,7 +106,7 @@ fi
 dialog "Do you want install the game in $GAMEDIR ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
-  msg "Please set \`_games_path\` as you want in the .cfg file"
+  msg "Please set '_games_path' as you want in the .cfg file"
   msg "or use the variable 'GAMES_PATH'"
   exit 1
 fi
@@ -148,7 +148,7 @@ fi
 #  Wine prefix Installation
 # ==========================
 
-GAME="$_games_path"/"$1"
+GAME="$_games_path/$1"
 
 export WINEPREFIX="$GAME"/pfx
 export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="

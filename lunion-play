@@ -150,12 +150,12 @@ msg "game_directory: $GAMEDIR"
 #  Arguments Verification
 # ========================
 
-if [[ "$1" =~ ^\/$|(\/[a-zA-Z_0-9-]+)+$ ]]; then
+if [[ "$1" =~ ^/$|(/[a-zA-Z_0-9-]+)+$ ]]; then
   error "Do not pass a path: $1"
   exit 1
 fi
 
-if [[ ! "$2" =~ ^\/$|(\/[a-zA-Z_0-9 -.]+)+.exe$ ]]; then
+if [[ ! "$2" =~ ^/$|(/[a-zA-Z_0-9 -.]+)+.exe$ ]]; then
   error "Need to pass a Windows game (/path/to/game.exe)"
   exit 1
 fi

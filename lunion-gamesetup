@@ -57,10 +57,13 @@ fi
 
 if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
   source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
+  msg "cfg: $HOME/.config/lunion-play/customization.cfg"
 elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -f "$where/customization.cfg" ]; then
   source "$where"/customization.cfg 2> /dev/null
+  msg "cfg: $where/customization.cfg"
 elif [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
   source /etc/lunion-play/customization.cfg 2> /dev/null
+  msg "cfg: /etc/lunion-play/customization.cfg"
 else
   msg "customization.cfg not found"
   if [ -z "$GAMES_PATH" ]; then
@@ -99,6 +102,7 @@ dialog "Do you want install the game in $GAMEDIR ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
   msg "Please set \`_games_path\` as you want in the .cfg file"
+  msg "or use the variable 'GAMES_PATH'"
   exit 1
 fi
 if [ ! -d "$GAMEDIR" ]; then

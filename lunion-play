@@ -4,15 +4,20 @@ if [ "$DEBUG" = 1 ]; then
   set -x
 fi
 
-where="$(dirname "$(which "${BASH_SOURCE[0]}")")"
 bin="$(basename "${BASH_SOURCE[0]}")"
+version="0.2.rc1"
+where="$(dirname "$(which "${BASH_SOURCE[0]}")")"
+
+case "$1" in
+  -h | --help)
+    echo "usage: $bin gamename /path/to/game.exe"
+    exit 0;;
+  -v | --version)
+    echo "$bin-$version"
+    exit 0;;
+esac
 
 if [ "$#" -ne 2 ]; then
-  echo "usage: $bin gamename /path/to/game.exe"
-  exit 1
-fi
-
-if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]]; then
   echo "usage: $bin gamename /path/to/game.exe"
   exit 1
 fi

@@ -6,12 +6,12 @@ fi
 
 where="$(dirname "$(which "${BASH_SOURCE[0]}")")"
 
-if [ $# -eq 0 ] || [ $# -gt 2 ]; then
+if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]]; then
   echo "usage: $0 gamename [/path/to/setup.exe]"
-  exit 1
+  exit 0
 fi
 
-if [[ "$1" =~ -h ]] || [[ "$1" =~ --help ]]; then
+if [ $# -eq 0 ] || [ $# -gt 2 ]; then
   echo "usage: $0 gamename [/path/to/setup.exe]"
   exit 1
 fi

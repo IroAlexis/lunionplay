@@ -10,15 +10,15 @@ where="$(dirname "$(which "${BASH_SOURCE[0]}")")"
 
 case "$1" in
   -h | --help)
-    echo "usage: $bin gamename /path/to/game.exe"
+    echo "usage: $bin gamename"
     exit 0;;
   -v | --version)
     echo "$bin-$version"
     exit 0;;
 esac
 
-if [ "$#" -ne 2 ]; then
-  echo "usage: $bin gamename /path/to/game.exe"
+if [ "$#" -ne 1 ]; then
+  echo "usage: $bin gamename"
   exit 1
 fi
 
@@ -156,20 +156,6 @@ if [[ "$1" =~ ^/|(/[a-zA-Z_0-9-]+)+|/+$ ]]; then
   exit 1
 fi
 
-if [[ ! "$2" =~ ^/|(/[a-zA-Z_0-9 -.]+)+.exe$ ]]; then
-  error "Need to pass a Windows game (/path/to/game.exe)"
-  exit 1
-fi
-
-if [ -f "$2" ]; then
-  GAMEEXE="$(basename "$(realpath "$2")")"
-else
-  error "The game executable does not exist"
-  exit 1
-fi
-msg "command: $2"
-
-
 if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH" ]; then
   GAMEDIR="$(realpath "$GAMES_PATH")/$1"
 elif [ -n "$_games_path" ] && [ -d "$_games_path" ]; then
@@ -179,6 +165,14 @@ else
   exit 1
 fi
 msg "game_directory: $GAMEDIR"
+
+if [ -f "$GAMEDIR/.gamestart" ]; then
+  GAMEEXE="$(cat "$GAMEDIR/.gamestart")"
+else
+  error "The game executable does not exist $GAMEEXE"
+  exit 1
+fi
+msg "command: $GAMEEXE"
 
 
 # =======================
@@ -332,17 +326,17 @@ fi
 
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
   log=$HOME/lunionplay-$1.log
-  display_runtime_options "$2" &> "$log"
+  display_runtime_options "$GAMEEXE" &> "$log"
 else
-  display_runtime_options "$2"
+  display_runtime_options "$GAMEEXE"
 fi
 msg "Starting..."
 
-cd "$(dirname "$(realpath "$2")")" || exit
+cd "$(dirname "$(realpath "$GAMEEXE")")" || exit
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
-  wine "$GAMEEXE" &>> "$log"
+  wine "$(basename "$GAMEEXE")" &>> "$log"
 else
-  wine "$GAMEEXE"
+  wine "$(basename "$GAMEEXE")"
 fi
 
 

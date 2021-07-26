@@ -43,6 +43,19 @@ wine_wait()
   wineserver --wait
 }
 
+game_path()
+{
+  dialog "Enter the exe's path :"
+  read -rp " " exep;
+  if [ -f "$exep" ]; then
+    echo $exep > $GAMEDIR/.gamestart
+  else
+    return 1
+  fi
+
+  return 0
+}
+
 
 
 # ==============
@@ -243,7 +256,11 @@ if [ "$rslt" ]; then
           error "innoextract is not install"
           exit 1
         fi
-        msg "$GAME/gamedata"
+        game_path
+        while [ $? -eq 1 ]; do
+          game_path
+        done
+
         msg "exit script done"
         exit 0
       fi
@@ -275,7 +292,11 @@ if [ "$rslt" ]; then
     fi
   fi
 
-  msg "### You can launch the game with $(dirname "$(which "${BASH_SOURCE[0]}")")/lunion-play"
+  game_path
+  while [ $? -eq 1 ]; do
+    game_path
+  done
+
   msg "exit script done"
   exit 0
 fi

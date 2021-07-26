@@ -49,8 +49,9 @@ A correct local game installation should look like this:
         _games_path/gamename/
         ├── gamedata/
         ├── pfx/
-        └── shaders/
-Note : `gamedata` isn't mandatory, the game data can be in wine prefix but please be careful if you want to delete your prefix.
+        ├── shaders/
+        └── .gamestart
+Note : `gamedata` isn't mandatory, the game data can be in wine prefix but **please be careful if you want to delete your wine prefix** (`pfx/`).
 
 
 

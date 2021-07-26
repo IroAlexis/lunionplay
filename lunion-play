@@ -89,6 +89,7 @@ display_runtime_options()
     echo "==========================================="
     msg "version: $(wine --version)"
     msg "command: $1"
+    msg "working_directory: $(pwd)"
   fi
 
   type="runtime_option:"
@@ -324,6 +325,8 @@ fi
 #  Game Launch
 # =============
 
+cd "$(dirname "$(realpath "$GAMEEXE")")" || exit
+
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
   log=$HOME/lunionplay-$1.log
   display_runtime_options "$GAMEEXE" &> "$log"
@@ -332,7 +335,6 @@ else
 fi
 msg "Starting..."
 
-cd "$(dirname "$(realpath "$GAMEEXE")")" || exit
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
   wine "$(basename "$GAMEEXE")" &>> "$log"
 else

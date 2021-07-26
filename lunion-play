@@ -336,9 +336,9 @@ fi
 msg "Starting..."
 
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
-  wine "$(basename "$GAMEEXE")" &>> "$log"
+  wine "$(basename "$(realpath "$GAMEEXE")")" &>> "$log"
 else
-  wine "$(basename "$GAMEEXE")"
+  wine "$(basename "$(realpath "$GAMEEXE")")"
 fi
 
 

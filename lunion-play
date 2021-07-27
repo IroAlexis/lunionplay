@@ -10,15 +10,15 @@ where="$(dirname "$(which "${BASH_SOURCE[0]}")")"
 
 case "$1" in
   -h | --help)
-    echo "usage: $bin gamename"
+    echo "usage: $bin gamename [/path/to/game.exe]"
     exit 0;;
   -v | --version)
     echo "$bin-$version"
     exit 0;;
 esac
 
-if [ "$#" -ne 1 ]; then
-  echo "usage: $bin gamename"
+if [ "$#" -gt 2 ]; then
+  echo "usage: $bin gamename [/path/to/game.exe]"
   exit 1
 fi
 
@@ -169,6 +169,8 @@ msg "game_directory: $GAMEDIR"
 
 if [ -f "$GAMEDIR/.gamestart" ]; then
   GAMEEXE="$(cat "$GAMEDIR/.gamestart")"
+elif [ -n "$2" ] && [ -f "$2" ]; then
+  GAMEEXE="$2"
 else
   error "The game executable does not exist $GAMEEXE"
   exit 1

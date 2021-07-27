@@ -45,13 +45,20 @@ wine_wait()
 
 game_path()
 {
-  dialog "Enter the exe's path :"
-  read -rp " " exep;
-  if [ -f "$exep" ]; then
-    echo "$exep" > "$GAMEDIR/.gamestart"
-  else
-    return 1
-  fi
+  flag=1
+
+  while [ "$flag" -eq 1 ]; do
+    dialog "Enter the exe's path (press enter if you want to skip it):"
+    read -rp " " exep;
+    if [ -f "$exep" ]; then
+      echo "$exep" > "$GAMEDIR/.gamestart"
+      flag=0
+    elif [ -z $exep ]; then
+      flag=0
+    else
+      error "Path don't valid"
+    fi
+  done
 
   return 0
 }
@@ -257,9 +264,6 @@ if [ "$rslt" ]; then
           exit 1
         fi
         game_path
-        while [ $? -eq 1 ]; do
-          game_path
-        done
 
         msg "exit script done"
         exit 0
@@ -293,9 +297,6 @@ if [ "$rslt" ]; then
   fi
 
   game_path
-  while [ $? -eq 1 ]; do
-    game_path
-  done
 
   msg "exit script done"
   exit 0

@@ -93,8 +93,7 @@ display_runtime_options()
   if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
     echo "==========================================="
     msg "version: $(wine --version)"
-    msg "command: $1"
-    msg "working_directory: $(pwd)"
+    msg "command: $GAMEEXE"
   fi
 
   type="runtime_option:"
@@ -162,15 +161,14 @@ if [[ "$1" =~ ^/|(/[a-zA-Z_0-9-]+)+|/+$ ]]; then
   exit 1
 fi
 
-if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH" ]; then
+if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH/$1" ]; then
   GAMEDIR="$(realpath "$GAMES_PATH")/$1"
-elif [ -n "$_games_path" ] && [ -d "$_games_path" ]; then
+elif [ -n "$_games_path" ] && [ -d "$_games_path/$1" ]; then
   GAMEDIR="$(realpath "$_games_path")/$1"
 else
-  error "Games directory not exists"
+  error "Game directory not found"
   exit 1
 fi
-msg "game_directory: $GAMEDIR"
 
 if [ -f "$GAMEDIR/gamestart" ]; then
   GAMEEXE="$(cat "$GAMEDIR/gamestart")"
@@ -339,7 +337,7 @@ cd "$(dirname "$(realpath "$GAMEEXE")")" || exit
 
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
   log=$HOME/lunionplay-$1.log
-  display_runtime_options "$GAMEEXE" &> "$log"
+  display_runtime_options &> "$log"
 fi
 msg "Starting..."
 

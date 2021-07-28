@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$DEBUG" = 1 ]; then
+if [[ "$DEBUG" -eq 1 ]]; then
   set -x
 fi
 
@@ -30,7 +30,7 @@ msg()
 
 error()
 {
-  echo -e "[-] error:: $bin: $1" >&2
+  echo -e "[-] err:: $bin: $1" >&2
 }
 
 warn()
@@ -74,7 +74,7 @@ update_winepfx()
   if [ -d "$WINEPREFIX" ]; then
     msg "Preparing to launch the game..."
   else
-    msg "Prefix not found $WINEPREFIX"
+    error "Prefix not found $WINEPREFIX"
     exit 1
   fi
 

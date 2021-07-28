@@ -51,7 +51,7 @@ game_path()
     dialog "Enter the exe's path (press enter if you want to skip it):"
     read -rp " " exep;
     if [ -f "$exep" ]; then
-      echo "$exep" > "$GAMEDIR/.gamestart"
+      echo "$exep" > "$GAMEDIR/gamestart"
       flag=0
     elif [ -z $exep ]; then
       flag=0

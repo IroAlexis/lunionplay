@@ -172,10 +172,10 @@ else
 fi
 msg "game_directory: $GAMEDIR"
 
-if [ -f "$GAMEDIR/.gamestart" ]; then
-  GAMEEXE="$(cat "$GAMEDIR/.gamestart")"
+if [ -f "$GAMEDIR/gamestart" ]; then
+  GAMEEXE="$(cat "$GAMEDIR/gamestart")"
 else
-  warn ".gamestart file not found"
+  warn "gamestart file not found"
   if [ -n "$2" ] && [ -f "$2" ]; then
     GAMEEXE="$2"
   else

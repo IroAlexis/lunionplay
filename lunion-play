@@ -69,7 +69,7 @@ update_winepfx()
   if [ -d "$WINEPREFIX" ]; then
     msg "Preparing to launch the game..."
   else
-    msg "Prefix not found. $WINEPREFIX"
+    msg "Prefix not found $WINEPREFIX"
     exit 1
   fi
 
@@ -332,8 +332,6 @@ cd "$(dirname "$(realpath "$GAMEEXE")")" || exit
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
   log=$HOME/lunionplay-$1.log
   display_runtime_options "$GAMEEXE" &> "$log"
-else
-  display_runtime_options "$GAMEEXE"
 fi
 msg "Starting..."
 

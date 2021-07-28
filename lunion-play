@@ -33,6 +33,11 @@ error()
   echo -e "[-] error:: $bin: $1" >&2
 }
 
+warn()
+{
+  echo -e "[-] warn:: $bin: $1" >&2
+}
+
 is_futex2_supported()
 {
   if [ -d /sys/kernel/futex2 ]; then
@@ -148,9 +153,9 @@ else
 fi
 
 
-# ========================
-#  Arguments Verification
-# ========================
+# =========================
+#  Pre-launch Verification
+# =========================
 
 if [[ "$1" =~ ^/|(/[a-zA-Z_0-9-]+)+|/+$ ]]; then
   error "Do not pass a path: $1"
@@ -169,11 +174,14 @@ msg "game_directory: $GAMEDIR"
 
 if [ -f "$GAMEDIR/.gamestart" ]; then
   GAMEEXE="$(cat "$GAMEDIR/.gamestart")"
-elif [ -n "$2" ] && [ -f "$2" ]; then
-  GAMEEXE="$2"
 else
-  error "The game executable does not exist $GAMEEXE"
-  exit 1
+  warn ".gamestart file not found"
+  if [ -n "$2" ] && [ -f "$2" ]; then
+    GAMEEXE="$2"
+  else
+    error "Indicate the executable to launch"
+    exit 1
+  fi
 fi
 msg "command: $GAMEEXE"
 

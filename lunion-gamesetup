@@ -43,7 +43,7 @@ wine_wait()
   wineserver --wait
 }
 
-game_path()
+create_gamestart()
 {
   flag=1
 
@@ -263,7 +263,7 @@ if [ "$rslt" ]; then
           error "innoextract is not install"
           exit 1
         fi
-        game_path
+        create_gamestart
 
         msg "exit script done"
         exit 0
@@ -296,7 +296,7 @@ if [ "$rslt" ]; then
     fi
   fi
 
-  game_path
+  create_gamestart
 
   msg "exit script done"
   exit 0

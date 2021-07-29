@@ -1,6 +1,6 @@
 # Lunion Play
 
-Wrapper which allows installing and/or running 3D applications on Linux using Wine.
+Wrapper which allows installing and/or running Windows games on Linux using Wine.
 
 This is a first draft that allows me to have an overview for the Wine use and which also makes Wine.
 
@@ -46,11 +46,11 @@ A correct local game installation with Lunion Play should look like this:
 ```
         _games_path/my_game/         |        _games_path/my_game/
         ├── gamedata/                |        ├── pfx/
-        ├── pfx/                     |        ├── shaders/
-        ├── shaders/                 |        └── gamestart
+        ├── pfx/                     |        ├── shaderscache/
+        ├── shaderscache/            |        └── gamestart
         └── gamestart                |
 ```
-This installation may be generated with `lunion-gamesetup my_game [/path/to/setup.exe]`. The `gamestart` file is used to indicate the path to the game `.exe ` file.
+This installation may be generated with `lunion-gamesetup my_game [/path/to/setup.exe]`. The `gamestart` file is used to indicate the path to the game `.exe` file.
 
 If you have `gamestart` file, you can launch the game like this :
 ```bash

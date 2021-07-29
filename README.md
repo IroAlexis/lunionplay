@@ -34,30 +34,39 @@ $ makepkg -si
 
 
 
+## Configuration
+Lunion Play comes with a config file which can be used to set configuration options. The priorities of different config files are:
+1. `$HOME/.config/lunion-play/customization.cfg`
+2. `/path/to/lunion-play/customization.cfg` (*when using the standalone package*)
+3. `/etc/lunion-play/customization.cfg` (*when you have installed on your system*)
+
+
 ## Usage
-```bash
-$ ./lunion-play gamename /path/to/game.exe
+A correct local game installation with Lunion Play should look like this:
 ```
-The wrapper require that your wine prefix is in `$_games_path/gamename/pfx/` directory. He may be generate with :
-```bash
-./lunion-gamesetup gamename [/path/to/setup.exe]
+        _games_path/my_game/         |        _games_path/my_game/
+        ├── gamedata/                |        ├── pfx/
+        ├── pfx/                     |        ├── shaders/
+        ├── shaders/                 |        └── gamestart
+        └── gamestart                |
 ```
-By default, `_games_path` is set on `$HOME/Games` but you can edit him with `customization.cfg` file that is in `$HOME/.config/lunion-play` or `./` or `/etc/lunion-play` otherwise use the environement variable `$GAMES_PATH`.
+This installation may be generated with `lunion-gamesetup my_game [/path/to/setup.exe]`. The `gamestart` file is used to indicate the path to the game `.exe ` file.
 
-A correct local game installation should look like this:
-
-        _games_path/gamename/
-        ├── gamedata/
-        ├── pfx/
-        ├── shaders/
-        └── .gamestart
-Note : `gamedata` isn't mandatory, the game data can be in wine prefix but **please be careful if you want to delete your wine prefix** (`pfx/`).
+If you have `gamestart` file, you can launch the game like this :
+```bash
+$ lunion-play my_game
+```
+Else, you have to launch the game like this: 
+```bash
+$ lunion-play my_game /path/to/game.exe
+```
 
 
 
 ## Runtime Configuration Options
 All of the below are runtime options. You can use normally the runtime options others programms (Wine, graphical driver, ...). Removing the option will revert to the previous behavior.
 To enable a option that she don't require a `value`, set the variable to a non-0 value.
+### lunion-play
 * `GAMES_PATH=/path/to/games`, the directory where are installed the games (override `$_games_path`)
 * `CUSTOM_WINE=/path/to/wine/bin`, the directory where is located binaries of custom Wine.
 * `LUNION_PLAY_SYNC=value`, the possibles values list is available below :

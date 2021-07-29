@@ -204,7 +204,7 @@ if [ -z "$_vkd3dproton_path" ]; then
 fi
 
 if [ "$rslt" ]; then
-  mkdir -p "$GAME"/shaders
+  mkdir -p "$GAME"/shaderscache
 
   if [ "$LUNION_PLAY_DAMAVAND" = 1 ]; then
     wine reg add 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /d vulkan /f 1> /dev/null

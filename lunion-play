@@ -291,6 +291,8 @@ fi
 #  DXVK Configuration
 # ====================
 
+export DXVK_STATE_CACHE_PATH="$GAMEDIR/shaderscache/dxvk_state_cache"
+
 if [[ "$LUNION_PLAY_LOG" -gt 0 ]] && [ -z "$DXVK_LOG_LEVEL" ]; then
   export DXVK_LOG_LEVEL=info
 else
@@ -325,7 +327,7 @@ export "$(grep -e nvidia /sys/class/drm/card0/device/uevent)"
 if [[ "$DRIVER" = nvidia ]] && [ -d /proc/driver/nvidia ]; then
   export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
   export __GL_SHADER_DISK_CACHE=1
-  export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaders"
+  export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaderscache/nvidia"
 fi
 
 

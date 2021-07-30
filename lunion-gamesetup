@@ -258,7 +258,7 @@ if [ "$rslt" ]; then
           mkdir -p "$GAME"/gamedata
           cd "$GAME"/gamedata || exit
           msg "Installating in progress..."
-          innoextract -sm "$2"
+          innoextract "$2" -sgm --progress=1 --collisions rename
         else
           error "innoextract is not install"
           exit 1

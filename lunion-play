@@ -293,7 +293,8 @@ fi
 #  DXVK Configuration
 # ====================
 
-export DXVK_STATE_CACHE_PATH="$GAMEDIR/shaderscache/dxvk_state_cache"
+mkdir -p "$GAMEDIR"/shaderscache/dxvk_state_cache
+export DXVK_STATE_CACHE_PATH="$GAMEDIR"/shaderscache/dxvk_state_cache
 
 if [[ "$LUNION_PLAY_LOG" -gt 0 ]] && [ -z "$DXVK_LOG_LEVEL" ]; then
   export DXVK_LOG_LEVEL=info

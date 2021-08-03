@@ -259,8 +259,9 @@ if [ "$rslt" ]; then
           cd "$GAME"/gamedata || exit
           msg "Installating in progress..."
           innoextract "$2" -sgm --progress=1 --collisions rename
-          cp -r app/* .
+          mv app/* .
           rm -rf app/
+          rm -rf tmp/
         else
           error "innoextract is not install"
           exit 1

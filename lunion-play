@@ -205,7 +205,9 @@ if [ -n "$CUSTOM_WINE" ]; then
   fi
 fi
 
-export WINEPREFIX="$GAMEDIR"/pfx
+if [ -z WINEPREFIX ]; then
+  export WINEPREFIX="$GAMEDIR"/pfx
+fi
 
 is_futex2_supported
 is_winesync_supported

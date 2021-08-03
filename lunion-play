@@ -205,7 +205,7 @@ if [ -n "$CUSTOM_WINE" ]; then
   fi
 fi
 
-if [ -z WINEPREFIX ]; then
+if [ -z "$WINEPREFIX" ]; then
   export WINEPREFIX="$GAMEDIR"/pfx
 fi
 
@@ -330,8 +330,8 @@ export "$(grep -e nvidia /sys/class/drm/card0/device/uevent)"
 if [[ "$DRIVER" = nvidia ]] && [ -d /proc/driver/nvidia ]; then
   export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
   export __GL_SHADER_DISK_CACHE=1
-  mkdir -p "$GAMEDIR/shaderscache/nvidia"
-  export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR/shaderscache/nvidia"
+  mkdir -p "$GAMEDIR"/shaderscache/nvidia
+  export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR"/shaderscache/nvidia
 fi
 
 

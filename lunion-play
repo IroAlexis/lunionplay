@@ -209,6 +209,11 @@ if [ -z "$WINEPREFIX" ]; then
   export WINEPREFIX="$GAMEDIR"/pfx
 fi
 
+if [ ! -d "$WINEPREFIX" ]; then
+  error "Wine prefix not found"
+  exit 1
+fi
+
 is_futex2_supported
 is_winesync_supported
 

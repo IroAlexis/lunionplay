@@ -42,8 +42,8 @@ install:
 uninstall:
 	@rm -vf $(BIN_DIR)/$(pkgname)
 	@rm -vf $(BIN_DIR)/lunion-gamesetup
-	@rm -vf $(CONF_DIR)/customization.cfg
-	@rm -vf $(LICENSE_DIR)/LICENSE
+	@rm -vrf $(CONF_DIR)
+	@rm -vrf $(LICENSE_DIR)
 
 distclean clean:
 	@echo -e "\033[1;32m==>\033[1;0m\033[1;1m Removing existing build directories... \033[1;0m"

@@ -45,7 +45,7 @@ uninstall:
 	@rm -vf $(CONF_DIR)/customization.cfg
 	@rm -vf $(LICENSE_DIR)/LICENSE
 
-clean:
-	@echo -e "\033[1;32m==>\033[1;0m\033[1;1m Removing existing buildir/ directory... \033[1;0m"
-	@rm -rf $(buildir)
+distclean clean:
+	@echo -e "\033[1;32m==>\033[1;0m\033[1;1m Removing existing build directories... \033[1;0m"
+	@rm -vrf $(buildir)
 

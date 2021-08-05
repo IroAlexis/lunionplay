@@ -7,6 +7,7 @@ pkgdir=$(buildir)/$(pkgname)-$(pkgver)
 BIN_DIR=$(DESTDIR)/usr/bin
 CONF_DIR=$(DESTDIR)/etc/$(pkgname)
 LICENSE_DIR=$(DESTDIR)/usr/share/licenses/$(pkgname)
+DLLS_DIR=$(DESTDIR)/usr/share/$(pkgname)
 
 pkg=$(pkgname)-$(pkgver).tar.zst
 
@@ -20,6 +21,7 @@ env:
 	@echo "BIN_DIR="$(BIN_DIR)
 	@echo "CONF_DIR="$(CONF_DIR)
 	@echo "LICENSE_DIR="$(LICENSE_DIR)
+	@echo "DLLS_DIR="$(DLLS_DIR)
 
 package: clean
 	@echo -e "\033[1;32m==>\033[1;0m\033[1;1m Creating package $(pkgname)... \033[1;0m"

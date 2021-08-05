@@ -1,4 +1,5 @@
 pkgname=lunion-play
+name="Lunion Play"
 pkgver=$(shell git describe --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/v//g')
 buildir=/tmp/build
 pkgdir=$(buildir)/$(pkgname)-$(pkgver)

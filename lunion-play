@@ -189,20 +189,22 @@ msg "command: $GAMEEXE"
 #  Runtime Configuration
 # =======================
 
-if [ -z "$CUSTOM_WINE" ] && [ -n "$_custom_wine" ]; then
-  CUSTOM_WINE="$_custom_wine"
-fi
-if [ -n "$CUSTOM_WINE" ]; then
-  if [ -z "$PATH" ]; then
-    PATH="$CUSTOM_WINE"
-  else
-    PATH="$CUSTOM_WINE:$PATH"
+if [ "$WINE_SYSTEM" != 1 ]; then
+  if [ -z "$WINE_CUSTOM" ] && [ -n "$_wine_custom" ]; then
+    WINE_CUSTOM="$_wine_custom"
   fi
+  if [ -n "$WINE_CUSTOM" ]; then
+    if [ -z "$PATH" ]; then
+      PATH="$WINE_CUSTOM/bin"
+    else
+      PATH="$WINE_CUSTOM/bin:$PATH"
+    fi
 
-  if [ -z "$LD_LIBRARY_PATH" ]; then
-    LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib"
-  else
-    LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib:$LD_LIBRARY_PATH"
+    if [ -z "$LD_LIBRARY_PATH" ]; then
+      LD_LIBRARY_PATH="$WINE_CUSTOM/lib64:$WINE_CUSTOM/lib32:$WINE_CUSTOM/lib"
+    else
+      LD_LIBRARY_PATH="$WINE_CUSTOM/lib64:$WINE_CUSTOM/lib32:$WINE_CUSTOM/lib:$LD_LIBRARY_PATH"
+    fi
   fi
 fi
 

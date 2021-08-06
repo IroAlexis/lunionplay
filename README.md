@@ -68,7 +68,8 @@ All of the below are runtime options. You can use normally the runtime options o
 To enable a option that she don't require a `value`, set the variable to a non-0 value.
 ### lunion-play
 * `GAMES_PATH=/path/to/games`, the directory where are installed the games (override `$_games_path`)
-* `CUSTOM_WINE=/path/to/wine/bin`, the directory where is located binaries of custom Wine.
+* `WINE_SYSTEM=1`, prefer to use the Wine system.
+* `WINE_CUSTOM=/path/to/wine`, the directory where is located custom Wine.
 * `LUNION_PLAY_SYNC=value`, the possibles values list is available below :
   * `esync`, eventfd-based in-process synchronization primitives.
   * `fsync` or `futex2`, futex-based in-process synchronization primitives. (enable by default if your kernel is compatible ; automatically disabled on systems with no `FUTEX_WAIT_MULTIPLE` support.)

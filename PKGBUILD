@@ -18,15 +18,22 @@ optdepends=(
   'winetricks'
 )
 backup=(etc/lunion-play/customization.cfg)
-options=()
+options=(!buildflags)
 install="$pkgname".install
 changelog=
 
+
+build()
+{
+  cd "$startdir"
+  make buildir="$srcdir" _dxvk
+  make buildir="$srcdir" _vkd3dproton
+}
 
 package()
 {
   msg "Packaging Lunion Play..."
 
   cd "$startdir"
-  make DESTDIR="$pkgdir" install
+  make DESTDIR="$pkgdir" buildir="$srcdir" install_all
 }

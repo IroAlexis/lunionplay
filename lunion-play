@@ -166,21 +166,22 @@ if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH/$1" ]; then
 elif [ -n "$_games_path" ] && [ -d "$_games_path/$1" ]; then
   GAMEDIR="$(realpath "$_games_path")/$1"
 else
-  error "Game directory not found"
+  error "No such game directory"
   exit 1
 fi
 
-if [ -f "$GAMEDIR/gamestart" ]; then
+if [ -n "$2" ] && [ -f "$2" ]; then
+  GAMEEXE="$2"
+elif [ -f "$GAMEDIR/gamestart" ] && [ -f "$(cat "$GAMEDIR/gamestart")" ]; then
   GAMEEXE="$(cat "$GAMEDIR/gamestart")"
 else
-  warn "gamestart file not found"
-  if [ -n "$2" ] && [ -f "$2" ]; then
-    GAMEEXE="$2"
-  else
-    error "Indicate the executable to launch"
-    exit 1
+  if [ ! -f "$GAMEDIR/gamestart" ]; then
+    error "No such 'gamestart' file "
   fi
+  error "Indicate a correct executable path"
+  exit 1
 fi
+
 msg "command: $GAMEEXE"
 
 

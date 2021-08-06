@@ -74,7 +74,7 @@ update_winepfx()
   if [ -d "$WINEPREFIX" ]; then
     msg "Preparing to launch the game..."
   else
-    error "Prefix not found $WINEPREFIX"
+    error "Prefix not found '$WINEPREFIX'"
     exit 1
   fi
 
@@ -117,7 +117,7 @@ display_runtime_options()
 
 command -v source 1> /dev/null
 if [ ! $? ]; then
-  msg "Need install the tcl package"
+  msg "Need install the 'tcl' package"
   exit 1
 fi
 
@@ -131,7 +131,7 @@ elif [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "/etc/lunion-play/customization.c
   source /etc/lunion-play/customization.cfg 2> /dev/null
   msg "cfg: /etc/lunion-play/customization.cfg"
 else
-  msg "cfg: customization.cfg not found"
+  msg "cfg: No such 'customization.cfg' file"
   if [ -z "$GAMES_PATH" ]; then
     msg "Use the variable 'GAMES_PATH=/home/frog'"
   fi
@@ -157,7 +157,7 @@ fi
 # =========================
 
 if [[ "$1" =~ ^/|(/[a-zA-Z_0-9-]+)+|/+$ ]]; then
-  error "Do not pass a path: $1"
+  error "Do not pass a path: '$1'"
   exit 1
 fi
 
@@ -364,7 +364,7 @@ msg "Waiting all wine processes terminate..."
 wineserver --wait
 
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
-  msg "Debug log available here $log"
+  msg "Debug log available here '$log'"
 fi
 
 exit 0

@@ -74,7 +74,7 @@ update_winepfx()
   if [ -d "$WINEPREFIX" ]; then
     msg "Preparing to launch the game..."
   else
-    error "Prefix not found '$WINEPREFIX'"
+    error "No such Wine prefix '$WINEPREFIX'"
     exit 1
   fi
 
@@ -213,12 +213,12 @@ if [ "$WINE_SYSTEM" != 1 ]; then
 fi
 msg "version: $(wine --version)"
 
+# Don't override WINEPREFIX if the user passed one, otherwise we set ours
 if [ -z "$WINEPREFIX" ]; then
   export WINEPREFIX="$GAME_DIR"/pfx
 fi
-
 if [ ! -d "$WINEPREFIX" ]; then
-  error "Wine prefix not found"
+  error "No such Wine prefix '$WINEPREFIX'"
   exit 1
 fi
 

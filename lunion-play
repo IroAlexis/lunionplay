@@ -93,7 +93,7 @@ display_runtime_options()
   if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
     echo "==========================================="
     msg "version: $(wine --version)"
-    msg "command: $GAMEEXE"
+    msg "command: $GAME_EXE"
   fi
 
   type="runtime_option:"
@@ -161,28 +161,30 @@ if [[ "$1" =~ ^/|(/[a-zA-Z_0-9-]+)+|/+$ ]]; then
   exit 1
 fi
 
+# First argument allows to find the game directory to be launched
 if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH/$1" ]; then
-  GAMEDIR="$(realpath "$GAMES_PATH")/$1"
+  GAME_DIR="$(realpath "$GAMES_PATH")/$1"
 elif [ -n "$_games_path" ] && [ -d "$_games_path/$1" ]; then
-  GAMEDIR="$(realpath "$_games_path")/$1"
+  GAME_DIR="$(realpath "$_games_path")/$1"
 else
   error "No such game directory"
   exit 1
 fi
 
+# Second argument allows to launch the game executable (optionnal)
 if [ -n "$2" ] && [ -f "$2" ]; then
-  GAMEEXE="$2"
-elif [ -f "$GAMEDIR/gamestart" ] && [ -f "$(cat "$GAMEDIR/gamestart")" ]; then
-  GAMEEXE="$(cat "$GAMEDIR/gamestart")"
+  GAME_EXE="$2"
+elif [ -f "$GAME_DIR/gamestart" ] && [ -f "$(cat "$GAME_DIR/gamestart")" ]; then
+  GAME_EXE="$(cat "$GAME_DIR/gamestart")"
 else
-  if [ ! -f "$GAMEDIR/gamestart" ]; then
+  if [ ! -f "$GAME_DIR/gamestart" ]; then
     error "No such 'gamestart' file "
   fi
-  error "Indicate a correct executable path"
+  error "Indicate a correct executable path $GAME_EXE"
   exit 1
 fi
 
-msg "command: $GAMEEXE"
+msg "command: $GAME_EXE"
 
 
 # =======================
@@ -212,7 +214,7 @@ fi
 msg "version: $(wine --version)"
 
 if [ -z "$WINEPREFIX" ]; then
-  export WINEPREFIX="$GAMEDIR"/pfx
+  export WINEPREFIX="$GAME_DIR"/pfx
 fi
 
 if [ ! -d "$WINEPREFIX" ]; then
@@ -303,8 +305,8 @@ fi
 #  DXVK Configuration
 # ====================
 
-mkdir -p "$GAMEDIR"/shaderscache/dxvk_state_cache
-export DXVK_STATE_CACHE_PATH="$GAMEDIR"/shaderscache/dxvk_state_cache
+mkdir -p "$GAME_DIR"/shaderscache/dxvk_state_cache
+export DXVK_STATE_CACHE_PATH="$GAME_DIR"/shaderscache/dxvk_state_cache
 
 if [[ "$LUNION_PLAY_LOG" -gt 0 ]] && [ -z "$DXVK_LOG_LEVEL" ]; then
   export DXVK_LOG_LEVEL=info
@@ -340,8 +342,8 @@ export "$(grep -e nvidia /sys/class/drm/card0/device/uevent)"
 if [[ "$DRIVER" = nvidia ]] && [ -d /proc/driver/nvidia ]; then
   export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
   export __GL_SHADER_DISK_CACHE=1
-  mkdir -p "$GAMEDIR"/shaderscache/nvidia
-  export __GL_SHADER_DISK_CACHE_PATH="$GAMEDIR"/shaderscache/nvidia
+  mkdir -p "$GAME_DIR"/shaderscache/nvidia
+  export __GL_SHADER_DISK_CACHE_PATH="$GAME_DIR"/shaderscache/nvidia
 fi
 
 
@@ -349,7 +351,7 @@ fi
 #  Game Launch
 # =============
 
-cd "$(dirname "$(realpath "$GAMEEXE")")" || exit
+cd "$(dirname "$(realpath "$GAME_EXE")")" || exit
 
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
   log=$HOME/lunionplay-$1.log
@@ -358,9 +360,9 @@ fi
 msg "Starting..."
 
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
-  wine "$(basename "$(realpath "$GAMEEXE")")" &>> "$log"
+  wine "$(basename "$(realpath "$GAME_EXE")")" &>> "$log"
 else
-  wine "$(basename "$(realpath "$GAMEEXE")")"
+  wine "$(basename "$(realpath "$GAME_EXE")")"
 fi
 
 

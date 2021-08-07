@@ -136,12 +136,12 @@ else
     msg "Use the variable 'GAMES_PATH=/home/frog'"
   fi
 
-  if [ -z "$CUSTOM_WINE" ]; then
+  if [ -z "$WINE_CUSTOM" ]; then
     command -v wine 1> /dev/null
     if [ $? ]; then
-      msg "Using the Wine system (or use the variable 'CUSTOM_WINE=/path/to/wine/bin')"
+      msg "Using the Wine system (or use the variable 'WINE_CUSTOM=/path/to/wine/bin')"
     else
-      msg "Use the variable 'CUSTOM_WINE=/path/to/wine/bin'"
+      msg "Use the variable 'WINE_CUSTOM=/path/to/wine/bin'"
       msg "Or need install wine (mainline/staging)"
 
       if [ -z "$GAMES_PATH" ]; then
@@ -190,23 +190,26 @@ msg "command: $GAMEEXE"
 # =======================
 
 if [ "$WINE_SYSTEM" != 1 ]; then
-  if [ -z "$WINE_CUSTOM" ] && [ -n "$_wine_custom" ]; then
-    WINE_CUSTOM="$_wine_custom"
+  if [ -n "$WINE_CUSTOM" ] && [ -d "$WINE_CUSTOM" ]; then
+    WINE="$WINE_CUSTOM"
+  elif [ -n "$_wine_custom" ] && [ -d "$_wine_custom" ]; then
+    WINE="$_wine_custom"
   fi
-  if [ -n "$WINE_CUSTOM" ]; then
-    if [ -z "$PATH" ]; then
-      PATH="$WINE_CUSTOM/bin"
-    else
-      PATH="$WINE_CUSTOM/bin:$PATH"
-    fi
 
-    if [ -z "$LD_LIBRARY_PATH" ]; then
-      LD_LIBRARY_PATH="$WINE_CUSTOM/lib64:$WINE_CUSTOM/lib32:$WINE_CUSTOM/lib"
+  if [ -n "$WINE" ]; then
+    if [ -z "$PATH" ]; then
+      PATH="$WINE/bin"
     else
-      LD_LIBRARY_PATH="$WINE_CUSTOM/lib64:$WINE_CUSTOM/lib32:$WINE_CUSTOM/lib:$LD_LIBRARY_PATH"
+      PATH="$WINE/bin:$PATH"
+    fi
+    if [ -z "$LD_LIBRARY_PATH" ]; then
+      LD_LIBRARY_PATH="$WINE/lib64:$WINE/lib32:$WINE/lib"
+    else
+      LD_LIBRARY_PATH="$WINE/lib64:$WINE/lib32:$WINE/lib:$LD_LIBRARY_PATH"
     fi
   fi
 fi
+msg "version: $(wine --version)"
 
 if [ -z "$WINEPREFIX" ]; then
   export WINEPREFIX="$GAMEDIR"/pfx
@@ -220,7 +223,6 @@ fi
 is_futex2_supported
 is_winesync_supported
 
-msg "version: $(wine --version)"
 if [ -z "$_no_confirm" ] || [[ "$_no_confirm" =~ false ]]; then
   read -p "Press enter to continue. "
 fi

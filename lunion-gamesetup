@@ -139,20 +139,20 @@ fi
 #  Wine Configuration
 # ====================
 
-if [ -z "$CUSTOM_WINE" ] && [ -n "$_custom_wine" ]; then
-  CUSTOM_WINE="$_custom_wine"
+if [ -z "$WINE_CUSTOM" ] && [ -n "$_wine_custom" ]; then
+  WINE_CUSTOM="$_wine_custom"
 fi
-if [ -n "$CUSTOM_WINE" ]; then
+if [ -n "$WINE_CUSTOM" ]; then
   if [ -z "$PATH" ]; then
-    export PATH="$CUSTOM_WINE"
+    export PATH="$WINE_CUSTOM/bin"
   else
-    export PATH="$CUSTOM_WINE:$PATH"
+    export PATH="$WINE_CUSTOM/bin:$PATH"
   fi
 
   if [ -z "$LD_LIBRARY_PATH" ]; then
-    export LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib"
+    export LD_LIBRARY_PATH="$WINE_CUSTOM/lib64:$WINE_CUSTOM/lib32:$WINE_CUSTOM/lib"
   else
-    export LD_LIBRARY_PATH="$CUSTOM_WINE/../lib64:$CUSTOM_WINE/../lib32:$CUSTOM_WINE/../lib:$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$WINE_CUSTOM/lib64:$WINE_CUSTOM/lib32:$WINE_CUSTOM/lib:$LD_LIBRARY_PATH"
   fi
 fi
 

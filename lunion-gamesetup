@@ -63,6 +63,29 @@ create_gamestart()
   return 0
 }
 
+innoextract_process()
+{
+  mkdir -p "$GAME"/gamedata
+  cd "$GAME"/gamedata || exit
+
+  msg "Installating in progress..."
+  innoextract "$1" -sgm --progress=1 --collisions rename
+
+  # Move the content for success to launch some games (Frostpunk)
+  cp -rl app/* .
+
+  # "Hack" for SW Republic Commando and may be some others games
+  if [ -d "__support/app" ]; then
+    cp -rl __support/app/* .
+  fi
+
+  rm -rf __redist/
+  rm -rf __support/
+  rm -rf app/
+  rm -rf commonappdata/
+  rm -rf tmp/
+}
+
 
 
 # ==============
@@ -255,13 +278,7 @@ if [ "$rslt" ]; then
       if [[ "$_CONDITION" =~ [yY] ]]; then
         command -v innoextract 1> /dev/null
         if [ "$?" ]; then
-          mkdir -p "$GAME"/gamedata
-          cd "$GAME"/gamedata || exit
-          msg "Installating in progress..."
-          innoextract "$2" -sgm --progress=1 --collisions rename
-          mv app/* .
-          rm -rf app/
-          rm -rf tmp/
+          innoextract_process "$2"
         else
           error "innoextract is not install"
           exit 1

@@ -380,7 +380,7 @@ local_dxvk="$where/dxvk"
 
 if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -d "$system_dxvk/x64" ] && [ -d "$system_dxvk/x64" ] && [ -f "$system_dxvk/setup_dxvk.sh" ]; then
   install_dxvk "$system_dxvk"
-elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -d "$loc_dxvk/x64" ] && [ -d "$local_dxvk/x32" ] && [ -f "$local_dxvk/setup_dxvk.sh" ]; then
+elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -d "$local_dxvk/x64" ] && [ -d "$local_dxvk/x32" ] && [ -f "$local_dxvk/setup_dxvk.sh" ]; then
   install_dxvk "$local_dxvk"
 fi
 

@@ -116,7 +116,7 @@ display_runtime_options()
 # ========================================
 
 command -v source 1> /dev/null
-if [ ! $? ]; then
+if ! [ $? ]; then
   msg "Need install the 'tcl' package"
   exit 1
 fi
@@ -177,7 +177,7 @@ if [ -n "$2" ] && [ -f "$2" ]; then
 elif [ -f "$GAME_DIR/gamestart" ] && [ -f "$(cat "$GAME_DIR/gamestart")" ]; then
   GAME_EXE="$(cat "$GAME_DIR/gamestart")"
 else
-  if [ ! -f "$GAME_DIR/gamestart" ]; then
+  if ! [ -f "$GAME_DIR/gamestart" ]; then
     error "No such 'gamestart' file "
   fi
   error "Indicate a correct executable path $GAME_EXE"
@@ -217,7 +217,7 @@ msg "version: $(wine --version)"
 if [ -z "$WINEPREFIX" ]; then
   export WINEPREFIX="$GAME_DIR"/pfx
 fi
-if [ ! -d "$WINEPREFIX" ]; then
+if ! [ -d "$WINEPREFIX" ]; then
   error "No such Wine prefix '$WINEPREFIX'"
   exit 1
 fi

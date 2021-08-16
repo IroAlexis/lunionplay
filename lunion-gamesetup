@@ -212,18 +212,6 @@ wine_wait
 rslt=$?
 
 
-# ================================
-#  Translation layer Installation
-# ================================
-
-if [ -z "$_dxvk_path" ]; then
-  warning "DXVK Installation skipped"
-fi
-
-if [ -z "$_vkd3dproton_path" ]; then
-  warning "VKD3D-Proton Installation skipped"
-fi
-
 if [ "$rslt" ]; then
   mkdir -p "$GAME"/shaderscache
 
@@ -236,24 +224,6 @@ if [ "$rslt" ]; then
       wine reg delete 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /f &> /dev/null
     fi
     unset LUNION_PLAY_DAMAVAND
-  fi
-
-  if [ -n "$_dxvk_path" ] && [ ! "$LUNION_PLAY_DAMAVAND" = 1 ]; then
-    dialog "Do you want install DXVK for Direct3D 9/10/11 ?"
-    read -rp " [y/N] " _CONDITION;
-    if [[ "$_CONDITION" =~ [yY] ]]; then
-      "$_dxvk_path"/setup_dxvk.sh install
-      wine_wait
-    fi
-  fi
-
-  if [ -n "$_vkd3dproton_path" ] && [ ! "$LUNION_PLAY_DAMAVAND" = 1 ]; then
-    dialog "Do you want install VKD3D Proton for Direct3D 12 ?"
-    read -rp " [y/N] " _CONDITION;
-    if [[ "$_CONDITION" =~ [yY] ]]; then
-      "$_vkd3dproton_path"/setup_vkd3d_proton.sh install
-      wine_wait
-    fi
   fi
 
 

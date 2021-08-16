@@ -215,8 +215,8 @@ if [[ "$_CONDITION" =~ [yY] ]]; then
   export WINEARCH=win32
 fi
 dialog "Do you want the debug Wine ?"
-read -rp " [Y/n] " _CONDITION;
-if [[ "$_CONDITION" =~ [nN] ]]; then
+read -rp " [y/N] " _CONDITION;
+if ! [[ "$_CONDITION" =~ [nN] ]]; then
   export WINEDEBUG=-all
 fi
 

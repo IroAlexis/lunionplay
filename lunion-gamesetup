@@ -65,8 +65,7 @@ create_gamestart()
 
 innoextract_process()
 {
-  mkdir -p "$GAME"/gamedata
-  cd "$GAME"/gamedata || exit
+  cd "$GAME/gamedata" || exit
 
   msg "Installating in progress..."
   innoextract "$1" -sgm --progress=1 --collisions rename
@@ -157,6 +156,22 @@ if ! [ -d "$GAMEDIR" ]; then
   mkdir -p "$GAMEDIR"
 fi
 
+if ! [ -d "$GAMEDIR/gamedata" ]; then
+  dialog "Do you want a game data folder ? ($GAMEDIR/gamedata)"
+  read -rp " [Y/n] " _CONDITION;
+  if ! [[ "$_CONDITION" =~ [nN] ]]; then
+    mkdir -p "$GAMEDIR/gamedata"
+  fi
+fi
+
+if ! [ -d "$GAMEDIR/shaderscache" ]; then
+  dialog "Do you want a shader cache folder ($GAMEDIR/shaderscache) ?"
+  read -rp " [Y/n] " _CONDITION;
+  if ! [[ "$_CONDITION" =~ [nN] ]]; then
+    mkdir -p "$GAMEDIR/shaderscache"
+  fi
+fi
+
 
 # ====================
 #  Wine Configuration
@@ -213,8 +228,6 @@ rslt=$?
 
 
 if [ "$rslt" ]; then
-  mkdir -p "$GAME"/shaderscache
-
   if [ "$LUNION_PLAY_DAMAVAND" = 1 ]; then
     wine reg add 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /d vulkan /f 1> /dev/null
     msg "Damavand will be used"

@@ -93,7 +93,7 @@ innoextract_process()
 # ==============
 
 command -v source 1> /dev/null
-if [ ! $? ]; then
+if ! [ $? ]; then
   msg "Need install the tcl package"
   exit 1
 fi
@@ -153,7 +153,7 @@ if [[ "$_CONDITION" =~ [nN] ]]; then
   msg "or use the variable 'GAMES_PATH'"
   exit 1
 fi
-if [ ! -d "$GAMEDIR" ]; then
+if ! [ -d "$GAMEDIR" ]; then
   mkdir -p "$GAMEDIR"
 fi
 
@@ -191,9 +191,7 @@ fi
 #  Wine prefix Installation
 # ==========================
 
-GAME="$_games_path/$1"
-
-export WINEPREFIX="$GAME"/pfx
+export WINEPREFIX="$GAMEDIR"/pfx
 export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
 
 dialog "Do you want use 32 bits prefix ?"
@@ -264,7 +262,7 @@ if [ "$rslt" ]; then
   # ===================
 
   if [ "$2" ]; then
-    if [ ! -f "$2" ]; then
+    if ! [ -f "$2" ]; then
       error "$2 don't exist"
       exit 1
     fi

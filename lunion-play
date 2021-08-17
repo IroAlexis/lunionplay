@@ -111,14 +111,18 @@ display_runtime_options()
 }
 
 override_dll() {
-  wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
+  if [ $(command -v wine 1> /dev/null) ]; then
+    wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
+  else
+    wine64 reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
+  fi
   if [ $? -ne 0 ]; then
     error "Failed to add override for $1"
     exit 1
   fi
 }
 
-install_dll() {
+install_file() {
   dstfile="$1/$3.dll"
   srcfile="$2/$3.dll"
 
@@ -144,38 +148,42 @@ install_dll() {
 
 install_dxvk()
 {
-  for dll in dxgi d3d9 d3d10core d3d11; do
-    for arch in x64 x32; do
-      case "$arch" in
-      "x64")
-        path="$WINEPREFIX"/drive_c/windows/system32
-        ;;
-      "x32")
-        path="$WINEPREFIX"/drive_c/windows/syswow64
-        ;;
-      esac
+  wow64=true
+  if ! [ -f "$WINE/bin/wine" ]; then
+    wow64=false
+  fi
 
-      install_dll "$path" "$1/$arch" "$dll"
-      override_dll "$dll"
-    done
+  win64=$(wine64 winepath -u "C:\windows\system32" 2> /dev/null)
+  if $wow64; then
+    win32=$(wine winepath -u "C:\windows\system32" 2> /dev/null)
+  fi
+
+  for dll in dxgi d3d9 d3d10core d3d11; do
+    install_file "$win64" "$1/x64" "$dll"
+    if $wow64; then
+      install_file "$win32" "$1/x32" "$dll"
+    fi
+    override_dll "$dll"
   done
 }
 
 install_vkd3dproton()
 {
-  for arch in x64 x86; do
-    case "$arch" in
-    "x64")
-      path="$WINEPREFIX"/drive_c/windows/system32
-      ;;
-    "x32")
-      path="$WINEPREFIX"/drive_c/windows/syswow64
-      ;;
-    esac
+  wow64=true
+  if ! [ -f "$WINE/bin/wine" ]; then
+    wow64=false
+  fi
 
-    install_dll "$path" "$1/$arch" d3d12
-    override_dll d3d12
-  done
+  win64=$(wine64 winepath -u "C:\windows\system32" 2> /dev/null)
+  if $wow64; then
+    win32=$(wine winepath -u "C:\windows\system32" 2> /dev/null)
+  fi
+
+  install_file "$win64" "$1/x64" d3d12
+  if $wow64; then
+    install_file "$win32" "$1/x86" d3d12
+  fi
+  override_dll d3d12
 }
 
 

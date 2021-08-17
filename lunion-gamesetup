@@ -51,7 +51,7 @@ create_gamestart()
     dialog "Enter the exe's path (press enter if you want to skip it):"
     read -rp " " exep;
     if [ -f "$exep" ]; then
-      echo "$exep" > "$GAMEDIR/gamestart"
+      echo "$exep" > "$GAME_DIR/gamestart"
       flag=0
     elif [ -z $exep ]; then
       flag=0
@@ -138,37 +138,37 @@ fi
 # ============================
 
 if [ -n "$GAMES_PATH" ] && [ -d "$GAMES_PATH" ]; then
-  GAMEDIR="$(realpath "$GAMES_PATH")/$1"
+  GAME_DIR="$(realpath "$GAMES_PATH")/$1"
 elif [ -n "$_games_path" ] && [ -d "$_games_path" ]; then
-  GAMEDIR="$(realpath "$_games_path")/$1"
+  GAME_DIR="$(realpath "$_games_path")/$1"
 else
   exit 1
 fi
 
-dialog "Do you want install the game in $GAMEDIR ?"
+dialog "Do you want install the game in $GAME_DIR ?"
 read -rp " [Y/n] " _CONDITION;
 if [[ "$_CONDITION" =~ [nN] ]]; then
   msg "Please set '_games_path' as you want in the .cfg file"
   msg "or use the variable 'GAMES_PATH'"
   exit 1
 fi
-if ! [ -d "$GAMEDIR" ]; then
-  mkdir -p "$GAMEDIR"
+if ! [ -d "$GAME_DIR" ]; then
+  mkdir -p "$GAME_DIR"
 fi
 
-if ! [ -d "$GAMEDIR/gamedata" ]; then
-  dialog "Do you want a game data folder ? ($GAMEDIR/gamedata)"
+if ! [ -d "$GAME_DIR/gamedata" ]; then
+  dialog "Do you want a game data folder ? ($GAME_DIR/gamedata)"
   read -rp " [Y/n] " _CONDITION;
   if ! [[ "$_CONDITION" =~ [nN] ]]; then
-    mkdir -p "$GAMEDIR/gamedata"
+    mkdir -p "$GAME_DIR/gamedata"
   fi
 fi
 
-if ! [ -d "$GAMEDIR/shaderscache" ]; then
-  dialog "Do you want a shader cache folder ($GAMEDIR/shaderscache) ?"
+if ! [ -d "$GAME_DIR/shaderscache" ]; then
+  dialog "Do you want a shader cache folder ($GAME_DIR/shaderscache) ?"
   read -rp " [Y/n] " _CONDITION;
   if ! [[ "$_CONDITION" =~ [nN] ]]; then
-    mkdir -p "$GAMEDIR/shaderscache"
+    mkdir -p "$GAME_DIR/shaderscache"
   fi
 fi
 
@@ -206,7 +206,7 @@ fi
 #  Wine prefix Installation
 # ==========================
 
-export WINEPREFIX="$GAMEDIR"/pfx
+export WINEPREFIX="$GAME_DIR/pfx"
 export WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
 
 dialog "Do you want use 32 bits prefix ?"

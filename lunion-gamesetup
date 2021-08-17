@@ -65,7 +65,7 @@ create_gamestart()
 
 innoextract_process()
 {
-  cd "$GAME/gamedata" || exit
+  cd "$GAME_DIR/gamedata" || exit
 
   msg "Installating in progress..."
   innoextract "$1" -sgm --progress=1 --collisions rename

@@ -122,6 +122,21 @@ override_dll() {
   fi
 }
 
+delete_dll()
+{
+  if [ $(command -v wine 1> /dev/null) ]; then
+    wine reg query 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 &> /dev/null
+    if [ "$?" ]; then
+      wine reg delete 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /f > /dev/null 2>&1
+    fi
+  else
+    wine64 reg delete 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /f > /dev/null 2>&1
+  fi
+  if [ $? -ne 0 ]; then
+    error "Failed to remove override for $1"
+  fi
+}
+
 install_file() {
   dstfile="$1/$3.dll"
   srcfile="$2/$3.dll"
@@ -146,6 +161,28 @@ install_file() {
   return 0
 }
 
+uninstall_file()
+{
+  dstfile="$1/$2.dll"
+
+  if ! [ -f "$dstfile" ] && ! [ -h "$dstfile" ]; then
+    echo "$dstfile: File not found. Skipping." >&2
+    return 1
+  fi
+
+  if [ -f "$dstfile.old" ]; then
+    rm -v "$dstfile"
+    mv -v "$dstfile.old" "$dstfile"
+    return 0
+  elif [ -f "$dstfile.old_none" ]; then
+    rm -v "$dstfile.old_none"
+    rm -v "$dstfile"
+    return 0
+  else
+    return 1
+  fi
+}
+
 install_dxvk()
 {
   wow64=true
@@ -164,6 +201,28 @@ install_dxvk()
       install_file "$win32" "$1/x32" "$dll"
     fi
     override_dll "$dll"
+  done
+}
+
+uninstall_dxvk()
+{
+  wow64=true
+  if ! [ -f "$WINE/bin/wine" ]; then
+    wow64=false
+  fi
+
+  win64=$(wine64 winepath -u "C:\windows\system32" 2> /dev/null)
+  if $wow64; then
+    win32=$(wine winepath -u "C:\windows\system32" 2> /dev/null)
+  fi
+
+  for dll in dxgi d3d9 d3d10core d3d10 d3d10_1 d3d11; do
+    for path in "$win64" "$win32"; do
+      if [ -d "$path" ]; then
+        uninstall_file "$path" "$dll"
+      fi
+    done
+    delete_dll "$dll"
   done
 }
 
@@ -186,6 +245,25 @@ install_vkd3dproton()
   override_dll d3d12
 }
 
+uninstall_vkd3dproton()
+{
+  wow64=true
+  if ! [ -f "$WINE/bin/wine" ]; then
+    wow64=false
+  fi
+
+  win64=$(wine64 winepath -u "C:\windows\system32" 2> /dev/null)
+  if $wow64; then
+    win32=$(wine winepath -u "C:\windows\system32" 2> /dev/null)
+  fi
+
+  for path in "$win64" "$win32"; do
+    if [ -d "$path" ]; then
+      uninstall_file "$path" "$dll"
+    fi
+  done
+  delete_dll "$dll"
+}
 
 
 # ========================================

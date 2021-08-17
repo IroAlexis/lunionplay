@@ -216,7 +216,7 @@ if [[ "$_CONDITION" =~ [yY] ]]; then
 fi
 dialog "Do you want the debug Wine ?"
 read -rp " [y/N] " _CONDITION;
-if ! [[ "$_CONDITION" =~ [nN] ]]; then
+if ! [[ "$_CONDITION" =~ [yY] ]]; then
   export WINEDEBUG=-all
 fi
 

@@ -367,6 +367,8 @@ fi
 
 if [ -z "$WINEDLLOVERRIDES" ]; then
   export WINEDLLOVERRIDES="winemenubuilder.exe="
+else
+  export WINEDLLOVERRIDES="$WINEDLLOVERRIDES;winemenubuilder.exe="
 fi
 
 

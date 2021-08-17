@@ -119,25 +119,25 @@ override_dll() {
 }
 
 install_dll() {
-  dstfile="${1}/${3}.dll"
-  srcfile="${2}/${3}.dll"
+  dstfile="$1/$3.dll"
+  srcfile="$2/$3.dll"
 
-  if ! [ -f "${srcfile}" ]; then
-    warn "${srcfile}: File not found. Skipping." >&2
+  if ! [ -f "$srcfile" ]; then
+    warn "$srcfile: File not found. Skipping." >&2
     return 1
   fi
 
   if [ -n "$1" ]; then
-    if [ -f "${dstfile}" ] || [ -h "${dstfile}" ]; then
-      if ! [ -f "${dstfile}.old" ]; then
-        mv "${dstfile}" "${dstfile}.old"
+    if [ -f "$dstfile" ] || [ -h "$dstfile" ]; then
+      if ! [ -f "$dstfile.old" ]; then
+        mv "$dstfile" "$dstfile.old"
       else
-        rm "${dstfile}"
+        rm "$dstfile"
       fi
     else
-      touch "${dstfile}.old_none"
+      touch "$dstfile.old_none"
     fi
-    ln -s "${srcfile}" "${dstfile}"
+    ln -s "$srcfile" "$dstfile"
   fi
   return 0
 }

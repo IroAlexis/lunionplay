@@ -322,8 +322,10 @@ if [ "$WINE_SYSTEM" != 1 ]; then
 fi
 
 # See setup_dxvk.sh in DXVK projet
+wine_path=$(dirname "$(command -v $wineboot)")
 wow64=true
-if ! [ -f "$WINE/bin/$wine" ]; then
+
+if ! [ -f "$wine_path/$wine" ]; then
   wine=$wine64
   wow64=false
 fi

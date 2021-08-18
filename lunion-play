@@ -150,13 +150,10 @@ install_file() {
     if [ -f "$dstfile" ] || [ -h "$dstfile" ]; then
       if ! [ -f "$dstfile.old" ]; then
         mv "$dstfile" "$dstfile.old"
-      else
-        rm "$dstfile"
-      fi
     else
       touch "$dstfile.old_none"
     fi
-    ln -s "$srcfile" "$dstfile"
+    cp -l "$srcfile" "$dstfile"
   fi
   return 0
 }

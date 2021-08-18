@@ -78,7 +78,7 @@ update_winepfx()
     exit 1
   fi
 
-  wineboot &> /dev/null
+  $wineboot &> /dev/null
   rslt=$?
   wineserver -w
 
@@ -92,7 +92,7 @@ display_runtime_options()
 {
   if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
     echo "==========================================="
-    msg "version: $(wine --version)"
+    msg "version: $($wine --version)"
     msg "command: $GAME_EXE"
   fi
 
@@ -110,12 +110,9 @@ display_runtime_options()
   fi
 }
 
+# See setup_dxvk.sh in DXVK projet
 override_dll() {
-  if [ $(command -v wine 1> /dev/null) ]; then
-    wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
-  else
-    wine64 reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
-  fi
+  $wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
   if [ $? -ne 0 ]; then
     error "Failed to add override for $1"
     exit 1
@@ -124,16 +121,12 @@ override_dll() {
 
 delete_dll()
 {
-  if [ $(command -v wine 1> /dev/null) ]; then
-    wine reg query 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 &> /dev/null
-    if [ "$?" ]; then
-      wine reg delete 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /f > /dev/null 2>&1
+  $wine reg query 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 &> /dev/null
+  if [ "$?" ]; then
+    $wine reg delete 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /f > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+      error "Failed to remove override for $1"
     fi
-  else
-    wine64 reg delete 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /f > /dev/null 2>&1
-  fi
-  if [ $? -ne 0 ]; then
-    error "Failed to remove override for $1"
   fi
 }
 
@@ -182,20 +175,10 @@ uninstall_file()
 
 install_dxvk()
 {
-  wow64=true
-  if ! [ -f "$WINE/bin/wine" ]; then
-    wow64=false
-  fi
-
-  win64=$(wine64 winepath -u "C:\windows\system32" 2> /dev/null)
-  if $wow64; then
-    win32=$(wine winepath -u "C:\windows\system32" 2> /dev/null)
-  fi
-
   for dll in dxgi d3d9 d3d10core d3d11; do
-    install_file "$win64" "$1/x64" "$dll"
+    install_file "$win64_pfx_path" "$1/x64" "$dll"
     if $wow64; then
-      install_file "$win32" "$1/x32" "$dll"
+      install_file "$win32_pfx_path" "$1/x32" "$dll"
     fi
     override_dll "$dll"
   done
@@ -203,18 +186,8 @@ install_dxvk()
 
 uninstall_dxvk()
 {
-  wow64=true
-  if ! [ -f "$WINE/bin/wine" ]; then
-    wow64=false
-  fi
-
-  win64=$(wine64 winepath -u "C:\windows\system32" 2> /dev/null)
-  if $wow64; then
-    win32=$(wine winepath -u "C:\windows\system32" 2> /dev/null)
-  fi
-
   for dll in dxgi d3d9 d3d10core d3d10 d3d10_1 d3d11; do
-    for path in "$win64" "$win32"; do
+    for path in "$win64_pfx_path" "$win32_pfx_path"; do
       if [ -d "$path" ]; then
         uninstall_file "$path" "$dll"
       fi
@@ -225,36 +198,16 @@ uninstall_dxvk()
 
 install_vkd3dproton()
 {
-  wow64=true
-  if ! [ -f "$WINE/bin/wine" ]; then
-    wow64=false
-  fi
-
-  win64=$(wine64 winepath -u "C:\windows\system32" 2> /dev/null)
+  install_file "$win64_pfx_path" "$1/x64" d3d12
   if $wow64; then
-    win32=$(wine winepath -u "C:\windows\system32" 2> /dev/null)
-  fi
-
-  install_file "$win64" "$1/x64" d3d12
-  if $wow64; then
-    install_file "$win32" "$1/x86" d3d12
+    install_file "$win32_pfx_path" "$1/x86" d3d12
   fi
   override_dll d3d12
 }
 
 uninstall_vkd3dproton()
 {
-  wow64=true
-  if ! [ -f "$WINE/bin/wine" ]; then
-    wow64=false
-  fi
-
-  win64=$(wine64 winepath -u "C:\windows\system32" 2> /dev/null)
-  if $wow64; then
-    win32=$(wine winepath -u "C:\windows\system32" 2> /dev/null)
-  fi
-
-  for path in "$win64" "$win32"; do
+  for path in "$win64_pfx_path" "$win32_pfx_path"; do
     if [ -d "$path" ]; then
       uninstall_file "$path" "$dll"
     fi
@@ -343,6 +296,10 @@ msg "command: $GAME_EXE"
 #  Runtime Configuration
 # =======================
 
+wine="wine"
+wine64="wine64"
+wineboot="wineboot"
+
 if [ "$WINE_SYSTEM" != 1 ]; then
   if [ -n "$WINE_CUSTOM" ] && [ -d "$WINE_CUSTOM" ]; then
     WINE="$WINE_CUSTOM"
@@ -363,7 +320,15 @@ if [ "$WINE_SYSTEM" != 1 ]; then
     fi
   fi
 fi
-msg "version: $(wine --version)"
+
+# See setup_dxvk.sh in DXVK projet
+wow64=true
+if ! [ -f "$WINE/bin/$wine" ]; then
+  wine=$wine64
+  wow64=false
+fi
+
+msg "version: $($wine --version)"
 
 # Don't override WINEPREFIX if the user passed one, otherwise we set ours
 if [ -z "$WINEPREFIX" ]; then
@@ -455,11 +420,19 @@ else
 fi
 
 
-# ====================
-#  DXVK Configuration
-# ====================
-
 if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
+  # See setup_dxvk.sh in DXVK projet
+  win64_pfx_path=$($wine64 winepath -u "C:\windows\system32" 2> /dev/null)
+  win64_pfx_path="${win64_pfx_path/$'\r'/}"
+  if $wow64; then
+    win32_pfx_path=$($wine winepath -u "C:\windows\system32" 2> /dev/null)
+    win32_pfx_path="${win32_pfx_path/$'\r'/}"
+  fi
+
+  # ====================
+  #  DXVK Configuration
+  # ====================
+
   # Verify dxvk folder is present
   system_dxvk="/usr/share/lunion-play/dxvk"
   local_dxvk="$where/dxvk"
@@ -478,16 +451,12 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
   else
     export DXVK_LOG_LEVEL=none
   fi
-else
-  uninstall_dxvk
-fi
 
 
-# ============================
-#  VKD3D-Proton Configuration
-# ============================
+  # ============================
+  #  VKD3D-Proton Configuration
+  # ============================
 
-if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
   # Verify vkd3d-proton folder is present
   system_vkd3dproton="/usr/share/lunion-play/vkd3d-proton"
   local_vkd3dproton="$where/vkd3d-proton"
@@ -512,6 +481,7 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
     fi
   fi
 else
+  uninstall_dxvk
   uninstall_vkd3dproton
 fi
 
@@ -542,9 +512,9 @@ fi
 msg "Starting..."
 
 if [ -n "$LUNION_PLAY_LOG" ] && [[ "$LUNION_PLAY_LOG" -gt 0 ]] ; then
-  wine "$(basename "$(realpath "$GAME_EXE")")" &>> "$log"
+  $wine "$(basename "$(realpath "$GAME_EXE")")" &>> "$log"
 else
-  wine "$(basename "$(realpath "$GAME_EXE")")"
+  $wine "$(basename "$(realpath "$GAME_EXE")")"
 fi
 
 

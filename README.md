@@ -2,9 +2,9 @@
 
 Wine Wrapper which allows installing and/or running Windows games on Linux.
 
-The main goal is to offer an Proton alternative to launch your GOG games. You can use the Wine package of your Linux distribution (but it is not ideal for gaming) or Lutris builds or Wine GE builds or else Wine TkG builds. 
+The main goal is to offer an Proton alternative to launch your GOG games. You can use the Wine package of your Linux distribution (but it is not ideal for gaming) or Lutris builds or Wine GE builds or else Wine TkG builds. You can try for launch games from other platforms but I don't cover this cases.
 
-Note : You can try for launch games from other platforms but I don't cover this cases.
+Small clarification, Lunion Play is only tested on Arch Linux distribution (with Chaotic-AUR repository enable).
 
 *This is a draft that allows me to have an overview for the Wine use and which also makes Wine.*
 
@@ -59,7 +59,6 @@ sudo makepkg -si
 #### Others distributions
 Go to Source or Packaged binaries section for install it.
 
-Furthermore, Lunion Play is only tested (and focused) on Arch Linux distribution (with Chaotic-AUR repository enable).
 
 
 ## Configuration
@@ -67,6 +66,7 @@ Lunion Play comes with a config file which can be used to set configuration opti
 1. `$HOME/.config/lunion-play/customization.cfg`
 2. `/path/to/lunion-play/customization.cfg` (*when using the standalone package*)
 3. `/etc/lunion-play/customization.cfg` (*when you have installed on your system*)
+
 
 
 ## Usage

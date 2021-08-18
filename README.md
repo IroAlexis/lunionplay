@@ -1,8 +1,12 @@
 # Lunion Play
 
-Wrapper which allows installing and/or running Windows games on Linux using Wine.
+Wine Wrapper which allows installing and/or running Windows games on Linux.
 
-This is a first draft that allows me to have an overview for the Wine use and which also makes Wine.
+The main goal is to offer an Proton alternative to launch your GOG games. You can use the Wine package of your Linux distribution (but it is not ideal for gaming) or Lutris builds or Wine GE builds or else Wine TkG builds. 
+
+Note : You can try for launch games from other platforms but I don't cover this cases.
+
+*This is a draft that allows me to have an overview for the Wine use and which also makes Wine.*
 
 
 

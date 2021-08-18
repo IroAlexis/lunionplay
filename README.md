@@ -31,7 +31,7 @@ git clone --recursive https://github.com/IroAlexis/lunion-play.git && cd lunion-
 #### Source
 To install it, run this :
 ```bash
-sudo make install_all
+sudo make install
 ```
 You can then subsequently uninstall Lunion Play via the following command :
 ```bash
@@ -41,7 +41,7 @@ sudo make uninstall
 #### Packaged binaries
 To generate packaged binaries, execute this :
 ```bash
-sudo make package_all
+sudo make package
 ```
 
 If you have downloaded the file from [Releases](https://github.com/IroAlexis/lunion-play/releases) or generated it as above, you have just extract it wherever you want and go to Usage section (if you don't know the next).

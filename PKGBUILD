@@ -35,5 +35,5 @@ package()
   msg "Packaging Lunion Play..."
 
   cd "$startdir"
-  make DESTDIR="$pkgdir" buildir="$srcdir" install_all
+  make DESTDIR="$pkgdir" buildir="$srcdir" install
 }

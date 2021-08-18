@@ -63,7 +63,7 @@ _vkd3dproton:
 	    "$(buildir)/vkd3d-proton/build.86"; \
 	  ninja -C "$(buildir)/vkd3d-proton/build.86"
 
-package:
+package_without:
 	@ echo -e "\033[1;32m==>\033[1;0m\033[1;1m Creating package $(pkgname)... \033[1;0m"
 	@ install -v -Dm755 lunion-play -t $(pkgdir)
 	@ install -v -Dm755 lunion-gamesetup -t $(pkgdir)
@@ -76,7 +76,7 @@ package:
 	@ mv $(buildir)/$(pkg) .
 	@ echo -e "\033[1;32m==>\033[1;0m\033[1;1m Finished making: $(pkgname) $(pkgver) ($(shell date))\033[1;0m"
 
-package_all: _dxvk _vkd3dproton
+package: _dxvk _vkd3dproton
 	@ echo -e "\033[1;32m==>\033[1;0m\033[1;1m Creating package $(pkgname)... \033[1;0m"
 	@ install -v -Dm755 lunion-play -t $(pkgdir)
 	@ install -v -Dm755 lunion-gamesetup -t $(pkgdir)
@@ -99,7 +99,7 @@ package_all: _dxvk _vkd3dproton
 	@ mv $(buildir)/$(pkg) .
 	@ echo -e "\033[1;32m==>\033[1;0m\033[1;1m Finished making: $(pkgname) $(pkgver) ($(shell date))\033[1;0m"
 
-install:
+install_without:
 ifndef DESTDIR
 	@ echo -e "\033[1;32m==>\033[1;0m\033[1;1m Installing $(name)... \033[1;0m"
 endif
@@ -108,7 +108,7 @@ endif
 	@ install -v -Dm644 customization.cfg -t $(CONF_DIR)
 	@ install -v -Dm444 LICENSE -t $(LICENSE_DIR)
 
-install_all: install
+install: install_without
 	@ DESTDIR="$(DLLS_DIR)" ninja -C "$(buildir)/dxvk/build.64" install
 	@ DESTDIR="$(DLLS_DIR)" ninja -C "$(buildir)/dxvk/build.32" install
 	@ install -v -Dm755 dxvk/setup_dxvk.sh -t $(DLLS_DIR)/dxvk

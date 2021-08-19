@@ -114,7 +114,7 @@ add_override()
   fi
 }
 
-delete_dll()
+remove_override()
 {
   $wine reg query 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 &> /dev/null
   if [ "$?" ]; then
@@ -189,7 +189,7 @@ uninstall_dxvk()
         uninstall_file "$path" "$dll"
       fi
     done
-    delete_dll "$dll"
+    remove_override "$dll"
   done
 }
 
@@ -209,7 +209,7 @@ uninstall_vkd3dproton()
       uninstall_file "$path" d3d12
     fi
   done
-  delete_dll d3d12
+  remove_override d3d12
 }
 
 

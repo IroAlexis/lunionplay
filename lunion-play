@@ -130,7 +130,8 @@ delete_dll()
   fi
 }
 
-install_file() {
+install_file()
+{
   dstfile="$1/$3.dll"
   srcfile="$2/$3.dll"
 
@@ -143,6 +144,7 @@ install_file() {
     if [ -f "$dstfile" ] || [ -h "$dstfile" ]; then
       if ! [ -f "$dstfile.old" ]; then
         mv "$dstfile" "$dstfile.old"
+      fi
     else
       touch "$dstfile.old_none"
     fi
@@ -336,9 +338,10 @@ msg "version: $($wine --version)"
 if [ -z "$WINEPREFIX" ]; then
   export WINEPREFIX="$GAME_DIR"/pfx
 fi
+
+msg "pfx: $WINEPREFIX"
 if ! [ -d "$WINEPREFIX" ]; then
-  error "No such Wine prefix '$WINEPREFIX'"
-  exit 1
+  warn "pfx: Need to recreate prefix"
 fi
 
 is_futex2_supported
@@ -411,7 +414,7 @@ fi
 update_winepfx
 
 if [ "$?" = 1 ]; then
-  error "Problem Wine prefix update"
+  error "Problem with prefix update"
   exit 1
 fi
 

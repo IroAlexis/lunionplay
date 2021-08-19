@@ -494,8 +494,14 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
     fi
   fi
 else
-  uninstall_dxvk
-  uninstall_vkd3dproton
+  if [ -f "$WINEPREFIX/dxvk.lock" ]; then
+    uninstall_dxvk
+    rm "$WINEPREFIX/dxvk.lock"
+  fi
+  if [ -f "$WINEPREFIX/vkd3dproton.lock" ]; then
+    uninstall_vkd3dproton
+    rm "$WINEPREFIX/vkd3dproton.lock"
+  fi
 fi
 
 

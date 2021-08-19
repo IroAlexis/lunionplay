@@ -292,10 +292,6 @@ msg "command: $GAME_EXE"
 #  Runtime Configuration
 # =======================
 
-wine="wine"
-wine64="wine64"
-wineboot="wineboot"
-
 if [ "$WINE_SYSTEM" != 1 ]; then
   if [ -n "$WINE_CUSTOM" ] && [ -d "$WINE_CUSTOM" ]; then
     WINE="$WINE_CUSTOM"
@@ -318,6 +314,10 @@ if [ "$WINE_SYSTEM" != 1 ]; then
 fi
 
 # See setup_dxvk.sh in DXVK projet
+wine="wine"
+wine64="wine64"
+wineboot="wineboot"
+
 wine_path=$(dirname "$(command -v $wineboot)")
 wow64=true
 
@@ -419,15 +419,24 @@ else
 fi
 
 
-if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
-  # See setup_dxvk.sh in DXVK projet
-  win64_pfx_path=$($wine64 winepath -u "C:\windows\system32" 2> /dev/null)
-  win64_pfx_path="${win64_pfx_path/$'\r'/}"
-  if $wow64; then
-    win32_pfx_path=$($wine winepath -u "C:\windows\system32" 2> /dev/null)
-    win32_pfx_path="${win32_pfx_path/$'\r'/}"
-  fi
+if [ -f "$wine_path/$wine64" ] && [ -f "$wine_path/$wine" ]; then
+  win64_pfx_path="$WINEPREFIX/drive_c/windows/system32"
+  win32_pfx_path="$WINEPREFIX/drive_c/windows/syswow64"
+elif [ -f "$wine_path/$wine64" ] && ! [ -f "$wine_path/$wine" ]; then
+  win64_pfx_path="$WINEPREFIX/drive_c/windows/system32"
+elif ! [ -f "$wine_path/$wine64" ] && [ -f "$wine_path/$wine" ]; then
+  win32_pfx_path="$WINEPREFIX/drive_c/windows/system32"
+else
+  error "Check your Wine build $WINE."
+  exit 1
+fi
 
+if [ -z "$win32_pfx_path" ] && [ -z "$win64_pfx_path" ]; then
+  error "Failed to resolve C:\windows\system32."
+  exit 1
+fi
+
+if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
   # ====================
   #  DXVK Configuration
   # ====================

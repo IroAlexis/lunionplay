@@ -71,13 +71,7 @@ update_winepfx()
     WINEDLLOVERRIDES="mscoree,mshtml,winemenubuilder.exe="
   fi
 
-  if [ -d "$WINEPREFIX" ]; then
-    msg "Preparing to launch the game..."
-  else
-    error "No such Wine prefix '$WINEPREFIX'"
-    exit 1
-  fi
-
+  msg "Preparing to launch the game..."
   $wineboot &> /dev/null
   rslt=$?
   wineserver -w

@@ -474,8 +474,10 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
 
   if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -d "$system_vkd3dproton/x64" ] && [ -d "$system_vkd3dproton/x86" ] && [ -f "$system_vkd3dproton/setup_vkd3d_proton.sh" ]; then
     install_vkd3dproton "$system_vkd3dproton"
+    touch "$WINEPREFIX/vkd3dproton.lock"
   elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -d "$local_vkd3dproton/x64" ] && [ -d "$local_vkd3dproton/x86" ] && [ -f "$local_vkd3dproton/setup_vkd3d_proton.sh" ]; then
     install_vkd3dproton "$local_vkd3dproton"
+    touch "$WINEPREFIX/vkd3dproton.lock"
   fi
 
   if [[ "$LUNION_PLAY_LOG" -gt 0 ]] && [ -z "$VKD3D_DEBUG" ]; then

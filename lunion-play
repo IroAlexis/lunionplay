@@ -470,8 +470,8 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
   system_vkd3dproton="/usr/share/lunion-play/vkd3d-proton"
   local_vkd3dproton="$where/vkd3d-proton"
 
-  if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -d "$sys_vkd3dproton/x64" ] && [ -d "$sys_vkd3dproton/x64" ] && [ -f "$sys_vkd3dproton/setup_vkd3d_proton.sh" ]; then
-    install_vkd3dproton "$sys_vkd3dproton"
+  if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -d "$system_vkd3dproton/x64" ] && [ -d "$system_vkd3dproton/x86" ] && [ -f "$system_vkd3dproton/setup_vkd3d_proton.sh" ]; then
+    install_vkd3dproton "$system_vkd3dproton"
   elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -d "$local_vkd3dproton/x64" ] && [ -d "$local_vkd3dproton/x86" ] && [ -f "$local_vkd3dproton/setup_vkd3d_proton.sh" ]; then
     install_vkd3dproton "$local_vkd3dproton"
   fi

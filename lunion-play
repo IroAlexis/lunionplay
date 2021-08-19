@@ -205,10 +205,10 @@ uninstall_vkd3dproton()
 {
   for path in "$win64_pfx_path" "$win32_pfx_path"; do
     if [ -d "$path" ]; then
-      uninstall_file "$path" "$dll"
+      uninstall_file "$path" d3d12
     fi
   done
-  delete_dll "$dll"
+  delete_dll d3d12
 }
 
 

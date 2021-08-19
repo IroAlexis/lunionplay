@@ -105,7 +105,8 @@ display_runtime_options()
 }
 
 # See setup_dxvk.sh in DXVK projet
-override_dll() {
+add_override()
+{
   $wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
   if [ $? -ne 0 ]; then
     error "reg: Failed to add override for $1"
@@ -176,7 +177,7 @@ install_dxvk()
     if $wow64; then
       install_file "$win32_pfx_path" "$1/x32" "$dll"
     fi
-    override_dll "$dll"
+    add_override "$dll"
   done
 }
 
@@ -198,7 +199,7 @@ install_vkd3dproton()
   if $wow64; then
     install_file "$win32_pfx_path" "$1/x86" d3d12
   fi
-  override_dll d3d12
+  add_override d3d12
 }
 
 uninstall_vkd3dproton()

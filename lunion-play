@@ -143,7 +143,7 @@ install_file()
     else
       touch "$dstfile.old_none"
     fi
-    cp -l "$srcfile" "$dstfile"
+    cp -u "$srcfile" "$dstfile"
   fi
   return 0
 }

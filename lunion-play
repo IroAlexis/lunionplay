@@ -157,12 +157,12 @@ uninstall_file()
   fi
 
   if [ -f "$dstfile.old" ]; then
-    rm -v "$dstfile"
-    mv -v "$dstfile.old" "$dstfile"
+    rm "$dstfile"
+    mv "$dstfile.old" "$dstfile"
     return 0
   elif [ -f "$dstfile.old_none" ]; then
-    rm -v "$dstfile.old_none"
-    rm -v "$dstfile"
+    rm "$dstfile.old_none"
+    rm "$dstfile"
     return 0
   else
     return 1

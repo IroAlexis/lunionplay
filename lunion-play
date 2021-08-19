@@ -108,7 +108,7 @@ display_runtime_options()
 override_dll() {
   $wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
   if [ $? -ne 0 ]; then
-    error "Failed to add override for $1"
+    error "reg: Failed to add override for $1"
     exit 1
   fi
 }
@@ -119,7 +119,7 @@ delete_dll()
   if [ "$?" ]; then
     $wine reg delete 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /f > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-      error "Failed to remove override for $1"
+      warn "reg: Failed to remove override for $1"
     fi
   fi
 }

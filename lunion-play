@@ -448,8 +448,10 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
 
   if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -d "$system_dxvk/x64" ] && [ -d "$system_dxvk/x64" ] && [ -f "$system_dxvk/setup_dxvk.sh" ]; then
     install_dxvk "$system_dxvk"
+    touch "$WINEPREFIX/dxvk.lock"
   elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -d "$local_dxvk/x64" ] && [ -d "$local_dxvk/x32" ] && [ -f "$local_dxvk/setup_dxvk.sh" ]; then
     install_dxvk "$local_dxvk"
+    touch "$WINEPREFIX/dxvk.lock"
   fi
 
   mkdir -p "$GAME_DIR"/shaderscache/dxvk_state_cache

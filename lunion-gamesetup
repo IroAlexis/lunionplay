@@ -271,31 +271,13 @@ if [ "$2" ]; then
       exit 0
     fi
 
-    dialog "Do you want the GUI ?"
-    read -rp " [Y/n] " _CONDITION;
-    if [[ "$_CONDITION" =~ [nN] ]]; then
-      _ARGS="/SP- /SUPPRESSMSGBOXES"
-
-      dialog "Do you want a silent installation without progress bar ?"
-      read -rp " [y/N] " _CONDITION;
-      if [[ "$_CONDITION" =~ [yY] ]]; then
-        _ARGS="$_ARGS /VERYSILENT"
-      else
-        _ARGS="$_ARGS /SILENT"
-      fi
-      msg "$(winepath -u C:\\GOG\ Games)"
+    msg "$(winepath -u C:\\GOG\ Games)"
     fi
   fi
 
-
-  if [ -n "$_ARGS" ]; then
-    wine "$2" "$_ARGS"
-    wine_wait
-  else
-    warning "Don't launch the game with the installer..."
-    wine "$2"
-    wine_wait
-  fi
+  warning "Don't launch the game with the installer..."
+  wine "$2"
+  wine_wait
 fi
 
 create_gamestart

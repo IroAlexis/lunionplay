@@ -156,14 +156,6 @@ if ! [ -d "$GAME_DIR" ]; then
   mkdir -p "$GAME_DIR"
 fi
 
-if ! [ -d "$GAME_DIR/gamedata" ]; then
-  dialog "Do you want a game data folder ($GAME_DIR/gamedata) ?"
-  read -rp " [Y/n] " _CONDITION;
-  if ! [[ "$_CONDITION" =~ [nN] ]]; then
-    mkdir -p "$GAME_DIR/gamedata"
-  fi
-fi
-
 if ! [ -d "$GAME_DIR/shaderscache" ]; then
   dialog "Do you want a shader cache folder ($GAME_DIR/shaderscache) ?"
   read -rp " [Y/n] " _CONDITION;
@@ -260,6 +252,7 @@ if [ "$2" ]; then
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
       if command -v innoextract 1> /dev/null; then
+        mkdir -p "$GAME_DIR/gamedata"
         innoextract_process "$2"
       else
         error "innoextract is not install"

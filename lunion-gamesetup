@@ -157,7 +157,7 @@ if ! [ -d "$GAME_DIR" ]; then
 fi
 
 if ! [ -d "$GAME_DIR/gamedata" ]; then
-  dialog "Do you want a game data folder ? ($GAME_DIR/gamedata)"
+  dialog "Do you want a game data folder ($GAME_DIR/gamedata) ?"
   read -rp " [Y/n] " _CONDITION;
   if ! [[ "$_CONDITION" =~ [nN] ]]; then
     mkdir -p "$GAME_DIR/gamedata"

@@ -235,8 +235,7 @@ if [ "$LUNION_PLAY_DAMAVAND" = 1 ]; then
   wine reg add 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /d vulkan /f 1> /dev/null
   msg "Damavand will be used"
 else
-  wine reg query 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer &> /dev/null
-  if [ "$?" ]; then
+  if wine reg query 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer &> /dev/null; then
     wine reg delete 'HKEY_CURRENT_USER\Software\Wine\Direct3D' /v renderer /f &> /dev/null
   fi
   unset LUNION_PLAY_DAMAVAND
@@ -260,8 +259,7 @@ if [ "$2" ]; then
     dialog "Do install the game outside the wine prefix (require innoextract) ?"
     read -rp " [y/N] " _CONDITION;
     if [[ "$_CONDITION" =~ [yY] ]]; then
-      command -v innoextract 1> /dev/null
-      if [ "$?" ]; then
+      if command -v innoextract 1> /dev/null; then
         innoextract_process "$2"
       else
         error "innoextract is not install"

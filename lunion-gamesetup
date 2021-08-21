@@ -48,7 +48,7 @@ create_gamestart()
   flag=1
 
   while [ "$flag" -eq 1 ]; do
-    dialog "Enter the exe's path (press enter if you want to skip it):"
+    dialog "Fill in game exe's path (press Enter if you don't want 'gamestart' file):"
     read -rp " " exep;
     if [ -f "$exep" ]; then
       echo "$exep" > "$GAME_DIR/gamestart"

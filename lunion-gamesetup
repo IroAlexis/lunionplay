@@ -247,10 +247,9 @@ if [ "$2" ]; then
   dialog "Is it a GOG installer ?"
   read -rp " [y/N] " _CONDITION;
   if [[ "$_CONDITION" =~ [yY] ]]; then
-
     dialog "Do install the game outside the wine prefix (require innoextract) ?"
-    read -rp " [y/N] " _CONDITION;
-    if [[ "$_CONDITION" =~ [yY] ]]; then
+    read -rp " [y/N] " _icond;
+    if [[ "$_icond" =~ [yY] ]]; then
       if command -v innoextract 1> /dev/null; then
         mkdir -p "$GAME_DIR/gamedata"
         innoextract_process "$2"
@@ -265,7 +264,6 @@ if [ "$2" ]; then
     fi
 
     msg "$(winepath -u C:\\GOG\ Games)"
-    fi
   fi
 
   warning "Don't launch the game with the installer..."
@@ -273,6 +271,15 @@ if [ "$2" ]; then
   wine_wait
 fi
 
+msg
+
+if [[ "$_icond" =~ [yY] ]]; then
+  find "$GAME_DIR/gamedata" -name "*.exe" -exec echo "  -> " "{}" \;
+else
+  find "$GAME_DIR/pfx/drive_c" -name "*.exe" -exec echo "  -> " "{}" \; | grep -ve "drive_c/windows" -e "/wordpad.exe" -e "/wmplayer.exe" -e "/iexplore.exe"
+fi
+
+msg
 create_gamestart
 
 msg "exit script done"

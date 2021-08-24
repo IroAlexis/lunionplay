@@ -51,7 +51,7 @@ create_gamestart()
   if [[ "$_icond" =~ [yY] ]]; then
     find "$GAME_DIR/gamedata" -name "*.exe" -exec echo "  -> " "{}" \;
   else
-    find "$GAME_DIR/pfx/drive_c" -name "*.exe" -exec echo "  -> " "{}" \; | grep -ve "drive_c/windows" -e "/wordpad.exe" -e "/wmplayer.exe" -e "/iexplore.exe"
+    find "$GAME_DIR" -name "*.exe" -exec echo "  -> " "{}" \; | grep -ve "drive_c/windows" -e "/wordpad.exe" -e "/wmplayer.exe" -e "/iexplore.exe"
   fi
 
   msg

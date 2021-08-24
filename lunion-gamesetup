@@ -140,6 +140,16 @@ if [[ "$1" =~ ^/|(/[a-zA-Z_0-9-]+)+|/+$ ]]; then
   exit 1
 fi
 
+if [ -n "$2" ] && ! [ -f "$2" ]; then
+  error "$2 don't exist"
+  exit 1
+fi
+
+if [ -n "$2" ] && [[ "$(basename $2)" =~ ^patch ]] && [ -d "$GAME_DIR/gamedata" ]; then
+  error "Game patch are not supported with game installation outside wine prefix"
+  exit 1
+fi
+
 
 # ============================
 #  Games folder Configuration
@@ -247,15 +257,18 @@ fi
 # ===================
 
 if [ "$2" ]; then
-  if ! [ -f "$2" ]; then
-    error "$2 don't exist"
-    exit 1
+  if [[ "$(basename $2)" =~ ^patch ]]; then
+    wine "$2"
+    wine_wait
+
+    msg "exit script done"
+    exit 0
   fi
 
   dialog "Is it a GOG installer ?"
   read -rp " [y/N] " _CONDITION;
   if [[ "$_CONDITION" =~ [yY] ]]; then
-    dialog "Do install the game outside the wine prefix (require innoextract) ?"
+    dialog "Do you want install the game outside wine prefix (no game updates support) ?"
     read -rp " [y/N] " _icond;
     if [[ "$_icond" =~ [yY] ]]; then
       if command -v innoextract 1> /dev/null; then

@@ -82,6 +82,8 @@ This installation may be generated with `lunion-gamesetup my_game [/path/to/setu
 
 `<path>` is determinated in order priority by the environment variable `GAMES_PATH` and the variable `_games_path` that is in `customization.cfg` file.
 
+`gamedata` folder is only present whe you choose the game installation outside wine prefix. However, you can't install patchs, you will have to re download entirelly the game at each updates/patchs.
+
 `gamestart` file is used to indicate the path to the game `.exe` file.
 
 

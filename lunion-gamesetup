@@ -46,7 +46,15 @@ wine_wait()
 create_gamestart()
 {
   flag=1
+  msg
 
+  if [[ "$_icond" =~ [yY] ]]; then
+    find "$GAME_DIR/gamedata" -name "*.exe" -exec echo "  -> " "{}" \;
+  else
+    find "$GAME_DIR/pfx/drive_c" -name "*.exe" -exec echo "  -> " "{}" \; | grep -ve "drive_c/windows" -e "/wordpad.exe" -e "/wmplayer.exe" -e "/iexplore.exe"
+  fi
+
+  msg
   while [ "$flag" -eq 1 ]; do
     dialog "Fill in game exe's path (press Enter if you don't want 'gamestart' file):"
     read -rp " " exep;
@@ -271,15 +279,6 @@ if [ "$2" ]; then
   wine_wait
 fi
 
-msg
-
-if [[ "$_icond" =~ [yY] ]]; then
-  find "$GAME_DIR/gamedata" -name "*.exe" -exec echo "  -> " "{}" \;
-else
-  find "$GAME_DIR/pfx/drive_c" -name "*.exe" -exec echo "  -> " "{}" \; | grep -ve "drive_c/windows" -e "/wordpad.exe" -e "/wmplayer.exe" -e "/iexplore.exe"
-fi
-
-msg
 create_gamestart
 
 msg "exit script done"

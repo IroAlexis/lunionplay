@@ -101,7 +101,7 @@ innoextract_process()
 
 command -v source 1> /dev/null
 if ! [ $? ]; then
-  msg "Need install the tcl package"
+  error "Install 'tcl' package"
   exit 1
 fi
 
@@ -275,7 +275,7 @@ if [ "$2" ]; then
         mkdir -p "$GAME_DIR/gamedata"
         innoextract_process "$2"
       else
-        error "innoextract is not install"
+        error "Install 'innoextract' package"
         exit 1
       fi
       create_gamestart

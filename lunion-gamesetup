@@ -76,7 +76,7 @@ innoextract_process()
   cd "$GAME_DIR/gamedata" || exit
 
   msg "Installating in progress..."
-  innoextract "$1" -sgm --progress=1 --collisions rename
+  innoextract "$1" -sgm --progress=1
 
   # Move the content for success to launch some games (Frostpunk)
   cp -rl app/* .

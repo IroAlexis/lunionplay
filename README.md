@@ -89,11 +89,11 @@ This installation may be generated with `lunion-gamesetup my_game [/path/to/setu
 
 If you have `gamestart` file, you can launch the game like this :
 ```bash
-$ lunion-play my_game
+lunion-play my_game
 ```
 Else, you have to launch the game like this: 
 ```bash
-$ lunion-play my_game /path/to/game.exe
+lunion-play my_game /path/to/game.exe
 ```
 
 
@@ -104,7 +104,7 @@ All of the below are runtime options. You can use normally the runtime options o
 * `GAMES_PATH=<path>`, the directory where are installed the games (override `$_games_path`)
 * `WINE_SYSTEM=1`, prefer to use the Wine system.
 * `WINE_CUSTOM=<path>`, the directory where is located custom Wine.
-* `LUNION_PLAY_USE_WINED3D=1`, use OpenGL-based wined3d instead of Vulkan-based DXVK for d3d11, d3d10, and d3d9..
+* `LUNION_PLAY_USE_WINED3D=1`, use OpenGL-based wined3d instead of Vulkan-based DXVK and VKD3D-Proton
 * `LUNION_PLAY_SYNC=<value>`, use an other in-process synchronization primitives :
   * `esync`, eventfd-based in-process synchronization primitives.
   * `fsync` or `futex2`, futex-based in-process synchronization primitives. (enable by default if your kernel is compatible ; automatically disabled on systems with no `FUTEX_WAIT_MULTIPLE` support.)

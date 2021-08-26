@@ -61,7 +61,7 @@ create_gamestart()
     if [ -f "$exep" ]; then
       echo "$exep" > "$GAME_DIR/gamestart"
       flag=0
-    elif [ -z $exep ]; then
+    elif [ -z "$exep" ]; then
       flag=0
     else
       error "Path don't valid"
@@ -106,10 +106,10 @@ if ! [ $? ]; then
 fi
 
 if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
-  source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
+  source "$HOME/.config/lunion-play/customization.cfg" 2> /dev/null
   msg "cfg: $HOME/.config/lunion-play/customization.cfg"
 elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -f "$where/customization.cfg" ]; then
-  source "$where"/customization.cfg 2> /dev/null
+  source "$where/customization.cfg" 2> /dev/null
   msg "cfg: $where/customization.cfg"
 elif [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
   source /etc/lunion-play/customization.cfg 2> /dev/null
@@ -145,7 +145,7 @@ if [ -n "$2" ] && ! [ -f "$2" ]; then
   exit 1
 fi
 
-if [ -n "$2" ] && [[ "$(basename $2)" =~ ^patch ]] && [ -d "$GAME_DIR/gamedata" ]; then
+if [ -n "$2" ] && [[ "$(basename "$2")" =~ ^patch ]] && [ -d "$GAME_DIR/gamedata" ]; then
   error "Game patch are not supported with game installation outside wine prefix"
   exit 1
 fi
@@ -257,7 +257,7 @@ fi
 # ===================
 
 if [ "$2" ]; then
-  if [[ "$(basename $2)" =~ ^patch ]]; then
+  if [[ "$(basename "$2")" =~ ^patch ]]; then
     wine "$2"
     wine_wait
 

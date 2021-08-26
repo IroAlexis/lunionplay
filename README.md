@@ -72,15 +72,17 @@ Lunion Play comes with a config file which can be used to set configuration opti
 ## Usage
 A correct local game installation with Lunion Play should look like this:
 ```
-     <path>/my_game/       |      <path>/my_game/
+     <path>/game-id/       |      <path>/game-id/
      ├── gamedata/         |      ├── pfx/
      ├── pfx/              |      ├── shaderscache/
      ├── shaderscache/     |      └── gamestart
      └── gamestart         |
 ```
-This installation may be generated with `lunion-gamesetup my_game [/path/to/setup-my_game.exe]`.
+This installation may be generated with `lunion-gamesetup game-id [/path/to/setup-game.exe]`.
 
 `<path>` is determinated in order priority by the environment variable `GAMES_PATH` and the variable `_games_path` that is in `customization.cfg` file.
+
+`game-id` is the folder name where is stored the game. This id will be used to launch the game like with Steam in command line.
 
 `gamedata` folder is only present when you choose the game installation outside wine prefix. However, you can't install patchs, you will have to re download entirelly the game at each updates/patchs.
 
@@ -89,11 +91,11 @@ This installation may be generated with `lunion-gamesetup my_game [/path/to/setu
 
 If you have `gamestart` file, you can launch the game like this :
 ```bash
-lunion-play my_game
+lunion-play game-id
 ```
 Else, you have to launch the game like this: 
 ```bash
-lunion-play my_game /path/to/game.exe
+lunion-play game-id /path/to/game.exe
 ```
 
 

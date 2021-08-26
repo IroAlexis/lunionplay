@@ -10,7 +10,7 @@ where="$(dirname "$(which "${BASH_SOURCE[0]}")")"
 
 case "$1" in
   -h | --help)
-    echo "usage: $bin gamename [/path/to/game.exe]"
+    echo "usage: $bin game-id [/path/to/game.exe]"
     exit 0;;
   -v | --version)
     echo "$bin-$version"
@@ -18,7 +18,7 @@ case "$1" in
 esac
 
 if [ "$#" -gt 2 ]; then
-  echo "usage: $bin gamename [/path/to/game.exe]"
+  echo "usage: $bin game-id [/path/to/game.exe]"
   exit 1
 fi
 

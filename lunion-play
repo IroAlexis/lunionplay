@@ -107,8 +107,8 @@ display_runtime_options()
 # See setup_dxvk.sh in DXVK projet
 add_override()
 {
-  $wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /d native /f >/dev/null 2>&1
-  if [ $? -ne 0 ]; then
+  $wine reg add 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v "$1" /d native /f >/dev/null 2>&1
+  if [ "$?" -ne 0 ]; then
     error "reg: Failed to add override for $1"
     exit 1
   fi
@@ -116,10 +116,10 @@ add_override()
 
 remove_override()
 {
-  $wine reg query 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 &> /dev/null
+  $wine reg query 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v "$1" &> /dev/null
   if [ "$?" ]; then
-    $wine reg delete 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v $1 /f > /dev/null 2>&1
-    if [ $? -ne 0 ]; then
+    $wine reg delete 'HKEY_CURRENT_USER\Software\Wine\DllOverrides' /v "$1" /f > /dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
       warn "reg: Failed to remove override for $1"
     fi
   fi
@@ -224,13 +224,13 @@ if ! [ $? ]; then
 fi
 
 if [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "$HOME/.config/lunion-play/customization.cfg" ]; then
-  source "$HOME"/.config/lunion-play/customization.cfg 2> /dev/null
+  source "$HOME/.config/lunion-play/customization.cfg" 2> /dev/null
   msg "cfg: $HOME/.config/lunion-play/customization.cfg"
 elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -f "$where/customization.cfg" ]; then
-  source "$where"/customization.cfg 2> /dev/null
+  source "$where/customization.cfg" 2> /dev/null
   msg "cfg: $where/customization.cfg"
 elif [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
-  source /etc/lunion-play/customization.cfg 2> /dev/null
+  source /etc/lunion-play/customiza tion.cfg 2> /dev/null
   msg "cfg: /etc/lunion-play/customization.cfg"
 else
   msg "cfg: No such 'customization.cfg' file"

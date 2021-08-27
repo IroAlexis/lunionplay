@@ -234,7 +234,7 @@ elif [[ "$where" != ^/+usr/+bin/*.* ]] && [ -f "$where/customization.cfg" ]; the
   source "$where/customization.cfg" 2> /dev/null
   msg "cfg: $where/customization.cfg"
 elif [[ "$where" =~ ^/+usr/+bin/*.* ]] && [ -f "/etc/lunion-play/customization.cfg" ]; then
-  source /etc/lunion-play/customiza tion.cfg 2> /dev/null
+  source /etc/lunion-play/customization.cfg 2> /dev/null
   msg "cfg: /etc/lunion-play/customization.cfg"
 else
   msg "cfg: No such 'customization.cfg' file"

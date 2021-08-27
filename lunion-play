@@ -245,10 +245,10 @@ else
   if [ -z "$WINE_CUSTOM" ]; then
     command -v wine 1> /dev/null
     if [ $? ]; then
-      msg "Using the Wine system (or use the variable 'WINE_CUSTOM=/path/to/wine/bin')"
+      msg "Using the Wine system (or use the variable 'WINE_CUSTOM=/path/to/wine')"
     else
-      msg "Use the variable 'WINE_CUSTOM=/path/to/wine/bin'"
-      msg "Or need install wine (mainline/staging)"
+      msg "Use the variable 'WINE_CUSTOM=/path/to/wine'"
+      msg "Or install Wine with your package manager"
 
       if [ -z "$GAMES_PATH" ]; then
         exit 1

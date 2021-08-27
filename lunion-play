@@ -135,16 +135,20 @@ install_file()
     return 1
   fi
 
-  if [ -n "$1" ]; then
-    if [ -f "$dstfile" ] || [ -h "$dstfile" ]; then
-      if ! [ -f "$dstfile.old" ]; then
-        mv "$dstfile" "$dstfile.old"
-      fi
-    else
-      touch "$dstfile.old_none"
-    fi
-    cp -u "$srcfile" "$dstfile"
+  if [ -z "$1" ]; then
+    return 1
   fi
+
+  if [ -f "$dstfile" ] || [ -h "$dstfile" ]; then
+    if ! [ -f "$dstfile.old" ]; then
+      mv "$dstfile" "$dstfile.old"
+    fi
+  else
+    touch "$dstfile.old_none"
+  fi
+
+  cp -u "$srcfile" "$dstfile"
+
   return 0
 }
 

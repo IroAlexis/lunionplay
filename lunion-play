@@ -297,6 +297,10 @@ msg "command: $GAME_EXE"
 #  Runtime Configuration
 # =======================
 
+if [ -z "$_wine_custom" ] && [ -z "$WINE_CUSTOM" ]; then
+  WINE_SYSTEM=1
+fi
+
 if [ "$WINE_SYSTEM" != 1 ]; then
   if [ -n "$WINE_CUSTOM" ] && [ -d "$WINE_CUSTOM" ]; then
     WINE="$WINE_CUSTOM"

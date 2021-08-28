@@ -462,8 +462,8 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
     touch "$WINEPREFIX/dxvk.lock"
   fi
 
-  mkdir -p "$GAME_DIR"/shadercache/dxvk_state_cache
-  export DXVK_STATE_CACHE_PATH="$GAME_DIR"/shadercache/dxvk_state_cache
+  mkdir -p "$GAME_DIR/shadercache/dxvk_state_cache"
+  export DXVK_STATE_CACHE_PATH="$GAME_DIR/shadercache/dxvk_state_cache"
 
   if [[ "$LUNION_PLAY_LOG" -gt 0 ]] && [ -z "$DXVK_LOG_LEVEL" ]; then
     export DXVK_LOG_LEVEL=info

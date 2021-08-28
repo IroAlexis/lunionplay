@@ -462,8 +462,8 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
     touch "$WINEPREFIX/dxvk.lock"
   fi
 
-  mkdir -p "$GAME_DIR"/shaderscache/dxvk_state_cache
-  export DXVK_STATE_CACHE_PATH="$GAME_DIR"/shaderscache/dxvk_state_cache
+  mkdir -p "$GAME_DIR"/shadercache/dxvk_state_cache
+  export DXVK_STATE_CACHE_PATH="$GAME_DIR"/shadercache/dxvk_state_cache
 
   if [[ "$LUNION_PLAY_LOG" -gt 0 ]] && [ -z "$DXVK_LOG_LEVEL" ]; then
     export DXVK_LOG_LEVEL=info
@@ -517,14 +517,24 @@ fi
 #  Driver Configuration
 # ======================
 
-export "$(grep -e nvidia /sys/class/drm/card0/device/uevent)"
-if [[ "$DRIVER" = nvidia ]] && [ -d /proc/driver/nvidia ]; then
-  export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
-  export __GL_SHADER_DISK_CACHE=1
-  mkdir -p "$GAME_DIR"/shaderscache/nvidia
-  export __GL_SHADER_DISK_CACHE_PATH="$GAME_DIR"/shaderscache/nvidia
-fi
+export "$(grep -e nvidia /sys/class/drm/card0/device/uevent | grep -e "DRIVER")"
+mkdir -p "$GAME_DIR/shadercache/$DRIVER"
 
+case "$DRIVER" in
+  nvidia)
+    if [ -d /proc/driver/nvidia ]; then
+      export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
+      export __GL_SHADER_DISK_CACHE=1
+      export __GL_SHADER_DISK_CACHE_PATH="$GAME_DIR/shadercache/$DRIVER"
+    fi
+    ;;
+  amdgpu)
+    export MESA_GLSL_CACHE_DIR="$GAME_DIR/shadercache/$DRIVER"
+    ;;
+  *)
+    msg "driver: '$DRIVER' driver configuration is not supported..."
+    ;;
+esac
 
 # =============
 #  Game Launch

@@ -493,14 +493,6 @@ if ! [ "$LUNION_PLAY_USE_WINED3D" = 1 ]; then
   else
     export VKD3D_DEBUG=none
   fi
-
-  if [ -n "$_ray_tracing" ] && [[ "$_ray_tracing" =~ true ]]; then
-    if [ -z "$VKD3D_CONFIG" ]; then
-      export VKD3D_CONFIG=dxr
-    else
-      VKD3D_CONFIG+=,dxr
-    fi
-  fi
 else
   if [ -f "$WINEPREFIX/dxvk.lock" ]; then
     uninstall_dxvk

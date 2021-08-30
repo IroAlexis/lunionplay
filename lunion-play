@@ -292,7 +292,7 @@ else
   if ! [ -f "$GAME_DIR/gamestart" ]; then
     error "No such 'gamestart' file "
   fi
-  error "Indicate a correct executable path $GAME_EXE"
+  error "Indicate a correct executable path '$GAME_EXE'"
   exit 1
 fi
 
@@ -432,7 +432,7 @@ elif [ -f "$wine_path/$wine64" ] && ! [ -f "$wine_path/$wine" ]; then
 elif ! [ -f "$wine_path/$wine64" ] && [ -f "$wine_path/$wine" ]; then
   win32_pfx_path="$WINEPREFIX/drive_c/windows/system32"
 else
-  error "Check your Wine build $WINE."
+  error "Check your Wine build '$WINE'"
   exit 1
 fi
 

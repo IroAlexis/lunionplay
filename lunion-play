@@ -221,9 +221,8 @@ uninstall_vkd3dproton()
 #  Lunion Play configuration Verification
 # ========================================
 
-command -v source 1> /dev/null
-if ! [ $? ]; then
-  msg "Need install the 'tcl' package"
+if ! command -v source 1> /dev/null; then
+  msg "Install 'tcl' with your package manager"
   exit 1
 fi
 
@@ -243,10 +242,7 @@ else
   fi
 
   if [ -z "$WINE_CUSTOM" ]; then
-    command -v wine 1> /dev/null
-    if [ $? ]; then
-      msg "Using the Wine system (or use the variable 'WINE_CUSTOM=/path/to/wine')"
-    else
+    if ! command -v wine 1> /dev/null; then
       msg "Use the variable 'WINE_CUSTOM=/path/to/wine'"
       msg "Or install Wine with your package manager"
 

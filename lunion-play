@@ -277,6 +277,16 @@ else
   exit 1
 fi
 
+# Don't override WINEPREFIX if the user passed one, otherwise we set ours
+if [ -z "$WINEPREFIX" ]; then
+  export WINEPREFIX="$GAME_DIR"/pfx
+fi
+
+msg "pfx: $WINEPREFIX"
+if ! [ -d "$WINEPREFIX" ]; then
+  warn "pfx: Need to recreate prefix"
+fi
+
 # Second argument allows to launch the game executable (optionnal)
 if [ -n "$2" ] && [ -f "$2" ]; then
   GAME_EXE="$2"
@@ -336,16 +346,6 @@ if ! [ -f "$wine_path/$wine" ]; then
 fi
 
 msg "version: $($wine --version)"
-
-# Don't override WINEPREFIX if the user passed one, otherwise we set ours
-if [ -z "$WINEPREFIX" ]; then
-  export WINEPREFIX="$GAME_DIR"/pfx
-fi
-
-msg "pfx: $WINEPREFIX"
-if ! [ -d "$WINEPREFIX" ]; then
-  warn "pfx: Need to recreate prefix"
-fi
 
 is_futex2_supported
 is_winesync_supported

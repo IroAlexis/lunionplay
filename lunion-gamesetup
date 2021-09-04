@@ -174,11 +174,11 @@ if ! [ -d "$GAME_DIR" ]; then
   mkdir -p "$GAME_DIR"
 fi
 
-if ! [ -d "$GAME_DIR/shaderscache" ]; then
-  dialog "Do you want a shader cache folder ($GAME_DIR/shaderscache) ?"
+if ! [ -d "$GAME_DIR/shadercache" ]; then
+  dialog "Do you want a shader cache folder ($GAME_DIR/shadercache) ?"
   read -rp " [Y/n] " _CONDITION;
   if ! [[ "$_CONDITION" =~ [nN] ]]; then
-    mkdir -p "$GAME_DIR/shaderscache"
+    mkdir -p "$GAME_DIR/shadercache"
   fi
 fi
 

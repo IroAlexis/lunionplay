@@ -31,6 +31,11 @@ For clone this repository, you should run :
 git clone --recursive https://github.com/IroAlexis/lunion-play.git && cd lunion-play
 ```
 
+#### Valgrind
+```
+G_DEBUG=gc-friendly G_SLICE=always-malloc valgrind --leak-check=full --leak-resolution=high --suppressions=/usr/share/glib-2.0/valgrind/glib.supp
+```
+
 ### Install
 #### Source
 To install it, run this :

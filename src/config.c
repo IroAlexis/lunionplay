@@ -18,13 +18,13 @@
 
 
 #include "config.h"
-#include "system.h"
-#include "env.h"
-#include "debug.h"
 
 #include <stdio.h>
 #include <sys/stat.h>
 #include <assert.h>
+
+#include "system.h"
+#include "debug.h"
 
 
 #define TYPE "config"
@@ -50,12 +50,12 @@ int lunionplay_open_config(GKeyFile** stream, const char* pathname)
 
 	if (NULL == pathname)
 	{
-		cfg = g_string_new(lunionplay_get_envar("HOME"));
+		cfg = g_string_new(getenv("HOME"));
 		g_string_append(cfg, HOME_PATH_FILE);
 	}
 	else
 		cfg = g_string_new(pathname);
-	TRACE(__FILE__, __FUNCTION__, "cfg->str '%s'\n", cfg->str);
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", cfg->str, cfg->len);
 
 	/* Prevent memory leak with g_key_file_load_from_file */
 	if (stat(cfg->str, &statbuf) == 0)
@@ -66,12 +66,14 @@ int lunionplay_open_config(GKeyFile** stream, const char* pathname)
 			if (NULL != error)
 				g_error_free(error);
 
+			INFO(TYPE, "No such user configuration file.\n");
 			g_string_free(cfg, TRUE);
 			return EXIT_FAILURE;
 		}
 	}
 	else
 	{
+		INFO(TYPE, "No such user configuration file.\n");
 		g_string_free(cfg, TRUE);
 		return EXIT_FAILURE;
 	}
@@ -81,34 +83,27 @@ int lunionplay_open_config(GKeyFile** stream, const char* pathname)
 }
 
 
-int lunionplay_parse_config(GKeyFile* stream, const char* group, const char* name, char** value)
+char* lunionplay_parse_config(GKeyFile* stream, const char* group, const char* name)
 {
 	assert(stream != NULL);
 	assert(group != NULL);
 	assert(name != NULL);
 
-	int ret = 0;
+	char* value = NULL;
 	GError* error = NULL;
 
-	if (NULL == stream)
-		return -1;
-
-	*value = g_key_file_get_string(stream, group, name, &error);
-	if (NULL == *value && error != NULL)
+	value = g_key_file_get_string(stream, group, name, &error);
+	if (NULL == value && error != NULL)
 	{
-		ret = 1;
 		if (error->code ==  G_KEY_FILE_ERROR_GROUP_NOT_FOUND)
-		{
-			ret = 2;
-			ERR(TYPE, "'%s' group not found\n", group);
-		}
+			ERR(TYPE, "\"%s\" group not found\n", group);
 		else if (error->code == G_KEY_FILE_ERROR_KEY_NOT_FOUND)
-			WARN(TYPE, "'%s' key not found\n", name);
+			TRACE(__FILE__, __FUNCTION__, "\"%s\" key not found\n", name);
 		else
 			ERR(TYPE, "%s\n", error->message);
 
 		g_error_free(error);
 	}
 
-	return ret;
+	return value;
 }

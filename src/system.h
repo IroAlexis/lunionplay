@@ -21,10 +21,19 @@
 #define __SYSTEM__
 
 
+#include <glib.h>
+
+
 char* lunionplay_default_place();
 
 
-int lunionplay_exist_path(const char* pathname);
+int lunionplay_exist_path(const char* path);
+
+
+GString* lunionplay_get_absolut_path(const char* path);
+
+
+GString* lunionplay_get_output_cmd(const char* cmd);
 
 
 #endif

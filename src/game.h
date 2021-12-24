@@ -1,5 +1,5 @@
 /*
- * env.h
+ * game.h
  * Copyright (C) 2021 Alexis Peypelut <peypeluta@live.fr>
  *
  * lunion-play is free software: you can redistribute it and/or modify it
@@ -16,24 +16,21 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ENV__
-#define __ENV__
+
+#ifndef __GAME__
+#define __GAME__
 
 
-typedef struct
-{
-	char* name;
-	char* value;
-} Envar;
+#include <glib.h>
 
 
-char* lunionplay_get_envar(const char* name);
+int lunionplay_append_gameid(GString** gamedir, const char* gameid);
 
 
-int lunionplay_set_envar(const char* name, const char* val);
+int lunionplay_init_game(GString** gamedir, GString** gamebin, const char* gameid, const char* exec);
 
 
-int lunionplay_unset_envar(const char* name);
+GString* lunionplay_set_command(GString* gamedir, GString* exec);
 
 
 #endif

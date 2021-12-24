@@ -20,11 +20,13 @@
 #ifndef __WINE__
 #define __WINE__
 
+#include <glib.h>
 
-int lunionplay_init_wine(char** winedir, char** winever);
+
+int lunionplay_init_wine(GString* winedir, GString** winever, int* wow64);
 
 
-int lunionplay_is_wine(const char* winedir, char** winever);
+int lunionplay_is_wine(const GString* winedir, GString** winever);
 
 
 #endif

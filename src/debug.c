@@ -26,10 +26,29 @@
 #define SIZE 1024
 
 
-void lunionplay_debug_printf(FILE* stream,
-							 const char* level,
-							 const char* type,
-							 const char* format, ...)
+int lunionplay_debug_mode(void)
+{
+	char* value = NULL;
+	int ret = 0;
+
+	value = getenv("LUNIONPLAY_DEBUG");
+	if (value != NULL)
+	{
+		if (strncmp(value, "1", 1) == 0)
+			ret = 1;
+
+		if (strncmp(value, "2", 1) == 0)
+			ret = 2;
+	}
+
+	return ret;
+}
+
+
+void lunionplay_printf(FILE* stream,
+					   const char* level,
+					   const char* type,
+					   const char* format, ...)
 {
 	char buffer[SIZE];
 	va_list args;
@@ -42,20 +61,19 @@ void lunionplay_debug_printf(FILE* stream,
 }
 
 
-void lunionplay_trace_printf(FILE* stream,
-							 const char* file,
+void lunionplay_printf_trace(const char* file,
 							 const char* fct,
 							 const char* format, ...)
 {
-	char buffer[SIZE];
-	va_list args;
-
-	if (getenv("LUNIONPLAY_DEBUG") != NULL && strcmp(getenv("LUNIONPLAY_DEBUG"), "1") == 0)
+	if (lunionplay_debug_mode() == 2)
 	{
+		char buffer[SIZE];
+		va_list args;
+
 		va_start(args, format);
 		vsnprintf(buffer, sizeof(buffer), format, args);
 		va_end(args);
 
-		fprintf(stream, "=> %s@%s: %s", file, fct, buffer);
+		fprintf(stderr, " -> %s@%s: %s", file, fct, buffer);
 	}
 }

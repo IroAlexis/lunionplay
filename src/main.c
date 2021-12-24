@@ -18,11 +18,10 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <libgen.h>
 #include <glib.h>
 
-#include "core.h"
-#include "env.h"
+#include "session.h"
 #include "config.h"
 #include "debug.h"
 
@@ -33,17 +32,12 @@
 int main(int argc, char* argv[])
 {
 	int ret = EXIT_FAILURE;
-	Session* game = NULL;
+	LunionPlaySession* game = NULL;
 
-	if (argc == 2)
-		game = lunionplay_init_session(argv[1], &ret);
+	game = lunionplay_init_session(argv[1], argv[2], &ret);
 
-	if (game != NULL)
-	{
-		TRACE(__FILE__, __FUNCTION__, "gamedir '%s'\n", game->gamedir);
-		TRACE(__FILE__, __FUNCTION__, "winedir '%s'\n", game->winedir);
-		TRACE(__FILE__, __FUNCTION__, "winever '%s'\n", game->winever);
-	}
+	if (ret != 0)
+		fprintf(stderr, "%s: There's a frog somewhere... *ribbit*\n", basename(argv[0]));
 
 	lunionplay_free_session(&game);
 	return ret;

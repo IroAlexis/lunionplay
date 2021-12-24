@@ -1,5 +1,5 @@
 /*
- * env.c
+ * session.h
  * Copyright (C) 2021 Alexis Peypelut <peypeluta@live.fr>
  *
  * lunion-play is free software: you can redistribute it and/or modify it
@@ -17,53 +17,26 @@
  */
 
 
-#include "env.h"
-#include "debug.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
-#include <assert.h>
+#ifndef __SESSION__
+#define __SESSION__
 
 
-#define TYPE "env"
+#include <glib.h>
 
 
-char* lunionplay_get_envar(const char* name)
-{
-	assert(name != NULL);
-
-	return getenv(name);
-}
+typedef struct _lunion_play_session LunionPlaySession;
 
 
-int lunionplay_set_envar(const char* name, const char* val)
-{
-	assert(name != NULL);
-
-	int ret;
-	errno = 0;
-
-	ret = setenv(name, val, 1);
-	if (ret == -1)
-		ERR(TYPE, "%s\n", strerror(errno));
-
-	return ret;
-}
+void lunionplay_free_session(LunionPlaySession** p_game);
 
 
-int lunionplay_unset_envar(const char* name)
-{
-	assert(name != NULL);
+void lunionplay_display_session(const LunionPlaySession* game);
 
-	int ret;
-	errno = 0;
 
-	ret = unsetenv(name);
-	if (ret == -1)
-		ERR(TYPE, "%s\n", strerror(errno));
+LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec, int* error);
 
-	return ret;
-}
+
+char* lunionplay_get_app_setting(GKeyFile* stream, const char* name);
+
+
+#endif

@@ -18,44 +18,72 @@
 
 
 #include "system.h"
-#include "env.h"
-#include "debug.h"
 
-#include <glib.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <assert.h>
 
+#include "debug.h"
 
+
+#define LEN_MAX 4096
 #define TYPE "system"
 
 
-char* lunionplay_default_place()
+int lunionplay_exist_path(const char* path)
 {
-	char* tmp = NULL;
-	GString* path = NULL;
-
-	path = g_string_new(lunionplay_get_envar("HOME"));
-	g_string_append(path, "/Games");
-
-	tmp = strdup(path->str);
-	g_string_free(path, TRUE);
-
-	return tmp;
-}
-
-
-int lunionplay_exist_path(const char* pathname)
-{
-	assert (pathname != NULL);
+	assert (path != NULL);
 
 	int ret;
 	struct stat statbuf;
 
-	TRACE(__FILE__, __FUNCTION__, "pathname '%s'\n", pathname);
+	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", path);
 
-	ret = stat(pathname, &statbuf);
+	ret = stat(path, &statbuf);
 	if (ret != 0)
-		ERR(TYPE, "%s: No such file or directory\n", pathname);
+		ERR(TYPE, "%s: No such file or directory.\n", path);
 
 	return ret;
+}
+
+
+GString* lunionplay_get_absolut_path(const char* path)
+{
+	char buff[PATH_MAX];
+	char* tmp = NULL;
+
+	/* TODO More feedback about error */
+	tmp = realpath(path, buff);
+	if (tmp == NULL)
+		return NULL;
+
+	tmp = (char*) calloc(strnlen(buff, PATH_MAX), sizeof(char));
+	return tmp;
+
+}
+
+
+GString* lunionplay_get_output_cmd(const char* cmd)
+{
+	assert(cmd != NULL);
+
+	char tmp[LEN_MAX];
+	FILE* fp = NULL;
+	GString* output = NULL;
+
+	fp = popen(cmd, "r");
+	if (fp == NULL)
+		return NULL;
+
+	fgets(tmp, LEN_MAX, fp);
+	fclose(fp);
+
+	output = g_string_new(tmp);
+
+	if (output->str[output->len - 1] == '\n')
+		g_string_truncate(output, output->len - 1);
+
+	return output;
 }

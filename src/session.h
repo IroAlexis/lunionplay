@@ -39,4 +39,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 char* lunionplay_get_app_setting(GKeyFile* stream, const char* name);
 
 
+int lunionplay_setup_session(LunionPlaySession* session);
+
+
 #endif

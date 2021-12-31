@@ -28,6 +28,7 @@
 
 #define TYPE "main"
 
+/* FIXME Function return codes for don't use EXIT_* (only main function) */
 
 int main(int argc, char* argv[])
 {
@@ -36,7 +37,11 @@ int main(int argc, char* argv[])
 
 	game = lunionplay_init_session(argv[1], argv[2], &ret);
 
-	if (ret != 0)
+	if (ret == EXIT_SUCCESS)
+	{
+		lunionplay_setup_session(game);
+	}
+	else
 		fprintf(stderr, "%s: There's a frog somewhere... *ribbit*\n", basename(argv[0]));
 
 	lunionplay_free_session(&game);

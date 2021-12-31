@@ -20,13 +20,26 @@
 #ifndef __WINE__
 #define __WINE__
 
+#include <stdio.h>
 #include <glib.h>
+
+
+void lunionplay_display_env_wine(FILE* stream);
 
 
 int lunionplay_init_wine(GString* winedir, GString** winever, int* wow64);
 
 
 int lunionplay_is_wine(const GString* winedir, GString** winever);
+
+
+int lunionplay_set_wine_prefix(GString* gamedir);
+
+
+int lunionplay_update_wine_prefix(void);
+
+
+int lunionplay_valid_wine_prefix(GString* winepfx);
 
 
 #endif

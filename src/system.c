@@ -24,6 +24,9 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <assert.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/utsname.h>
 
 #include "debug.h"
 
@@ -59,8 +62,7 @@ GString* lunionplay_get_absolut_path(const char* path)
 	if (tmp == NULL)
 		return NULL;
 
-	tmp = (char*) calloc(strnlen(buff, PATH_MAX), sizeof(char));
-	return tmp;
+	return g_string_new(tmp);
 
 }
 
@@ -86,4 +88,55 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 		g_string_truncate(output, output->len - 1);
 
 	return output;
+}
+
+
+GString* lunionplay_get_uname(void)
+{
+	struct utsname buffer;
+	GString* kernel = NULL;
+
+	if (uname(&buffer) != 0)
+		return NULL;
+
+	kernel = g_string_new(buffer.sysname);
+	if (NULL == kernel)
+		return NULL;
+
+	g_string_append(kernel, " ");
+	g_string_append(kernel, buffer.release);
+	g_string_append(kernel, " ");
+	g_string_append(kernel, buffer.version);
+	g_string_append(kernel, " ");
+	g_string_append(kernel, buffer.machine);
+
+	return kernel;
+}
+
+
+int lunionplay_run_process(const char* cmd, char* const argv[])
+{
+	assert(cmd != NULL);
+	assert(argv != NULL);
+
+	int status;
+	pid_t child;
+	pid_t pid;
+
+	child = fork();
+	switch(child)
+	{
+		case -1:
+			perror("fork");
+			return EXIT_FAILURE;
+		case 0:
+			execvp(cmd, argv);
+			exit(EXIT_FAILURE);
+		default:
+			break;
+	}
+
+	pid = waitpid(child, &status, 0);
+
+	return EXIT_SUCCESS;
 }

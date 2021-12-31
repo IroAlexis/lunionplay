@@ -36,4 +36,10 @@ GString* lunionplay_get_absolut_path(const char* path);
 GString* lunionplay_get_output_cmd(const char* cmd);
 
 
+GString* lunionplay_get_uname(void);
+
+
+int lunionplay_run_process(const char* cmd, char* const argv[]);
+
+
 #endif

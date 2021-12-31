@@ -108,5 +108,6 @@ GString* lunionplay_set_command(GString* gamedir, GString* exec)
 	else
 		bin = g_string_new(exec->str);
 
+	INFO(TYPE, "command: %s\n", bin->str);
 	return bin;
 }

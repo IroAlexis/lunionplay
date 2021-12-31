@@ -19,10 +19,11 @@
 
 #include "wine.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <libgen.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include <assert.h>
 
 #include "system.h"
@@ -31,6 +32,19 @@
 
 #define TYPE "wine"
 #define BUFFER 2048
+
+
+void lunionplay_display_env_wine(FILE* stream)
+{
+	fprintf(stream, "===========================================\n");
+	fprintf(stream, " -> PATH=%s\n", getenv("PATH"));
+	fprintf(stream, " -> WINEPREFIX=%s\n", getenv("WINEPREFIX"));
+	fprintf(stream, " -> WINEFSYNC=%s\n", getenv("WINEFSYNC"));
+	fprintf(stream, " -> WINEESYNC=%s\n", getenv("WINEESYNC"));
+	fprintf(stream, " -> WINEDLLOVERRIDES=%s\n", getenv("WINEDLLOVERRIDES"));
+	fprintf(stream, " -> WINEDEBUG=%s\n", getenv("WINEDEBUG"));
+	fprintf(stream, "===========================================\n");
+}
 
 
 /* TODO Harmonize return code error */
@@ -116,4 +130,103 @@ int lunionplay_is_wine(const GString* winedir, GString** winever)
 	g_string_free(winecmd, TRUE);
 	g_string_free(version, TRUE);
 	return wow64;
+}
+
+
+int lunionplay_set_wine_prefix(GString* gamedir)
+{
+	assert(gamedir != NULL);
+
+	char* env = NULL;
+	GString* winepfx = NULL;
+
+	env = getenv("WINEPREFIX");
+	if (env == NULL)
+	{
+		winepfx = g_string_new(gamedir->str);
+		if (winepfx == NULL)
+			return EXIT_FAILURE;
+
+		if (winepfx->str[winepfx->len - 1] != '/')
+			g_string_append(winepfx, "/");
+
+		g_string_append(winepfx, "pfx");
+		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", winepfx->str, winepfx->len);
+		setenv("WINEPREFIX", winepfx->str, 1);
+	}
+	else
+		winepfx = g_string_new(env);
+
+	if (lunionplay_valid_wine_prefix(winepfx) == 0)
+		INFO(TYPE, "prefix: %s\n", winepfx->str);
+	else
+		ERR(TYPE, "%s: Not a valid wine prefix.\n", winepfx->str);
+
+	g_string_free(winepfx, TRUE);
+	return EXIT_SUCCESS;
+}
+
+
+int lunionplay_update_wine_prefix(void)
+{
+	GString* dll = NULL;
+	GString* dbg = NULL;
+	char* wboot[] = {"wineboot", NULL};
+	char* wserv[] = {"wineserver", "-w", NULL};
+
+	/* Save actual values */
+	if (getenv("WINEDLLOVERRIDES") != NULL)
+		dll = g_string_new(getenv("WINEDLLOVERRIDES"));
+	if (getenv("WINEDEBUG") != NULL)
+		dbg = g_string_new(getenv("WINEDEBUG"));
+
+	setenv("WINEDLLOVERRIDES", "mscoree,mshtml,winemenubuilder.exe=", 1);
+	setenv("WINEDEBUG", "-all", 1);
+
+	lunionplay_run_process(wboot[0], wboot);
+	lunionplay_run_process(wserv[0], wserv);
+
+	unsetenv("WINEDLLOVERRIDES");
+	unsetenv("WINEDEBUG");
+
+	if (dll != NULL)
+	{
+		if (dll->len != 0)
+			setenv("WINEDLLOVERRIDES", dll->str, 1);
+		g_string_free(dll, TRUE);
+	}
+	if (dbg != NULL)
+	{
+		if (dbg->len != 0)
+			setenv("WINEDEBUG", dbg->str, 1);
+		g_string_free(dbg, TRUE);
+	}
+
+	return EXIT_SUCCESS;
+}
+
+
+int lunionplay_valid_wine_prefix(GString* winepfx)
+{
+	assert(winepfx != NULL);
+
+	struct stat statbuf;
+	GString* s_reg = NULL;
+
+	if (stat(winepfx->str, &statbuf) != 0)
+		return EXIT_FAILURE;
+
+	s_reg = g_string_new(winepfx->str);
+
+	if (s_reg->str[s_reg->len - 1] != '/')
+		g_string_append(s_reg, "/");
+	g_string_append(s_reg, "system.reg");
+
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", s_reg->str, s_reg->len);
+
+	if (stat(s_reg->str, &statbuf) != 0)
+		return EXIT_FAILURE;
+
+	g_string_free(s_reg, TRUE);
+	return EXIT_SUCCESS;
 }

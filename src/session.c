@@ -45,28 +45,25 @@ struct _lunion_play_session
 };
 
 
-void lunionplay_free_session(LunionPlaySession** session)
+void lunionplay_free_session(LunionPlaySession* session)
 {
-	if (*session != NULL)
-	{
-		if ((*session)->stream != NULL)
-			lunionplay_close_config(&(*session)->stream);
+	assert(session != NULL);
 
-		if ((*session)->winedir != NULL)
-			g_string_free((*session)->winedir, TRUE);
+	g_clear_pointer(&(session->stream), g_key_file_free);
 
-		if ((*session)->winever != NULL)
-			g_string_free((*session)->winever, TRUE);
+	if (session->winedir != NULL)
+		g_string_free(session->winedir, TRUE);
 
-		if ((*session)->gamedir != NULL)
-			g_string_free((*session)->gamedir, TRUE);
+	if (session->winever != NULL)
+		g_string_free(session->winever, TRUE);
 
-		if ((*session)->command != NULL)
-			g_string_free((*session)->command, TRUE);
+	if (session->gamedir != NULL)
+		g_string_free(session->gamedir, TRUE);
 
-		free(*session);
-		*session = NULL;
-	}
+	if (session->command != NULL)
+		g_string_free(session->command, TRUE);
+
+	free(session);
 }
 
 

@@ -27,7 +27,7 @@
 typedef struct _lunion_play_session LunionPlaySession;
 
 
-void lunionplay_free_session(LunionPlaySession** p_game);
+void lunionplay_free_session(LunionPlaySession* session);
 
 
 void lunionplay_display_session(const LunionPlaySession* game);

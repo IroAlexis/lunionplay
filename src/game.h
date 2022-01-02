@@ -24,13 +24,10 @@
 #include <glib.h>
 
 
-int lunionplay_append_gameid(GString** gamedir, const char* gameid);
+GString* lunionplay_set_game_dir(const char* path, const char* gameid);
 
 
-int lunionplay_init_game(GString** gamedir, GString** gamebin, const char* gameid, const char* exec);
-
-
-GString* lunionplay_set_command(GString* gamedir, GString* exec);
+GString* lunionplay_set_command(const GString* gamedir, const char* exec);
 
 
 #endif

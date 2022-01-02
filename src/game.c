@@ -30,53 +30,35 @@
 #define TYPE "game"
 
 
-/* TODO Harmonize return code error */
-int lunionplay_append_gameid(GString** gamedir, const char* gameid)
+GString* lunionplay_set_game_dir(const char* path, const char* gameid)
 {
+	assert(path != NULL);
 	assert(gameid != NULL);
-	assert(*gamedir != NULL);
 
-	GString* path = NULL;
+	GString* gamedir = NULL;
 
-	path = g_string_new((*gamedir)->str);
-	g_string_free(*gamedir, TRUE);
+	gamedir = g_string_new(path);
+	if (gamedir->str[gamedir->len - 1] != '/')
+		g_string_append(gamedir, "/");
+	g_string_append(gamedir, gameid);
 
-	if (path->str[path->len - 1] != '/')
-		g_string_append(path, "/");
-	g_string_append(path, gameid);
-	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", path->str, path->len);
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamedir->str, gamedir->len);
 
-	*gamedir = g_string_new(path->str);
+	if (lunionplay_exist_path(gamedir->str, TRUE) != 0)
+	{
+		g_string_free(gamedir, TRUE);
+		gamedir = NULL;
+	}
 
-	g_string_free(path, TRUE);
-
-	return lunionplay_exist_path((*gamedir)->str);
+	return gamedir;
 }
 
 
-int lunionplay_init_game(GString** gamedir, GString** command, const char* gameid, const char* exec)
-{
-	assert(gameid != NULL);
-
-	GString* exepath = NULL;
-
-	if (lunionplay_append_gameid(gamedir, gameid) == EXIT_FAILURE)
-		return EXIT_FAILURE;
-
-	exepath = lunionplay_get_absolut_path(exec);
-	*command = lunionplay_set_command(*gamedir, exepath);
-
-	if (exepath != NULL)
-		g_string_free(exepath, TRUE);
-
-	return EXIT_SUCCESS;
-}
-
-
-GString* lunionplay_set_command(GString* gamedir, GString* exec)
+GString* lunionplay_set_command(const GString* gamedir, const char* exec)
 {
 	assert(gamedir != NULL);
 
+	char* file = "gamestart";
 	GString* gamestart = NULL;
 	GString* bin = NULL;
 
@@ -86,15 +68,14 @@ GString* lunionplay_set_command(GString* gamedir, GString* exec)
 
 		if (gamestart->str[gamestart->len - 1] != '/')
 			g_string_append(gamestart, "/");
-		g_string_append(gamestart, "gamestart");
+		g_string_append(gamestart, file);
 
 		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamestart->str, gamestart->len);
-		if (lunionplay_exist_path(gamestart->str) == 0)
+		if (lunionplay_exist_path(gamestart->str, TRUE) == 0)
 		{
-			FILE* stream = NULL;
 			char buffer[4096];
+			FILE* stream = fopen(gamestart->str, "r");
 
-			stream = fopen(gamestart->str, "r");
 			fgets(buffer, 4096, stream);
 			fclose(stream);
 
@@ -106,8 +87,10 @@ GString* lunionplay_set_command(GString* gamedir, GString* exec)
 		g_string_free(gamestart, TRUE);
 	}
 	else
-		bin = g_string_new(exec->str);
+		bin = g_string_new(exec);
 
-	INFO(TYPE, "command: %s\n", bin->str);
+	if (bin != NULL)
+		INFO(TYPE, "command: %s\n", bin->str);
+
 	return bin;
 }

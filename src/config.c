@@ -20,7 +20,6 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <sys/stat.h>
 #include <assert.h>
 
 #include "system.h"
@@ -31,22 +30,11 @@
 #define HOME_PATH_FILE "/.config/lunionplay/config.ini"
 
 
-void lunionplay_close_config(GKeyFile** stream)
+GKeyFile* lunionplay_open_config(const char* pathname)
 {
-	assert (*stream != NULL);
-
-	g_key_file_free(*stream);
-}
-
-
-int lunionplay_open_config(GKeyFile** stream, const char* pathname)
-{
-	struct stat statbuf;
+	GKeyFile* stream = NULL;
 	GString* cfg = NULL;
 	GError* error = NULL;
-
-	if (pathname != NULL)
-		TRACE(__FILE__, __FUNCTION__, "pathname %s\n", pathname);
 
 	if (NULL == pathname)
 	{
@@ -55,31 +43,30 @@ int lunionplay_open_config(GKeyFile** stream, const char* pathname)
 	}
 	else
 		cfg = g_string_new(pathname);
+
 	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", cfg->str, cfg->len);
 
 	/* Prevent memory leak with g_key_file_load_from_file */
-	if (stat(cfg->str, &statbuf) == 0)
+	if (lunionplay_exist_path(cfg->str, FALSE) == 0)
 	{
+		int ret;
 		INFO(TYPE, "%s\n", cfg->str);
-		if (!g_key_file_load_from_file(*stream, cfg->str, G_KEY_FILE_NONE, &error))
-		{
-			if (NULL != error)
-				g_error_free(error);
 
-			INFO(TYPE, "No such user configuration file.\n");
-			g_string_free(cfg, TRUE);
-			return EXIT_FAILURE;
+		stream = g_key_file_new();
+		ret = g_key_file_load_from_file(stream, cfg->str, G_KEY_FILE_NONE, &error);
+		if (ret == FALSE)
+		{
+			if (error != NULL)
+				g_error_free(error);
+			g_clear_pointer(&stream, g_key_file_free);
 		}
 	}
-	else
-	{
+
+	if (stream == NULL)
 		INFO(TYPE, "No such user configuration file.\n");
-		g_string_free(cfg, TRUE);
-		return EXIT_FAILURE;
-	}
 
 	g_string_free(cfg, TRUE);
-	return EXIT_SUCCESS;
+	return stream;
 }
 
 

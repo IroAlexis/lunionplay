@@ -37,9 +37,11 @@
 struct _lunion_play_session
 {
 	GKeyFile* stream;
+
 	GString* winedir;
-	GString* winever;
 	int wow64;
+	GString* winever;
+
 	GString* gamedir;
 	GString* command;
 };
@@ -67,41 +69,42 @@ void lunionplay_free_session(LunionPlaySession* session)
 }
 
 
-void lunionplay_display_session(const LunionPlaySession* game)
+void lunionplay_display_session(const LunionPlaySession* session)
 {
+	assert(session != NULL);
+
 	if (lunionplay_debug_mode())
 	{
 		fprintf(stderr, " ->\n");
 
-		if (game != NULL)
-		{
-			fprintf(stderr, " -> LunionPlaySession:\n");
+		fprintf(stderr, " -> LunionPlaySession:\n");
 
-			if (game->winedir != NULL)
-				fprintf(stderr, " ->  * winedir: \"%s\" (%ld)\n", game->winedir->str, game->winedir->len);
-			else
-				fprintf(stderr, " ->  * winedir: %p\n", NULL);
+		if (session->stream != NULL)
+			fprintf(stderr, " ->  * stream: (loaded)\n");
+		else
+			fprintf(stderr, " ->  * stream: %p\n", NULL);
 
-			if (game->winever != NULL)
-				fprintf(stderr, " ->  * winever: \"%s\" (%ld)\n", game->winever->str, game->winever->len);
-			else
-				fprintf(stderr, " ->  * winever: %p\n", NULL);
+		if (session->winedir != NULL)
+			fprintf(stderr, " ->  * winedir: \"%s\" (%ld)\n", session->winedir->str, session->winedir->len);
+		else
+			fprintf(stderr, " ->  * winedir: %p\n", NULL);
 
-			if (game->wow64 == TRUE)
-				fprintf(stderr, " ->  * wow64: TRUE\n");
-			else
-				fprintf(stderr, " ->  * wow64: FALSE\n");
+		fprintf(stderr, " ->  * wow64: %d\n", session->wow64);
 
-			if (game->gamedir != NULL)
-				fprintf(stderr, " ->  * gamedir: \"%s\" (%ld)\n", game->gamedir->str, game->gamedir->len);
-			else
-				fprintf(stderr, " ->  * gamedir: %p\n", NULL);
+		if (session->winever != NULL)
+			fprintf(stderr, " ->  * winever: \"%s\" (%ld)\n", session->winever->str, session->winever->len);
+		else
+			fprintf(stderr, " ->  * winever: %p\n", NULL);
 
-			if (game->command != NULL)
-				fprintf(stderr, " ->  * command: \"%s\" (%ld)\n", game->command->str, game->command->len);
-			else
-				fprintf(stderr, " ->  * command: %p\n", NULL);
-		}
+		if (session->gamedir != NULL)
+			fprintf(stderr, " ->  * gamedir: \"%s\" (%ld)\n", session->gamedir->str, session->gamedir->len);
+		else
+			fprintf(stderr, " ->  * gamedir: %p\n", NULL);
+
+		if (session->command != NULL)
+			fprintf(stderr, " ->  * command: \"%s\" (%ld)\n", session->command->str, session->command->len);
+		else
+			fprintf(stderr, " ->  * command: %p\n", NULL);
 
 		fprintf(stderr, " ->\n");
 	}
@@ -110,93 +113,84 @@ void lunionplay_display_session(const LunionPlaySession* game)
 
 LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec, int* error)
 {
-	int ret = EXIT_FAILURE;
-	char* value = NULL;
+	GString* dir = NULL;
 	LunionPlaySession* session = NULL;
 
 	session = (LunionPlaySession*) calloc(1, sizeof(LunionPlaySession));
 	if (NULL == session)
 	{
-		*error = ret;
+		*error = -1;
 		return NULL;
 	}
 
-	session->stream = g_key_file_new();
-	ret = lunionplay_open_config(&(session->stream), getenv("LUNIONPLAY_CONFIGFILE"));
-	if (ret == EXIT_FAILURE)
-	{
-		lunionplay_close_config(&(session->stream));
-		session->stream = NULL;
-	}
+	*error = 0;
+	session->stream = lunionplay_open_config(getenv("LUNIONPLAY_CONFIGFILE"));
 
 	/* Search Wine */
-	value = lunionplay_get_app_setting(session->stream, "wine");
-	if (value == NULL)
+	session->winedir = lunionplay_get_app_setting(session->stream, "wine");
+	if (session->winedir != NULL)
+	{
+		session->wow64 = lunionplay_valid_wine_dir(session->winedir);
+		if (session->wow64 == 0 || session->wow64 == 1)
+			session->winever = lunionplay_set_wine_version(session->winedir, session->wow64);
+
+		if (session->winever == NULL)
+			*error = 2;
+	}
+	else
 	{
 		ERR(TYPE, "No Wine detected.\n");
-		*error = EXIT_FAILURE;
-		return session;
-	}
-
-	session->winedir = g_string_new(value);
-	free(value);
-	value = NULL;
-
-	if (session->winedir->str[session->winedir->len - 1] != '/')
-		g_string_append(session->winedir, "/");
-
-	ret = lunionplay_init_wine(session->winedir, &(session->winever), &(session->wow64));
-	if (ret != EXIT_SUCCESS)
-	{
-		lunionplay_display_session(session);
-		*error = EXIT_FAILURE;
+		*error = 1;
 		return session;
 	}
 
 
 	/* Search directory */
-	value = lunionplay_get_app_setting(session->stream, "default_dir");
-	if (value == NULL)
+	dir = lunionplay_get_app_setting(session->stream, "default_dir");
+	if (dir != NULL)
 	{
-		lunionplay_display_session(session);
-		*error = EXIT_FAILURE;
-		return session;
+		session->gamedir = lunionplay_set_game_dir(dir->str, gameid);
+		if (session->gamedir != NULL)
+			session->command = lunionplay_set_command(session->gamedir, exec);
+
+		g_string_free(dir, TRUE);
+
+		if (session->gamedir == NULL || session->command == NULL)
+			*error = 4;
 	}
-
-	session->gamedir = g_string_new(value);
-	free(value);
-	value = NULL;
-
-	ret = lunionplay_init_game(&(session->gamedir), &(session->command), gameid, exec);
-	if (ret != EXIT_SUCCESS)
+	else
 	{
-		lunionplay_display_session(session);
-		*error = EXIT_FAILURE;
+		ERR(TYPE, "No games directory detected.\n");
+		*error = 3;
 		return session;
 	}
 
 	lunionplay_display_session(session);
-	*error = EXIT_SUCCESS;
 	return session;
 }
 
 
-char* lunionplay_get_app_setting(GKeyFile* stream, const char* name)
+GString* lunionplay_get_app_setting(GKeyFile* stream, const char* name)
 {
-	char* value = NULL;
+	assert(name != NULL);
+
+	char* tmp = NULL;
+	GString* value = NULL;
 	GString* env = NULL;
 
 	env = g_string_new("LUNIONPLAY_");
 	if (env != NULL)
 	{
-		char* tmp = g_ascii_strup(name, strnlen(name, 1024));
+		tmp = g_ascii_strup(name, strnlen(name, 1024));
 
 		env = g_string_append(env, tmp);
 		TRACE(__FILE__, __FUNCTION__, "%s=%s\n", env->str, getenv(env->str));
+
 		if (getenv(env->str) != NULL)
-			value = strndup(getenv(env->str), strnlen(getenv(env->str), 2048));
+			value = g_string_new(getenv(env->str));
 
 		free(tmp);
+		tmp = NULL;
 	}
 	else
 		ERR(TYPE, "Unexpected error with runtime configuration option.");
@@ -204,7 +198,13 @@ char* lunionplay_get_app_setting(GKeyFile* stream, const char* name)
 	g_string_free(env, TRUE);
 
 	if (value == NULL && stream != NULL)
-		value = lunionplay_parse_config(stream, "lunionplay", name);
+	{
+		tmp = lunionplay_parse_config(stream, "lunionplay", name);
+		value = g_string_new(tmp);
+
+		free(tmp);
+		tmp = NULL;
+	}
 
 	return value;
 }
@@ -214,24 +214,24 @@ int lunionplay_setup_session(LunionPlaySession* session)
 {
 	assert(session != NULL);
 
-	char* value = NULL;
+	GString* confirm = NULL;
 
 	lunionplay_set_wine_prefix(session->gamedir);
 
 	/* Disable by default */
-	value = lunionplay_get_app_setting(session->stream, "confirm");
-	TRACE(__FILE__, __FUNCTION__, "%p\n", value);
+	confirm = lunionplay_get_app_setting(session->stream, "confirm");
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", confirm->str, confirm->len);
 	/*
-	if (lunionplay_wait_continue(value))
-		return EXIT_FAILURE;
+	if (lunionplay_wait_continue(confirm))
+		return 1;
 	*/
 
 	INFO(TYPE, "Preparing to launch the game...\n");
 	lunionplay_update_wine_prefix();
 	/*lunionplay_set_wine_env();*/
 
-	if (value != NULL)
-		free(value);
+	if (confirm != NULL)
+		g_string_free(confirm, TRUE);
 
-	return EXIT_SUCCESS;
+	return 0;
 }

@@ -27,7 +27,7 @@
 void lunionplay_close_config(GKeyFile** stream);
 
 
-int lunionplay_open_config(GKeyFile** stream, const char* file);
+GKeyFile* lunionplay_open_config(const char* pathname);
 
 
 char* lunionplay_parse_config(GKeyFile* stream, const char* group, const char* name);

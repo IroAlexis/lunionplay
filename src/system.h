@@ -27,7 +27,7 @@
 char* lunionplay_default_place();
 
 
-int lunionplay_exist_path(const char* path);
+int lunionplay_exist_path(const char* path, const int msg);
 
 
 GString* lunionplay_get_absolut_path(const char* path);

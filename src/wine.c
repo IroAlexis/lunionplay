@@ -23,7 +23,6 @@
 #include <libgen.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <assert.h>
 
 #include "system.h"
@@ -34,102 +33,172 @@
 #define BUFFER 2048
 
 
+static int lunionplay_exist_wine(const GString* path, const int arch)
+{
+	assert(path != NULL);
+	assert(arch != 32 || arch != 64);
+
+	int ret;
+	GString* wine = NULL;
+
+	wine = g_string_new(path->str);
+	if (wine->str[wine->len - 1] != '/')
+		g_string_append(wine, "/");
+
+	switch(arch)
+	{
+		case 32:
+			g_string_append(wine, "bin/wine");
+			break;
+		case 64:
+			g_string_append(wine, "bin/wine64");
+			break;
+		default:
+			break;
+	}
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", wine->str, wine->len);
+
+	ret = lunionplay_exist_path(wine->str, TRUE);
+	g_string_free(wine, TRUE);
+	TRACE(__FILE__, __FUNCTION__, "int %d\n", ret);
+
+	return ret;
+}
+
+
+static int lunionplay_exist_wineboot(const GString* path)
+{
+	assert (path != NULL);
+
+	int ret;
+	GString* wineboot = NULL;
+
+	wineboot = g_string_new(path->str);
+	if (wineboot->str[wineboot->len - 1] != '/')
+		g_string_append(wineboot, "/");
+	g_string_append(wineboot, "bin/wineboot");
+
+	ret = lunionplay_exist_path(wineboot->str, TRUE);
+	g_string_free(wineboot, TRUE);
+
+	return ret;
+}
+
+
+static int lunionplay_valid_wine_prefix(GString* winepfx)
+{
+	assert(winepfx != NULL);
+
+	int ret;
+	GString* s_reg = NULL;
+
+	ret = lunionplay_exist_path(winepfx->str, FALSE);
+	if (ret == 0)
+	{
+		s_reg = g_string_new(winepfx->str);
+
+		if (s_reg->str[s_reg->len - 1] != '/')
+			g_string_append(s_reg, "/");
+		g_string_append(s_reg, "system.reg");
+
+		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", s_reg->str, s_reg->len);
+
+		ret = lunionplay_exist_path(s_reg->str, FALSE);
+		g_string_free(s_reg, TRUE);
+	}
+
+	return ret;
+}
+
+
 void lunionplay_display_env_wine(FILE* stream)
 {
 	fprintf(stream, "===========================================\n");
 	fprintf(stream, " -> PATH=%s\n", getenv("PATH"));
 	fprintf(stream, " -> WINEPREFIX=%s\n", getenv("WINEPREFIX"));
 	fprintf(stream, " -> WINEFSYNC=%s\n", getenv("WINEFSYNC"));
+	fprintf(stream, " -> WINEFSYNC_FUTEX2=%s\n", getenv("WINEFSYNC_FUTEX2"));
 	fprintf(stream, " -> WINEESYNC=%s\n", getenv("WINEESYNC"));
+	fprintf(stream, " -> WINE_DISABLE_FAST_SYNC=%s\n", getenv("WINE_DISABLE_FAST_SYNC"));
 	fprintf(stream, " -> WINEDLLOVERRIDES=%s\n", getenv("WINEDLLOVERRIDES"));
 	fprintf(stream, " -> WINEDEBUG=%s\n", getenv("WINEDEBUG"));
 	fprintf(stream, "===========================================\n");
 }
 
 
-/* TODO Harmonize return code error */
-int lunionplay_init_wine(GString* winedir, GString** winever, int* wow64)
+int lunionplay_valid_wine_dir(const GString* winedir)
 {
 	assert(winedir != NULL);
 
+	int wow64 = 0;
 	GString* winepath = NULL;
 	GString* path = NULL;
 
+	/* WOW64 or not */
+	if (lunionplay_exist_wineboot(winedir) != 0)
+	{
+		ERR(TYPE, "Invalid Wine directory.\n");
+		return -1;
+	}
+
+	if (lunionplay_exist_wine(winedir, 32) != 0)
+	{
+		if (lunionplay_exist_wine(winedir, 64) == 0)
+			wow64 = 1;
+		else
+		{
+			ERR(TYPE, "No such file wine or wine64.\n");
+			return -1;
+		}
+	}
+
+	if (getenv("PATH") == NULL)
+	{
+		ERR(TYPE, "No $PATH detected.\n");
+		return -1;
+	}
+
 	winepath = g_string_new(winedir->str);
+	path = g_string_new(getenv("PATH"));
 
-	g_string_append(winepath, "bin");
-
-	if (lunionplay_exist_path(winepath->str) == 0)
-	{
-		/* Get the old PATH */
-		path = g_string_new(getenv("PATH"));
-
-		g_string_append(winepath, ":");
-		g_string_append(winepath, path->str);
-		setenv("PATH", winepath->str, 1);
-	}
-	else
-	{
-		ERR(TYPE, "Invalid Wine directory\n");
-		g_string_free(winepath, TRUE);
-		g_string_free(path, TRUE);
-		return EXIT_FAILURE;
-	}
-
-	*wow64 = lunionplay_is_wine(winedir, winever);
+	g_string_append(winepath, "/bin:");
+	g_string_append(winepath, path->str);
+	setenv("PATH", winepath->str, 1);
 
 	g_string_free(winepath, TRUE);
 	g_string_free(path, TRUE);
 
-	return EXIT_SUCCESS;
+	return wow64;
 }
 
 
 /* https://github.com/doitsujin/dxvk/blob/552b29ca0c6ddcf595c8610095034249cf972643/setup_dxvk.sh#L63 */
 /* wineboot is always present in all wine build */
-int lunionplay_is_wine(const GString* winedir, GString** winever)
+GString* lunionplay_set_wine_version(const GString* winedir, const int wow64)
 {
 	assert(winedir != NULL);
 
-	int wow64;
 	GString* version = NULL;
-	GString* winecmd = NULL;
+	GString* cmd = NULL;
 
-	/* We verify the Wine build if it is 32 or 64 bit */
-	/* Default consider that it is not pure 64bit Wine */
-	wow64 = TRUE;
+	cmd = g_string_new("wine");
 
-	winecmd = g_string_new(winedir->str);
-	if (winecmd->str[winecmd->len - 1] != '/')
-		g_string_append(winecmd, "/");
+	if (wow64 == 1)
+		g_string_append(cmd, "64");
+	g_string_append(cmd, " --version");
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %ld ]\n", cmd->str, cmd->len);
 
-	g_string_append(winecmd, "bin/wine");
-	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", winecmd->str, winecmd->len);
-
-	if (lunionplay_exist_path(winecmd->str) != 0)
-		wow64 = FALSE;
-
-	if (wow64 == FALSE)
-		g_string_append(winecmd, "64");
-	g_string_append(winecmd, " --version");
-	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %ld ]\n", winecmd->str, winecmd->len);
-
-	version = lunionplay_get_output_cmd(winecmd->str);
-	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %ld ]\n", version->str, version->len);
+	version = lunionplay_get_output_cmd(cmd->str);
 	if (version->len == 0)
-	{
 		ERR(TYPE, "Not a wine executable. Check your wine.\n");
 
-		g_string_free(winecmd, TRUE);
-		return -1;
-	}
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %ld ]\n", version->str, version->len);
+	if (version != NULL)
+		INFO(TYPE, "version: %s\n", version->str);
 
-	INFO(TYPE, "version: %s\n", version->str);
-	*winever = g_string_new(version->str);
+	g_string_free(cmd, TRUE);
 
-	g_string_free(winecmd, TRUE);
-	g_string_free(version, TRUE);
-	return wow64;
+	return version;
 }
 
 
@@ -145,7 +214,7 @@ int lunionplay_set_wine_prefix(GString* gamedir)
 	{
 		winepfx = g_string_new(gamedir->str);
 		if (winepfx == NULL)
-			return EXIT_FAILURE;
+			return 1;
 
 		if (winepfx->str[winepfx->len - 1] != '/')
 			g_string_append(winepfx, "/");
@@ -163,7 +232,7 @@ int lunionplay_set_wine_prefix(GString* gamedir)
 		ERR(TYPE, "%s: Not a valid wine prefix.\n", winepfx->str);
 
 	g_string_free(winepfx, TRUE);
-	return EXIT_SUCCESS;
+	return 0;
 }
 
 
@@ -202,31 +271,5 @@ int lunionplay_update_wine_prefix(void)
 		g_string_free(dbg, TRUE);
 	}
 
-	return EXIT_SUCCESS;
-}
-
-
-int lunionplay_valid_wine_prefix(GString* winepfx)
-{
-	assert(winepfx != NULL);
-
-	struct stat statbuf;
-	GString* s_reg = NULL;
-
-	if (stat(winepfx->str, &statbuf) != 0)
-		return EXIT_FAILURE;
-
-	s_reg = g_string_new(winepfx->str);
-
-	if (s_reg->str[s_reg->len - 1] != '/')
-		g_string_append(s_reg, "/");
-	g_string_append(s_reg, "system.reg");
-
-	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", s_reg->str, s_reg->len);
-
-	if (stat(s_reg->str, &statbuf) != 0)
-		return EXIT_FAILURE;
-
-	g_string_free(s_reg, TRUE);
-	return EXIT_SUCCESS;
+	return 0;
 }

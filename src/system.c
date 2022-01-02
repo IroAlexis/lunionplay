@@ -35,7 +35,7 @@
 #define TYPE "system"
 
 
-int lunionplay_exist_path(const char* path)
+int lunionplay_exist_path(const char* path, const int msg)
 {
 	assert (path != NULL);
 
@@ -45,7 +45,7 @@ int lunionplay_exist_path(const char* path)
 	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", path);
 
 	ret = stat(path, &statbuf);
-	if (ret != 0)
+	if (ret != 0 && msg == TRUE)
 		ERR(TYPE, "%s: No such file or directory.\n", path);
 
 	return ret;
@@ -77,7 +77,10 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 
 	fp = popen(cmd, "r");
 	if (fp == NULL)
+	{
+		ERR(TYPE, "Error to open a pipe stream.\n");
 		return NULL;
+	}
 
 	fgets(tmp, LEN_MAX, fp);
 	fclose(fp);
@@ -128,7 +131,7 @@ int lunionplay_run_process(const char* cmd, char* const argv[])
 	{
 		case -1:
 			perror("fork");
-			return EXIT_FAILURE;
+			return -1;
 		case 0:
 			execvp(cmd, argv);
 			exit(EXIT_FAILURE);
@@ -138,5 +141,5 @@ int lunionplay_run_process(const char* cmd, char* const argv[])
 
 	pid = waitpid(child, &status, 0);
 
-	return EXIT_SUCCESS;
+	return 0;
 }

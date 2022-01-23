@@ -49,15 +49,12 @@ GKeyFile* lunionplay_open_config(const char* pathname)
 	/* Prevent memory leak with g_key_file_load_from_file */
 	if (lunionplay_exist_path(cfg->str, FALSE) == 0)
 	{
-		int ret;
 		INFO(TYPE, "%s\n", cfg->str);
 
 		stream = g_key_file_new();
-		ret = g_key_file_load_from_file(stream, cfg->str, G_KEY_FILE_NONE, &error);
-		if (ret == FALSE)
+		if (g_key_file_load_from_file(stream, cfg->str, G_KEY_FILE_NONE, &error) == FALSE)
 		{
-			if (error != NULL)
-				g_error_free(error);
+			g_clear_error(&error);
 			g_clear_pointer(&stream, g_key_file_free);
 		}
 	}
@@ -79,18 +76,20 @@ char* lunionplay_parse_config(GKeyFile* stream, const char* group, const char* n
 	char* value = NULL;
 	GError* error = NULL;
 
-	value = g_key_file_get_string(stream, group, name, &error);
-	if (NULL == value && error != NULL)
+	if (g_key_file_has_key(stream, group, name, &error) == TRUE)
 	{
-		if (error->code ==  G_KEY_FILE_ERROR_GROUP_NOT_FOUND)
-			ERR(TYPE, "\"%s\" group not found\n", group);
-		else if (error->code == G_KEY_FILE_ERROR_KEY_NOT_FOUND)
-			TRACE(__FILE__, __FUNCTION__, "\"%s\" key not found\n", name);
-		else
-			ERR(TYPE, "%s\n", error->message);
-
-		g_error_free(error);
+		value = g_key_file_get_string(stream, group, name, &error);
+		if (NULL == value && error != NULL)
+		{
+			if (error->code ==  G_KEY_FILE_ERROR_GROUP_NOT_FOUND)
+				ERR(TYPE, "\"%s\" group not found\n", group);
+			else if (error->code == G_KEY_FILE_ERROR_KEY_NOT_FOUND)
+				TRACE(__FILE__, __FUNCTION__, "\"%s\" key not found\n", name);
+			else
+				ERR(TYPE, "%s\n", error->message);
+		}
 	}
+	g_clear_error(&error);
 
 	return value;
 }

@@ -30,6 +30,9 @@ void lunionplay_display_env_wine(FILE* stream);
 int lunionplay_valid_wine_dir(const GString* winedir);
 
 
+void lunionplay_set_wine_env(void);
+
+
 GString* lunionplay_set_wine_version(const GString* winedir, const int wow64);
 
 

@@ -32,26 +32,33 @@
 int main(int argc, char* argv[])
 {
 	int error;
-	int ret = EXIT_SUCCESS;
+	int ret;
 	LunionPlaySession* game = NULL;
 
-	if (argv[1] != NULL)
+	if (argc == 1)
 	{
-		game = lunionplay_init_session(argv[1], argv[2], &error);
-
-		if (error == 0)
-			lunionplay_setup_session(game);
-		else
-		{
-			fprintf(stderr, "%s: There's a frog somewhere... *ribbit*\n", basename(argv[0]));
-			ret = EXIT_FAILURE;
-		}
-
-		lunionplay_free_session(game);
-		game = NULL;
-	}
-	else
 		fprintf(stderr, "usage: %s <gameid> [ /path/to/game.exe ]\n", basename(argv[0]));
+		return EXIT_FAILURE;
+	}
 
-	return ret;
+	ret = 0;
+
+	game = lunionplay_init_session(argv[1], argv[2], &error);
+	if (error == 0)
+	{
+		ret = lunionplay_setup_session(game);
+		lunionplay_run_game(game);
+	}
+
+	lunionplay_free_session(game);
+	game = NULL;
+
+	if (ret != 0)
+	{
+		if (ret != 2)
+			fprintf(stderr, "%s: There's a frog somewhere... *ribbit*\n", basename(argv[0]));
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
 }

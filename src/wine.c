@@ -117,9 +117,7 @@ void lunionplay_display_env_wine(FILE* stream)
 	fprintf(stream, " -> PATH=%s\n", getenv("PATH"));
 	fprintf(stream, " -> WINEPREFIX=%s\n", getenv("WINEPREFIX"));
 	fprintf(stream, " -> WINEFSYNC=%s\n", getenv("WINEFSYNC"));
-	fprintf(stream, " -> WINEFSYNC_FUTEX2=%s\n", getenv("WINEFSYNC_FUTEX2"));
 	fprintf(stream, " -> WINEESYNC=%s\n", getenv("WINEESYNC"));
-	fprintf(stream, " -> WINE_DISABLE_FAST_SYNC=%s\n", getenv("WINE_DISABLE_FAST_SYNC"));
 	fprintf(stream, " -> WINEDLLOVERRIDES=%s\n", getenv("WINEDLLOVERRIDES"));
 	fprintf(stream, " -> WINEDEBUG=%s\n", getenv("WINEDEBUG"));
 	fprintf(stream, "===========================================\n");
@@ -169,6 +167,30 @@ int lunionplay_valid_wine_dir(const GString* winedir)
 	g_string_free(path, TRUE);
 
 	return wow64;
+}
+
+
+void lunionplay_set_wine_env(void)
+{
+	GString* buffer = NULL;
+
+	setenv("WINEFSYNC", "1", 0);
+	/* fallback when fsync don't support */
+	setenv("WINEESYNC", "1", 0);
+
+	if (getenv("WINEDLLOVERRIDES") != NULL)
+	{
+		buffer = g_string_new(getenv("WINEDLLOVERRIDES"));
+		g_string_append(buffer, ";winemenubuilder.exe=");
+
+		setenv("WINEDLLOVERRIDES", buffer->str, 1);
+		g_string_free(buffer, TRUE);
+	}
+	else
+		setenv("WINEDLLOVERRIDES", "winemenubuilder.exe=", 0);
+
+	if (getenv("LUNIONPLAY_LOG") == NULL && getenv("WINEDEBUG") == NULL)
+		setenv("WINEDEBUG", "-all", 1);
 }
 
 

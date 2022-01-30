@@ -23,6 +23,7 @@
 #include <libgen.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <assert.h>
 
 #include "system.h"
@@ -189,8 +190,37 @@ void lunionplay_set_wine_env(void)
 	else
 		setenv("WINEDLLOVERRIDES", "winemenubuilder.exe=", 0);
 
-	if (getenv("LUNIONPLAY_LOG") == NULL && getenv("WINEDEBUG") == NULL)
-		setenv("WINEDEBUG", "-all", 1);
+	if (getenv("LUNIONPLAY_LOG") != NULL)
+		setenv("WINEDEBUG", "fixme-all", 1);
+	else
+		setenv("WINEDEBUG", "-all", 0);
+}
+
+
+void lunionplay_set_dxvk_env(const GString* gamedir)
+{
+	GString* dir = NULL;
+
+	dir = g_string_new(gamedir->str);
+	g_string_append(dir, "/shadercache/dxvk_state_cache");
+	g_mkdir_with_parents(dir->str, S_IRWXU);
+
+	if (getenv("LUNIONPLAY_LOG") != NULL)
+		setenv("DXVK_LOG_LEVEL", "info", 1);
+
+	setenv("DXVK_LOG_LEVEL", "none", 0);
+	setenv("DXVK_STATE_CACHE_PATH", dir->str, 0);
+
+	g_string_free(dir, TRUE);
+}
+
+
+void lunionplay_set_vkd3d_proton_env(const GString* gamedir)
+{
+	if (getenv("LUNIONPLAY_LOG") != NULL)
+		setenv("VKD3D_DEBUG", "warn", 1);
+
+	setenv("VKD3D_DEBUG", "none", 0);
 }
 
 

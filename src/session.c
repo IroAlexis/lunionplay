@@ -290,6 +290,8 @@ int lunionplay_setup_session(LunionPlaySession* session)
 	lunionplay_update_wine_prefix();
 
 	lunionplay_set_wine_env();
+	lunionplay_set_dxvk_env(session->gamedir);
+	lunionplay_set_vkd3d_proton_env(session->gamedir);
 
 	return 0;
 }

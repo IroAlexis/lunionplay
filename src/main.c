@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
 	if (error == 0)
 	{
 		ret = lunionplay_setup_session(game);
-		lunionplay_run_game(game);
+		if (ret == 0)
+			lunionplay_run_game(game);
 	}
 
 	lunionplay_free_session(game);

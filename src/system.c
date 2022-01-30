@@ -27,6 +27,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/utsname.h>
+#include <fcntl.h>
 
 #include "debug.h"
 
@@ -117,6 +118,24 @@ GString* lunionplay_get_uname(void)
 }
 
 
+static void lunionplay_log_file(const char* logfile)
+{
+	if (logfile != NULL)
+	{
+		TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", logfile);
+
+		int fd = open(logfile, O_RDWR | O_APPEND | O_CREAT, S_IRUSR | S_IWUSR);
+
+		if (fd != -1)
+		{
+			dup2(fd, 1);
+			dup2(fd, 2);
+			close(fd);
+		}
+	}
+}
+
+
 int lunionplay_run_process(const char* cmd, char* const argv[])
 {
 	assert(cmd != NULL);
@@ -124,7 +143,8 @@ int lunionplay_run_process(const char* cmd, char* const argv[])
 
 	int status;
 	pid_t child;
-	pid_t pid;
+
+	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", cmd);
 
 	child = fork();
 	switch(child)
@@ -133,13 +153,13 @@ int lunionplay_run_process(const char* cmd, char* const argv[])
 			perror("fork");
 			return -1;
 		case 0:
+			lunionplay_log_file(getenv("LUNIONPLAY_LOG_FILE"));
 			execvp(cmd, argv);
 			exit(EXIT_FAILURE);
 		default:
 			break;
 	}
 
-	pid = waitpid(child, &status, 0);
-
+	waitpid(child, &status, 0);
 	return 0;
 }

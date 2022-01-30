@@ -33,6 +33,12 @@ int lunionplay_valid_wine_dir(const GString* winedir);
 void lunionplay_set_wine_env(void);
 
 
+void lunionplay_set_dxvk_env(const GString* gamedir);
+
+
+void lunionplay_set_vkd3d_proton_env(const GString* gamedir);
+
+
 GString* lunionplay_set_wine_version(const GString* winedir, const int wow64);
 
 

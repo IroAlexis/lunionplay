@@ -15,7 +15,7 @@ glib_dep = dependency('glib-2.0', version: '>= 2.64.0')
 sources = [
   'src/main.c',
   'src/session.c',
-  'src/config.c',
+  'src/ini.c',
   'src/debug.c',
   'src/system.c',
   'src/wine.c',

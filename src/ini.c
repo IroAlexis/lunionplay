@@ -1,5 +1,5 @@
 /*
- * config.c
+ * ini.c
  * Copyright (C) 2021 Alexis Peypelut <peypeluta@live.fr>
  *
  * lunion-play is free software: you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  */
 
 
-#include "config.h"
+#include "ini.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -26,11 +26,11 @@
 #include "debug.h"
 
 
-#define TYPE "config"
+#define TYPE "ini"
 #define HOME_PATH_FILE "/.config/lunionplay/config.ini"
 
 
-GKeyFile* lunionplay_open_config(const char* pathname)
+GKeyFile* lunionplay_open_ini(const char* pathname)
 {
 	GKeyFile* stream = NULL;
 	GString* cfg = NULL;
@@ -67,7 +67,7 @@ GKeyFile* lunionplay_open_config(const char* pathname)
 }
 
 
-char* lunionplay_parse_config(GKeyFile* stream, const char* group, const char* name)
+char* lunionplay_parse_ini(GKeyFile* stream, const char* group, const char* name)
 {
 	assert(stream != NULL);
 	assert(group != NULL);

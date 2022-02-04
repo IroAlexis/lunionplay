@@ -22,7 +22,6 @@
 #include <glib.h>
 
 #include "session.h"
-#include "config.h"
 #include "debug.h"
 
 

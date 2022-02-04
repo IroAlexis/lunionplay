@@ -25,7 +25,7 @@
 #include <glib/gstdio.h>
 #include <assert.h>
 
-#include "config.h"
+#include "ini.h"
 #include "system.h"
 #include "wine.h"
 #include "game.h"
@@ -150,7 +150,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 	}
 
 	*error = 0;
-	session->stream = lunionplay_open_config(getenv("LUNIONPLAY_CONFIGFILE"));
+	session->stream = lunionplay_open_ini(getenv("LUNIONPLAY_CONFIGFILE"));
 
 	/* Search Wine */
 	session->winedir = lunionplay_get_app_setting(session->stream, "wine");
@@ -228,7 +228,7 @@ GString* lunionplay_get_app_setting(GKeyFile* stream, const char* name)
 
 	if (value == NULL && stream != NULL)
 	{
-		tmp = lunionplay_parse_config(stream, "lunionplay", name);
+		tmp = lunionplay_parse_ini(stream, "lunionplay", name);
 		value = g_string_new(tmp);
 
 		free(tmp);

@@ -40,9 +40,7 @@ struct _lunion_play_session
 	GKeyFile* stream;
 	GString* waiting;
 
-	GString* winedir;
-	int wow64;
-	GString* winever;
+	LunionPlayWine* wine;
 
 	GString* gamedir;
 	GString* command;
@@ -74,11 +72,8 @@ void lunionplay_free_session(LunionPlaySession* session)
 	if (session->waiting != NULL)
 		g_string_free(session->waiting, TRUE);
 
-	if (session->winedir != NULL)
-		g_string_free(session->winedir, TRUE);
-
-	if (session->winever != NULL)
-		g_string_free(session->winever, TRUE);
+	if (session->wine != NULL)
+		lunionplay_free_wine(session->wine);
 
 	if (session->gamedir != NULL)
 		g_string_free(session->gamedir, TRUE);
@@ -110,17 +105,7 @@ void lunionplay_display_session(const LunionPlaySession* session)
 		else
 			fprintf(stderr, " ->  * waiting: %p\n", NULL);
 
-		if (session->winedir != NULL)
-			fprintf(stderr, " ->  * winedir: \"%s\" (%ld)\n", session->winedir->str, session->winedir->len);
-		else
-			fprintf(stderr, " ->  * winedir: %p\n", NULL);
-
-		fprintf(stderr, " ->  * wow64: %d\n", session->wow64);
-
-		if (session->winever != NULL)
-			fprintf(stderr, " ->  * winever: \"%s\" (%ld)\n", session->winever->str, session->winever->len);
-		else
-			fprintf(stderr, " ->  * winever: %p\n", NULL);
+		lunionplay_display_wine(session->wine);
 
 		if (session->gamedir != NULL)
 			fprintf(stderr, " ->  * gamedir: \"%s\" (%ld)\n", session->gamedir->str, session->gamedir->len);
@@ -153,19 +138,34 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 	session->stream = lunionplay_open_ini(getenv("LUNIONPLAY_CONFIGFILE"));
 
 	/* Search Wine */
-	session->winedir = lunionplay_get_app_setting(session->stream, "wine");
-	if (session->winedir != NULL)
+	dir = lunionplay_get_app_setting(session->stream, "wine");
+	if (dir == NULL)
 	{
-		session->wow64 = lunionplay_valid_wine_dir(session->winedir);
-		if (session->wow64 == 0 || session->wow64 == 1)
-			session->winever = lunionplay_set_wine_version(session->winedir, session->wow64);
+		char* pwd = g_get_current_dir();
 
-		if (session->winever == NULL)
+		dir = g_string_new(pwd);
+		free(pwd);
+
+		if (dir == NULL)
+		{
 			*error = 2;
+			return session;
+		}
+
+		g_string_append(dir, "/dist");
+		if (lunionplay_exist_path(dir->str, FALSE) != 0)
+		{
+			ERR(TYPE, "No Wine directory detected.\n");
+			g_string_free(dir, TRUE);
+			*error = 1;
+			return session;
+		}
 	}
-	else
+	session->wine = lunionplay_init_wine(dir);
+	g_string_free(dir, TRUE);
+
+	if (session->wine == NULL)
 	{
-		ERR(TYPE, "No Wine detected.\n");
 		*error = 1;
 		return session;
 	}
@@ -246,7 +246,6 @@ int lunionplay_run_game(const LunionPlaySession* session)
 	char* dir = NULL;
 	char* exec = NULL;
 	char** argv = NULL;
-	char* wserv[] = {"wineserver", "-w", NULL};
 
 	argv = (char**) calloc(3, sizeof(char*));
 	if (NULL == argv)
@@ -255,16 +254,21 @@ int lunionplay_run_game(const LunionPlaySession* session)
 	dir = g_path_get_dirname(session->command->str);
 	exec = g_path_get_basename(session->command->str);
 
-	argv[0] = strdup("wine");
-	argv[1] = strdup(exec);
+	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", dir);
+	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", exec);
+
+	if (session->wine != NULL)
+		argv[0] = strndup("wine", strnlen("wine", 8));
+	else
+		argv[0] = strndup("wine64", strnlen("wine64", 8));
+
+	argv[1] = strndup(exec, strnlen(exec, 16));
 	argv[2] = NULL;
+
 	g_chdir(dir);
-
-	INFO(TYPE, "Starting...\n");
+	INFO(TYPE, "Running...\n");
 	lunionplay_run_process(argv[0], argv);
-
-	INFO(TYPE, "Waiting all wine processes terminate...\n");
-	lunionplay_run_process(wserv[0], wserv);
+	lunionplay_use_wineserver("-w");
 
 	free(argv[1]);
 	free(argv[0]);

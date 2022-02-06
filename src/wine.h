@@ -24,10 +24,19 @@
 #include <glib.h>
 
 
+typedef struct _lunion_play_wine LunionPlayWine;
+
+
 void lunionplay_display_env_wine(FILE* stream);
 
 
-int lunionplay_valid_wine_dir(const GString* winedir);
+void lunionplay_display_wine(const LunionPlayWine* wine);
+
+
+void lunionplay_free_wine(LunionPlayWine* wine);
+
+
+LunionPlayWine* lunionplay_init_wine(const GString* winedir);
 
 
 void lunionplay_set_wine_env(void);
@@ -39,13 +48,13 @@ void lunionplay_set_dxvk_env(const GString* gamedir);
 void lunionplay_set_vkd3d_proton_env(const GString* gamedir);
 
 
-GString* lunionplay_set_wine_version(const GString* winedir, const int wow64);
-
-
 int lunionplay_set_wine_prefix(GString* gamedir);
 
 
 int lunionplay_update_wine_prefix(void);
+
+
+void lunionplay_use_wineserver(const char* option);
 
 
 #endif

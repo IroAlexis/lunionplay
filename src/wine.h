@@ -42,12 +42,6 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir);
 void lunionplay_set_wine_env(void);
 
 
-void lunionplay_set_dxvk_env(const GString* gamedir);
-
-
-void lunionplay_set_vkd3d_proton_env(const GString* gamedir);
-
-
 int lunionplay_set_wine_prefix(GString* gamedir);
 
 

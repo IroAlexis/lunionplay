@@ -348,33 +348,6 @@ void lunionplay_set_wine_env(void)
 }
 
 
-void lunionplay_set_dxvk_env(const GString* gamedir)
-{
-	GString* dir = NULL;
-
-	dir = g_string_new(gamedir->str);
-	g_string_append(dir, "/shadercache/dxvk_state_cache");
-	g_mkdir_with_parents(dir->str, S_IRWXU);
-
-	if (getenv("LUNIONPLAY_LOG") != NULL)
-		setenv("DXVK_LOG_LEVEL", "info", 1);
-
-	setenv("DXVK_LOG_LEVEL", "none", 0);
-	setenv("DXVK_STATE_CACHE_PATH", dir->str, 0);
-
-	g_string_free(dir, TRUE);
-}
-
-
-void lunionplay_set_vkd3d_proton_env(const GString* gamedir)
-{
-	if (getenv("LUNIONPLAY_LOG") != NULL)
-		setenv("VKD3D_DEBUG", "warn", 1);
-
-	setenv("VKD3D_DEBUG", "none", 0);
-}
-
-
 int lunionplay_set_wine_prefix(GString* gamedir)
 {
 	assert(gamedir != NULL);

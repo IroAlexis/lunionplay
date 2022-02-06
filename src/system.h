@@ -24,10 +24,10 @@
 #include <glib.h>
 
 
-char* lunionplay_default_place();
+#define BUFFSIZE 4096
 
 
-int lunionplay_exist_path(const char* path, const int msg);
+int lunionplay_exist_path(const char* path, const int boolean);
 
 
 GString* lunionplay_get_absolut_path(const char* path);
@@ -39,7 +39,7 @@ GString* lunionplay_get_output_cmd(const char* cmd);
 GString* lunionplay_get_uname(void);
 
 
-int lunionplay_run_process(const char* cmd, char* const argv[]);
+int lunionplay_run_process(const char* cmd, char* argv[]);
 
 
 #endif

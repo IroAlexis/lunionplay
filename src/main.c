@@ -32,11 +32,15 @@ int main(int argc, char* argv[])
 {
 	int error;
 	int ret;
+	char* bin = NULL;
 	LunionPlaySession* game = NULL;
+
+	bin = g_path_get_basename(argv[0]);
 
 	if (argc == 1)
 	{
-		fprintf(stderr, "usage: %s <gameid> [ /path/to/game.exe ]\n", basename(argv[0]));
+		fprintf(stderr, "usage: %s <gameid> [ /path/to/game.exe ]\n", bin);
+		free(bin);
 		return EXIT_FAILURE;
 	}
 
@@ -56,9 +60,11 @@ int main(int argc, char* argv[])
 	if (ret != 0)
 	{
 		if (ret != 2)
-			fprintf(stderr, "%s: There's a frog somewhere... *ribbit*\n", basename(argv[0]));
+			fprintf(stderr, "%s: There's a frog somewhere... *ribbit*\n", bin);
+		free(bin);
 		return EXIT_FAILURE;
 	}
 
+	free(bin);
 	return EXIT_SUCCESS;
 }

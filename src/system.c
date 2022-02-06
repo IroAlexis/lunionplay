@@ -32,11 +32,10 @@
 #include "debug.h"
 
 
-#define LEN_MAX 4096
 #define TYPE "system"
 
 
-int lunionplay_exist_path(const char* path, const int msg)
+int lunionplay_exist_path(const char* path, const int boolean)
 {
 	assert (path != NULL);
 
@@ -46,7 +45,7 @@ int lunionplay_exist_path(const char* path, const int msg)
 	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", path);
 
 	ret = stat(path, &statbuf);
-	if (ret != 0 && msg == TRUE)
+	if (ret != 0 && boolean == TRUE)
 		ERR(TYPE, "%s: No such file or directory.\n", path);
 
 	return ret;
@@ -72,7 +71,7 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 {
 	assert(cmd != NULL);
 
-	char tmp[LEN_MAX];
+	char buffer[BUFFSIZE];
 	FILE* fp = NULL;
 	GString* output = NULL;
 
@@ -83,10 +82,10 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 		return NULL;
 	}
 
-	fgets(tmp, LEN_MAX, fp);
+	fgets(buffer, BUFFSIZE, fp);
 	fclose(fp);
 
-	output = g_string_new(tmp);
+	output = g_string_new(buffer);
 
 	if (output->str[output->len - 1] == '\n')
 		g_string_truncate(output, output->len - 1);
@@ -136,7 +135,7 @@ static void lunionplay_log_file(const char* logfile)
 }
 
 
-int lunionplay_run_process(const char* cmd, char* const argv[])
+int lunionplay_run_process(const char* cmd, char* argv[])
 {
 	assert(cmd != NULL);
 	assert(argv != NULL);
@@ -144,7 +143,9 @@ int lunionplay_run_process(const char* cmd, char* const argv[])
 	int status;
 	pid_t child;
 
-	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", cmd);
+	for (char** tmp = argv; *tmp != NULL; tmp++)
+		TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", *tmp);
+
 
 	child = fork();
 	switch(child)

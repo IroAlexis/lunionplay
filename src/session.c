@@ -29,6 +29,8 @@
 #include "system.h"
 #include "wine.h"
 #include "game.h"
+#include "dxvk.h"
+#include "vkd3d.h"
 #include "debug.h"
 
 
@@ -53,8 +55,6 @@ static int lunionplay_wait_continue()
 
 	fprintf(stdout, "Press enter to continue. (q to quit) ");
 	fscanf(stdin, "%c", &buffer);
-
-	TRACE (__FILE__, __FUNCTION__, "\"%s\"\n", buffer);
 
 	if ('q' == buffer)
 		return 1;
@@ -161,6 +161,9 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 			return session;
 		}
 	}
+	if (dir->str[dir->len - 1] == '/')
+		g_string_truncate(dir, dir->len - 1);
+
 	session->wine = lunionplay_init_wine(dir);
 	g_string_free(dir, TRUE);
 
@@ -175,7 +178,10 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 	dir = lunionplay_get_app_setting(session->stream, "default_dir");
 	if (dir != NULL)
 	{
-		session->gamedir = lunionplay_set_game_dir(dir->str, gameid);
+		if (dir->str[dir->len - 1] == '/')
+			g_string_truncate(dir, dir->len - 1);
+
+		session->gamedir = lunionplay_init_gamedir(dir->str, gameid);
 		if (session->gamedir != NULL)
 			session->command = lunionplay_set_command(session->gamedir, exec);
 
@@ -266,13 +272,14 @@ int lunionplay_run_game(const LunionPlaySession* session)
 	argv[2] = NULL;
 
 	g_chdir(dir);
-	INFO(TYPE, "Running...\n");
+	INFO(TYPE, "Starting...\n");
 	lunionplay_run_process(argv[0], argv);
 	lunionplay_use_wineserver("-w");
 
-	free(argv[1]);
-	free(argv[0]);
+	for (char** tmp = argv; *tmp != NULL; tmp++)
+		free(*tmp);
 	free(argv);
+
 	free(dir);
 	free(exec);
 
@@ -286,16 +293,17 @@ int lunionplay_setup_session(LunionPlaySession* session)
 
 	lunionplay_set_wine_prefix(session->gamedir);
 
-	if (g_strcmp0(session->waiting->str, "true") == 0 && getenv ("LUNIONPLAY_LOG_FILE") == NULL)
-		if (lunionplay_wait_continue() == 1)
-			return 2;
+	if (session->waiting != NULL)
+		if (g_strcmp0(session->waiting->str, "true") == 0 && getenv("LUNIONPLAY_LOG_FILE") == NULL)
+			if (lunionplay_wait_continue() == 1)
+				return 2;
 
 	INFO(TYPE, "Preparing to launch the game...\n");
 	lunionplay_update_wine_prefix();
 
 	lunionplay_set_wine_env();
-	//lunionplay_set_dxvk_env(session->gamedir);
-	//lunionplay_set_vkd3d_proton_env(session->gamedir);
+	lunionplay_set_dxvk_env(session->gamedir);
+	lunionplay_set_vkd3d_proton_env();
 
 	return 0;
 }

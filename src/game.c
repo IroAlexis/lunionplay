@@ -30,7 +30,7 @@
 #define TYPE "game"
 
 
-GString* lunionplay_set_game_dir(const char* path, const char* gameid)
+GString* lunionplay_init_gamedir(const char* path, const char* gameid)
 {
 	assert(path != NULL);
 	assert(gameid != NULL);
@@ -73,7 +73,7 @@ GString* lunionplay_set_command(const GString* gamedir, const char* exec)
 		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamestart->str, gamestart->len);
 		if (lunionplay_exist_path(gamestart->str, TRUE) == 0)
 		{
-			char buffer[4096];
+			char buffer[BUFFSIZE];
 			FILE* stream = fopen(gamestart->str, "r");
 
 			fgets(buffer, 4096, stream);

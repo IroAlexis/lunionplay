@@ -240,7 +240,7 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 	}
 
 	/* binaries directory */
-	wine->bin_dir = g_string_new(winedir->str);
+	wine->bin_dir = g_string_new(wine->base_dir->str);
 	if (NULL == wine->bin_dir)
 	{
 		ERR(TYPE, "Allocation problem.\n");

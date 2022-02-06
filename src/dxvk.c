@@ -20,6 +20,7 @@
 #include "dxvk.h"
 
 #include <stdlib.h>
+#include <sys/stat.h>
 
 
 void lunionplay_set_dxvk_env(const GString* gamedir)

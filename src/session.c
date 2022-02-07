@@ -250,6 +250,7 @@ int lunionplay_run_game(const LunionPlaySession* session)
 	assert(session != NULL);
 
 	char* dir = NULL;
+	char* wine = NULL;
 	char* exec = NULL;
 	char** argv = NULL;
 
@@ -263,12 +264,13 @@ int lunionplay_run_game(const LunionPlaySession* session)
 	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", dir);
 	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", exec);
 
-	if (session->wine != NULL)
-		argv[0] = strndup("wine", strnlen("wine", 8));
+	wine = lunionplay_get_wine_bin(session->wine);
+	if (wine != NULL)
+		argv[0] = strndup(wine, strnlen(wine, 1024));
 	else
-		argv[0] = strndup("wine64", strnlen("wine64", 8));
+		return -1;
 
-	argv[1] = strndup(exec, strnlen(exec, 16));
+	argv[1] = strndup(exec, strnlen(exec, 128));
 	argv[2] = NULL;
 
 	g_chdir(dir);

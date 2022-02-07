@@ -38,8 +38,8 @@ struct _lunion_play_wine
 	GString* base_dir;
 	GString* bin_dir;
 	GString* version;
-	GString* wine_bin;
-	GString* wine64_bin;
+	GString* bin;
+	GString* bin64;
 };
 
 
@@ -175,15 +175,15 @@ void lunionplay_display_wine(const LunionPlayWine* wine)
 		else
 			fprintf(stderr, " ->  * version: %p\n", NULL);
 
-		if (wine->wine_bin != NULL)
-			fprintf(stderr, " ->  * wine_bin: \"%s\" (%ld)\n", wine->wine_bin->str, wine->wine_bin->len);
+		if (wine->bin != NULL)
+			fprintf(stderr, " ->  * bin: \"%s\" (%ld)\n", wine->bin->str, wine->bin->len);
 		else
-			fprintf(stderr, " ->  * wine_bin: %p\n", NULL);
+			fprintf(stderr, " ->  * bin: %p\n", NULL);
 
-		if (wine->wine64_bin != NULL)
-			fprintf(stderr, " ->  * wine64_bin: \"%s\" (%ld)\n", wine->wine64_bin->str, wine->wine64_bin->len);
+		if (wine->bin64 != NULL)
+			fprintf(stderr, " ->  * bin64: \"%s\" (%ld)\n", wine->bin64->str, wine->bin64->len);
 		else
-			fprintf(stderr, " ->  * wine64_bin: %p\n", NULL);
+			fprintf(stderr, " ->  * bin64: %p\n", NULL);
 
 		fprintf(stderr, " ->\n");
 	}
@@ -204,13 +204,24 @@ void lunionplay_free_wine(LunionPlayWine* wine)
 	if (wine->version != NULL)
 		g_string_free(wine->version, TRUE);
 
-	if (wine->wine_bin != NULL)
-		g_string_free(wine->wine_bin, TRUE);
+	if (wine->bin != NULL)
+		g_string_free(wine->bin, TRUE);
 
-	if (wine->wine64_bin != NULL)
-		g_string_free(wine->wine64_bin, TRUE);
+	if (wine->bin64 != NULL)
+		g_string_free(wine->bin64, TRUE);
 
 	free(wine);
+}
+
+
+char* lunionplay_get_wine_bin(LunionPlayWine* wine)
+{
+	assert(wine != NULL);
+
+	if (wine->bin != NULL)
+		return wine->bin->str;
+	else
+		return NULL;
 }
 
 
@@ -267,42 +278,41 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 	}
 
 	/* wine binary */
-	wine->wine_bin = g_string_new(wine->bin_dir->str);
-	if (NULL == wine->wine_bin)
+	wine->bin = g_string_new(wine->bin_dir->str);
+	if (NULL == wine->bin)
 	{
 		ERR(TYPE, "Allocation problem.\n");
 		lunionplay_free_wine(wine);
 		return NULL;
 	}
-	g_string_append(wine->wine_bin, "/wine");
-	if (lunionplay_exist_path(wine->wine_bin->str, FALSE) != 0)
+	g_string_append(wine->bin, "/wine");
+	if (lunionplay_exist_path(wine->bin->str, FALSE) != 0)
 	{
-		g_string_free(wine->wine_bin, TRUE);
-		wine->wine_bin = NULL;
+		g_string_free(wine->bin, TRUE);
+		wine->bin = NULL;
 	}
 
 	/* wine64 binary */
-	wine->wine64_bin = g_string_new(wine->bin_dir->str);
-	if (NULL == wine->wine64_bin)
+	wine->bin64 = g_string_new(wine->bin_dir->str);
+	if (NULL == wine->bin64)
 	{
 		ERR(TYPE, "Allocation problem.\n");
 		lunionplay_free_wine(wine);
 		return NULL;
 	}
-	g_string_append(wine->wine64_bin, "/wine64");
-	if (lunionplay_exist_path(wine->wine64_bin->str, FALSE) != 0)
+	g_string_append(wine->bin64, "/wine64");
+	if (lunionplay_exist_path(wine->bin64->str, FALSE) != 0)
 	{
 		ERR(TYPE, "Invalid Wine directory.\n");
 		lunionplay_free_wine(wine);
 		return NULL;
 	}
+	else if (wine->bin == NULL)
+		wine->bin = g_string_new(wine->bin64->str);
 
 	/* wine version */
-	if (wine->wine_bin != NULL)
-		wine->version = lunionplay_set_wine_version(wine->wine_bin);
-	else if (wine->wine64_bin != NULL)
-		wine->version = lunionplay_set_wine_version(wine->wine64_bin);
-	else
+	wine->version = lunionplay_set_wine_version(wine->bin);
+	if (NULL == wine->version)
 	{
 		ERR(TYPE, "Problem with your wine.");
 		lunionplay_free_wine(wine);

@@ -36,6 +36,9 @@ void lunionplay_display_wine(const LunionPlayWine* wine);
 void lunionplay_free_wine(LunionPlayWine* wine);
 
 
+char* lunionplay_get_wine_bin(LunionPlayWine* wine);
+
+
 LunionPlayWine* lunionplay_init_wine(const GString* winedir);
 
 

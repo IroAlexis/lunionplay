@@ -33,16 +33,16 @@ void lunionplay_free_session(LunionPlaySession* session);
 void lunionplay_display_session(const LunionPlaySession* session);
 
 
-LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec, int* error);
+LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec);
 
 
 GString* lunionplay_get_app_setting(GKeyFile* stream, const char* name);
 
 
-int lunionplay_run_game(const LunionPlaySession* session);
+int lunionplay_prepare_session(const LunionPlaySession* session);
 
 
-int lunionplay_setup_session(LunionPlaySession* session);
+int lunionplay_run_session(const LunionPlaySession* session);
 
 
 #endif

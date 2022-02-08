@@ -28,7 +28,6 @@
 #include "ini.h"
 #include "system.h"
 #include "wine.h"
-#include "game.h"
 #include "dxvk.h"
 #include "vkd3d.h"
 #include "debug.h"
@@ -47,6 +46,72 @@ struct _lunion_play_session
 	GString* gamedir;
 	GString* command;
 };
+
+
+static GString* lunionplay_set_gamedir(const char* path, const char* gameid)
+{
+	assert(path != NULL);
+	assert(gameid != NULL);
+
+	GString* gamedir = NULL;
+
+	gamedir = g_string_new(path);
+	if (gamedir->str[gamedir->len - 1] != '/')
+		g_string_append(gamedir, "/");
+	g_string_append(gamedir, gameid);
+
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamedir->str, gamedir->len);
+
+	if (lunionplay_exist_path(gamedir->str, TRUE) != 0)
+	{
+		g_string_free(gamedir, TRUE);
+		gamedir = NULL;
+	}
+
+	return gamedir;
+}
+
+
+static GString* lunionplay_set_command(const GString* gamedir, const char* exec)
+{
+	assert(gamedir != NULL);
+
+	char* file = "gamestart";
+	GString* gamestart = NULL;
+	GString* bin = NULL;
+
+	if (exec == NULL)
+	{
+		gamestart = g_string_new(gamedir->str);
+
+		if (gamestart->str[gamestart->len - 1] != '/')
+			g_string_append(gamestart, "/");
+		g_string_append(gamestart, file);
+
+		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamestart->str, gamestart->len);
+		if (lunionplay_exist_path(gamestart->str, TRUE) == 0)
+		{
+			char buffer[BUFFSIZE];
+			FILE* stream = fopen(gamestart->str, "r");
+
+			fgets(buffer, 4096, stream);
+			fclose(stream);
+
+			bin = g_string_new(buffer);
+			if (bin->str[bin->len - 1] == '\n')
+				g_string_truncate(bin, bin->len - 1);
+		}
+
+		g_string_free(gamestart, TRUE);
+	}
+	else
+		bin = g_string_new(exec);
+
+	if (bin != NULL)
+		INFO(TYPE, "command: %s\n", bin->str);
+
+	return bin;
+}
 
 
 static int lunionplay_wait_continue()
@@ -181,7 +246,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 		if (dir->str[dir->len - 1] == '/')
 			g_string_truncate(dir, dir->len - 1);
 
-		session->gamedir = lunionplay_init_gamedir(dir->str, gameid);
+		session->gamedir = lunionplay_set_gamedir(dir->str, gameid);
 		if (session->gamedir != NULL)
 			session->command = lunionplay_set_command(session->gamedir, exec);
 

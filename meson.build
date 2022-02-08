@@ -19,7 +19,6 @@ sources = [
   'src/debug.c',
   'src/system.c',
   'src/wine.c',
-  'src/game.c',
   'src/dxvk.c',
   'src/vkd3d.c'
 ]

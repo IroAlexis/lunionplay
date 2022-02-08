@@ -38,11 +38,11 @@ Lunion Play comes with a config file which can be used to set configuration opti
 ## Usage
 A correct local game installation with Lunion Play should look like this:
 ```
-     <path>/gameid/       |      <path>/gameid/
-     ├── gamedata/        |      ├── pfx/
-     ├── pfx/             |      ├── shaderscache/
-     ├── shaderscache/    |      └── gamestart
-     └── gamestart        |
+     <path>/gameid/      |     <path>/gameid/
+     ├── gamedata/       |     ├── pfx/
+     ├── pfx/            |     ├── shadercache/
+     ├── shadercache/    |     └── gamestart
+     └── gamestart       |
 ```
 `<path>` is determinated in order priority by the environment variable `LUNIONPLAY_DEFAULT_DIR` or the variable `default_dir` that is in `config.ini` file.
 

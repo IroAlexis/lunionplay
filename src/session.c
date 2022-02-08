@@ -187,19 +187,15 @@ void lunionplay_display_session(const LunionPlaySession* session)
 }
 
 
-LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec, int* error)
+LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 {
 	GString* dir = NULL;
 	LunionPlaySession* session = NULL;
 
 	session = (LunionPlaySession*) calloc(1, sizeof(LunionPlaySession));
 	if (NULL == session)
-	{
-		*error = -1;
 		return NULL;
-	}
 
-	*error = 0;
 	session->stream = lunionplay_open_ini(getenv("LUNIONPLAY_CONFIGFILE"));
 
 	/* Search Wine */
@@ -213,8 +209,8 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 
 		if (dir == NULL)
 		{
-			*error = 2;
-			return session;
+			lunionplay_free_session(session);
+			return NULL;
 		}
 
 		g_string_append(dir, "/dist");
@@ -222,8 +218,8 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 		{
 			ERR(TYPE, "No Wine directory detected.\n");
 			g_string_free(dir, TRUE);
-			*error = 1;
-			return session;
+			lunionplay_free_session(session);
+			return NULL;
 		}
 	}
 	if (dir->str[dir->len - 1] == '/')
@@ -234,8 +230,8 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 
 	if (session->wine == NULL)
 	{
-		*error = 1;
-		return session;
+		lunionplay_free_session(session);
+		return NULL;
 	}
 
 
@@ -253,13 +249,16 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec,
 		g_string_free(dir, TRUE);
 
 		if (session->gamedir == NULL || session->command == NULL)
-			*error = 4;
+		{
+			lunionplay_free_session(session);
+			return NULL;
+		}
 	}
 	else
 	{
 		ERR(TYPE, "No games directory detected.\n");
-		*error = 3;
-		return session;
+		lunionplay_free_session(session);
+		return NULL;
 	}
 
 	/* Waiting confirmation */
@@ -293,7 +292,7 @@ GString* lunionplay_get_app_setting(GKeyFile* stream, const char* name)
 		tmp = NULL;
 	}
 	else
-		ERR(TYPE, "Unexpected error with runtime configuration option.");
+		ERR(TYPE, "Allocation problem.");
 
 	g_string_free(env, TRUE);
 
@@ -310,7 +309,29 @@ GString* lunionplay_get_app_setting(GKeyFile* stream, const char* name)
 }
 
 
-int lunionplay_run_game(const LunionPlaySession* session)
+int lunionplay_prepare_session(const LunionPlaySession* session)
+{
+	assert(session != NULL);
+
+	lunionplay_set_wine_prefix(session->gamedir);
+
+	if (session->waiting != NULL)
+		if (g_strcmp0(session->waiting->str, "true") == 0 && getenv("LUNIONPLAY_LOG_FILE") == NULL)
+			if (lunionplay_wait_continue() == 1)
+				return -1;
+
+	INFO(TYPE, "Preparing to launch the game...\n");
+	lunionplay_update_wine_prefix();
+
+	lunionplay_set_wine_env();
+	lunionplay_set_dxvk_env(session->gamedir);
+	lunionplay_set_vkd3d_proton_env();
+
+	return 0;
+}
+
+
+int lunionplay_run_session(const LunionPlaySession* session)
 {
 	assert(session != NULL);
 
@@ -349,28 +370,6 @@ int lunionplay_run_game(const LunionPlaySession* session)
 
 	free(dir);
 	free(exec);
-
-	return 0;
-}
-
-
-int lunionplay_setup_session(LunionPlaySession* session)
-{
-	assert(session != NULL);
-
-	lunionplay_set_wine_prefix(session->gamedir);
-
-	if (session->waiting != NULL)
-		if (g_strcmp0(session->waiting->str, "true") == 0 && getenv("LUNIONPLAY_LOG_FILE") == NULL)
-			if (lunionplay_wait_continue() == 1)
-				return 2;
-
-	INFO(TYPE, "Preparing to launch the game...\n");
-	lunionplay_update_wine_prefix();
-
-	lunionplay_set_wine_env();
-	lunionplay_set_dxvk_env(session->gamedir);
-	lunionplay_set_vkd3d_proton_env();
 
 	return 0;
 }

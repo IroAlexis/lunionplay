@@ -51,9 +51,7 @@ static int lunionplay_exist_wineboot(const GString* path)
 	GString* wineboot = NULL;
 
 	wineboot = g_string_new(path->str);
-	if (wineboot->str[wineboot->len - 1] != '/')
-		g_string_append(wineboot, "/");
-	g_string_append(wineboot, "bin/wineboot");
+	g_string_append(wineboot, "/wineboot");
 
 	ret = lunionplay_exist_path(wineboot->str, TRUE);
 	g_string_free(wineboot, TRUE);
@@ -270,7 +268,7 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 	 * In such case, winebooot and wine64 will be present,
 	 * but wine binary will be missing
 	 */
-	if (lunionplay_exist_wineboot(winedir) != 0)
+	if (lunionplay_exist_wineboot(wine->bin_dir) != 0)
 	{
 		ERR(TYPE, "Invalid Wine directory.\n");
 		lunionplay_free_wine(wine);

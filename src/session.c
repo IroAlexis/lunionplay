@@ -43,6 +43,7 @@ struct _lunion_play_session
 
 	LunionPlayWine* wine;
 
+	GString* gameid;
 	GString* gamedir;
 	GString* command;
 };
@@ -140,6 +141,9 @@ void lunionplay_free_session(LunionPlaySession* session)
 	if (session->wine != NULL)
 		lunionplay_free_wine(session->wine);
 
+	if (session->gameid != NULL)
+		g_string_free(session->gameid, TRUE);
+
 	if (session->gamedir != NULL)
 		g_string_free(session->gamedir, TRUE);
 
@@ -171,6 +175,11 @@ void lunionplay_display_session(const LunionPlaySession* session)
 			fprintf(stderr, " ->  * waiting: %p\n", NULL);
 
 		lunionplay_display_wine(session->wine);
+
+		if (session->gameid != NULL)
+			fprintf(stderr, " ->  * gameid: \"%s\" (%ld)\n", session->gameid->str, session->gameid->len);
+		else
+			fprintf(stderr, " ->  * gameid: %p\n", NULL);
 
 		if (session->gamedir != NULL)
 			fprintf(stderr, " ->  * gamedir: \"%s\" (%ld)\n", session->gamedir->str, session->gamedir->len);
@@ -261,7 +270,10 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 		return NULL;
 	}
 
-	/* Waiting confirmation */
+	/* Copy gameid */
+	session->gameid = g_string_new(gameid);
+
+	/* For waiting confirmation */
 	session->waiting = lunionplay_get_app_setting(session->stream, "waiting");
 
 	lunionplay_display_session(session);

@@ -90,7 +90,7 @@ static GString* lunionplay_set_command(const GString* gamedir, const char* exec)
 		g_string_append(gamestart, file);
 
 		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamestart->str, gamestart->len);
-		if (lunionplay_exist_path(gamestart->str, TRUE) == 0)
+		if (lunionplay_exist_path(gamestart->str, FALSE) == 0)
 		{
 			char buffer[BUFFSIZE];
 			FILE* stream = fopen(gamestart->str, "r");
@@ -110,6 +110,8 @@ static GString* lunionplay_set_command(const GString* gamedir, const char* exec)
 
 	if (bin != NULL)
 		INFO(TYPE, "command: %s\n", bin->str);
+	else
+		ERR(TYPE, "No such executable game.\n");
 
 	return bin;
 }

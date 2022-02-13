@@ -68,6 +68,17 @@ static GString* lunionplay_compose_wine_path(const char* path, const char* str)
 }
 
 
+static void lunionplay_display_wine_struct(const char* name, const GString* value)
+{
+	assert(name != NULL);
+
+		if (value != NULL)
+			fprintf(stderr, " ->  * %s: \"%s\" (%ld)\n", name, value->str, value->len);
+		else
+			fprintf(stderr, " ->  * %s: %p\n", name, NULL);
+}
+
+
 static int lunionplay_exist_wineboot(const GString* path)
 {
 	assert (path != NULL);
@@ -195,40 +206,14 @@ void lunionplay_display_wine(const LunionPlayWine* wine)
 
 		fprintf(stderr, " -> LunionPlayWine:\n");
 
-		if (wine->base_dir != NULL)
-			fprintf(stderr, " ->  * base_dir: \"%s\" (%ld)\n", wine->base_dir->str, wine->base_dir->len);
-		else
-			fprintf(stderr, " ->  * base_dir: %p\n", NULL);
-
-		if (wine->bin_dir != NULL)
-			fprintf(stderr, " ->  * bin_dir: \"%s\" (%ld)\n", wine->bin_dir->str, wine->bin_dir->len);
-		else
-			fprintf(stderr, " ->  * bin_dir: %p\n", NULL);
-
-		if (wine->lib32_dir != NULL)
-			fprintf(stderr, " ->  * lib32_dir: \"%s\" (%ld)\n", wine->lib32_dir->str, wine->lib32_dir->len);
-		else
-			fprintf(stderr, " ->  * lib32_dir: %p\n", NULL);
-
-		if (wine->lib64_dir != NULL)
-			fprintf(stderr, " ->  * lib64_dir: \"%s\" (%ld)\n", wine->lib64_dir->str, wine->lib64_dir->len);
-		else
-			fprintf(stderr, " ->  * lib64_dir: %p\n", NULL);
-
-		if (wine->bin != NULL)
-			fprintf(stderr, " ->  * bin: \"%s\" (%ld)\n", wine->bin->str, wine->bin->len);
-		else
-			fprintf(stderr, " ->  * bin: %p\n", NULL);
-
-		if (wine->bin64 != NULL)
-			fprintf(stderr, " ->  * bin64: \"%s\" (%ld)\n", wine->bin64->str, wine->bin64->len);
-		else
-			fprintf(stderr, " ->  * bin64: %p\n", NULL);
-
-		if (wine->version != NULL)
-			fprintf(stderr, " ->  * version: \"%s\" (%ld)\n", wine->version->str, wine->version->len);
-		else
-			fprintf(stderr, " ->  * version: %p\n", NULL);
+		lunionplay_display_wine_struct("base_dir", wine->base_dir);
+		lunionplay_display_wine_struct("bin_dir", wine->bin_dir);
+		lunionplay_display_wine_struct("lib32_dir", wine->lib32_dir);
+		lunionplay_display_wine_struct("lib64_dir", wine->lib64_dir);
+		lunionplay_display_wine_struct("bin_dir", wine->bin_dir);
+		lunionplay_display_wine_struct("bin", wine->bin);
+		lunionplay_display_wine_struct("bin64", wine->bin64);
+		lunionplay_display_wine_struct("version", wine->version);
 
 		fprintf(stderr, " ->\n");
 	}

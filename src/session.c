@@ -49,6 +49,17 @@ struct _lunion_play_session
 };
 
 
+static void lunionplay_display_session_struct(const char* name, const GString* value)
+{
+	assert(name != NULL);
+
+	if (value != NULL)
+		fprintf(stderr, " ->  * %s: \"%s\" (%ld)\n", name, value->str, value->len);
+	else
+		fprintf(stderr, " ->  * %s: %p\n", name, NULL);
+}
+
+
 static GString* lunionplay_set_gamedir(const char* path, const char* gameid)
 {
 	assert(path != NULL);
@@ -171,27 +182,11 @@ void lunionplay_display_session(const LunionPlaySession* session)
 		else
 			fprintf(stderr, " ->  * stream: %p\n", NULL);
 
-		if (session->waiting != NULL)
-			fprintf(stderr, " ->  * waiting: \"%s\" (%ld)\n", session->waiting->str, session->waiting->len);
-		else
-			fprintf(stderr, " ->  * waiting: %p\n", NULL);
-
+		lunionplay_display_session_struct("waiting", session->waiting);
 		lunionplay_display_wine(session->wine);
-
-		if (session->gameid != NULL)
-			fprintf(stderr, " ->  * gameid: \"%s\" (%ld)\n", session->gameid->str, session->gameid->len);
-		else
-			fprintf(stderr, " ->  * gameid: %p\n", NULL);
-
-		if (session->gamedir != NULL)
-			fprintf(stderr, " ->  * gamedir: \"%s\" (%ld)\n", session->gamedir->str, session->gamedir->len);
-		else
-			fprintf(stderr, " ->  * gamedir: %p\n", NULL);
-
-		if (session->command != NULL)
-			fprintf(stderr, " ->  * command: \"%s\" (%ld)\n", session->command->str, session->command->len);
-		else
-			fprintf(stderr, " ->  * command: %p\n", NULL);
+		lunionplay_display_session_struct("gameid", session->gameid);
+		lunionplay_display_session_struct("gamedir", session->gamedir);
+		lunionplay_display_session_struct("command", session->command);
 
 		fprintf(stderr, " ->\n");
 	}

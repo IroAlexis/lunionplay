@@ -42,6 +42,7 @@ struct _lunion_play_wine
 	GString* bin;
 	GString* bin64;
 	GString* version;
+	gboolean wow64;
 };
 
 
@@ -215,6 +216,11 @@ void lunionplay_display_wine(const LunionPlayWine* wine)
 		lunionplay_display_wine_struct("bin64", wine->bin64);
 		lunionplay_display_wine_struct("version", wine->version);
 
+		if (wine->wow64 == 0)
+			fprintf(stderr, " ->  * wow64: FALSE\n");
+		else
+			fprintf(stderr, " ->  * wow64: TRUE\n");
+
 		fprintf(stderr, " ->\n");
 	}
 }
@@ -277,6 +283,8 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 		return NULL;
 	}
 
+	wine->wow64 = TRUE;
+
 	/* base directory */
 	wine->base_dir = g_string_new(winedir->str);
 	if (NULL == wine->base_dir)
@@ -327,7 +335,10 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 		return NULL;
 	}
 	if (wine->bin == NULL)
+	{
 		wine->bin = wine->bin64;
+		wine->wow64 = FALSE;
+	}
 
 	/* wine version */
 	wine->version = lunionplay_set_wine_version(wine->bin);

@@ -21,7 +21,10 @@
 #define __VKD3D__
 
 
-void lunionplay_set_vkd3d_proton_env(void);
+#include <glib.h>
+
+
+void lunionplay_set_vkd3d_proton_envar(const GString* path);
 
 
 #endif

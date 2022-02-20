@@ -83,7 +83,7 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 	}
 
 	fgets(buffer, BUFFSIZE, fp);
-	fclose(fp);
+	pclose(fp);
 
 	output = g_string_new(buffer);
 

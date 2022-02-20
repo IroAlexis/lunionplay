@@ -75,8 +75,9 @@ static GString* lunionplay_set_gamedir(const char* path, const char* gameid)
 
 	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamedir->str, gamedir->len);
 
-	if (lunionplay_exist_path(gamedir->str, TRUE) != 0)
+	if (lunionplay_exist_path(gamedir->str, FALSE) != 0)
 	{
+		ERR(TYPE, "%s: No such game id.\n", gameid);
 		g_string_free(gamedir, TRUE);
 		gamedir = NULL;
 	}
@@ -340,9 +341,9 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 		INFO(NULL, "Preparing to launch the game...\n");
 	lunionplay_update_wine_prefix();
 
-	lunionplay_set_wine_env();
-	lunionplay_set_dxvk_env(session->gamedir);
-	lunionplay_set_vkd3d_proton_env();
+	lunionplay_set_wine_envar();
+	lunionplay_set_dxvk_envar(session->gamedir);
+	lunionplay_set_vkd3d_proton_envar(session->gamedir);
 
 	return 0;
 }
@@ -376,8 +377,9 @@ int lunionplay_run_session(const LunionPlaySession* session)
 	argv[1] = strndup(exec, strnlen(exec, 128));
 	argv[2] = NULL;
 
+	INFO(NULL, "Starting...\n");
+
 	g_chdir(dir);
-	INFO(TYPE, "Starting...\n");
 	lunionplay_run_process(argv[0], argv);
 	lunionplay_use_wineserver("-w");
 

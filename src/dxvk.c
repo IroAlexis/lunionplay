@@ -23,11 +23,11 @@
 #include <sys/stat.h>
 
 
-void lunionplay_set_dxvk_env(const GString* gamedir)
+void lunionplay_set_dxvk_envar(const GString* path)
 {
 	GString* dir = NULL;
 
-	dir = g_string_new(gamedir->str);
+	dir = g_string_new(path->str);
 	g_string_append(dir, "/shadercache/dxvk_state_cache");
 	g_mkdir_with_parents(dir->str, S_IRWXU);
 

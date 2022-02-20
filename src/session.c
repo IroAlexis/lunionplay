@@ -43,6 +43,7 @@ struct _lunion_play_session
 
 	LunionPlayWine* wine;
 
+	GString* gametitle;
 	GString* gameid;
 	GString* gamedir;
 	GString* command;
@@ -154,6 +155,9 @@ void lunionplay_free_session(LunionPlaySession* session)
 	if (session->wine != NULL)
 		lunionplay_free_wine(session->wine);
 
+	if (session->gametitle != NULL)
+		g_string_free(session->gametitle, TRUE);
+
 	if (session->gameid != NULL)
 		g_string_free(session->gameid, TRUE);
 
@@ -184,6 +188,7 @@ void lunionplay_display_session(const LunionPlaySession* session)
 
 		lunionplay_display_session_struct("waiting", session->waiting);
 		lunionplay_display_wine(session->wine);
+		lunionplay_display_session_struct("gametitle", session->gametitle);
 		lunionplay_display_session_struct("gameid", session->gameid);
 		lunionplay_display_session_struct("gamedir", session->gamedir);
 		lunionplay_display_session_struct("command", session->command);
@@ -329,7 +334,10 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 			if (lunionplay_wait_continue() == 1)
 				return -1;
 
-	INFO(TYPE, "Preparing to launch the game...\n");
+	if (session->gametitle != NULL)
+		INFO(NULL, "Preparing to launch %s...\n", session->gametitle->str);
+	else
+		INFO(NULL, "Preparing to launch the game...\n");
 	lunionplay_update_wine_prefix();
 
 	lunionplay_set_wine_env();

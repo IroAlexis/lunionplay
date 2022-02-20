@@ -7,7 +7,7 @@
   <name xml:lang="en">Lunion Play</name>
   <shortdesc xml:lang="en">Wine wrapper</shortdesc>
   <description>Wine wrapper for easily launch GOG games</description>
-  <programming-language>Bash</programming-language>
+  <programming-language>C</programming-language>
 
   <maintainer>
     <foaf:Person>

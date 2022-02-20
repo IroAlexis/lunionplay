@@ -8,7 +8,6 @@ The main goal is to offer an Proton alternative to launch your GOG games. You ca
 
 ## Dependencies
 * glib (idealy 2.70)
-* wine
 
 
 
@@ -27,6 +26,8 @@ To install it, run this :
 meson build
 ninja -C build
 ```
+
+Note : Don't use `PKGBUILD`, he is **out-of-date** for moment.
 
 
 
@@ -93,4 +94,4 @@ All of the below are runtime options. You can use normally the runtime options o
 ## Licence
 Available in [LICENSE](LICENSE) file<br>
 
-**Copyright (C)** 2021 Alexis Peypelut alias IroAlexis
+**Copyright (C)** 2021-2022 Alexis Peypelut alias IroAlexis

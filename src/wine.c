@@ -122,17 +122,20 @@ static GString* lunionplay_set_wine_version(const GString* winebin)
 }
 
 
-static void lunionplay_set_wine_path(const GString* bindir)
+static void lunionplay_set_wine(const LunionPlayWine* wine)
 {
-	assert (bindir != NULL);
+	assert (wine != NULL);
 
-	if (getenv("PATH") != NULL)
+	char* p_env = NULL;
+	GString* path = NULL;
+	GString* tmp = NULL;
+
+	p_env = getenv("PATH");
+
+	if (p_env != NULL)
 	{
-		GString* path = NULL;
-		GString* tmp = NULL;
-
-		path = g_string_new(getenv("PATH"));
-		tmp = g_string_new(bindir->str);
+		path = g_string_new(p_env);
+		tmp = g_string_new(wine->bin_dir->str);
 
 		g_string_append(tmp, ":");
 		g_string_append(tmp, path->str);
@@ -143,6 +146,35 @@ static void lunionplay_set_wine_path(const GString* bindir)
 	}
 	else
 		ERR(TYPE, "No $PATH detected.\n");
+
+	p_env = getenv("LD_LIBRARY_PATH");
+
+	if (p_env != NULL)
+	{
+		path = g_string_new(p_env);
+		tmp = g_string_new(wine->lib64_dir->str);
+
+		g_string_append(tmp, ":");
+		g_string_append(tmp, wine->lib32_dir->str);
+		g_string_append(tmp, ":");
+		g_string_append(tmp, path->str);
+
+		setenv("LD_LIBRARY_PATH", tmp->str, 1);
+
+		g_string_free(tmp, TRUE);
+		g_string_free(path, TRUE);
+	}
+	else
+	{
+		tmp = g_string_new(wine->lib64_dir->str);
+
+		g_string_append(tmp, ":");
+		g_string_append(tmp, wine->lib32_dir->str);
+
+		setenv("LD_LIBRARY_PATH", tmp->str, 1);
+
+		g_string_free(tmp, TRUE);
+	}
 }
 
 
@@ -188,6 +220,7 @@ void lunionplay_display_env_wine(FILE* stream)
 {
 	fprintf(stream, "===========================================\n");
 	fprintf(stream, " -> PATH=%s\n", getenv("PATH"));
+	fprintf(stream, " -> LD_LIBRARY_PATH=%s\n", getenv("LD_LIBRARY_PATH"));
 	fprintf(stream, " -> WINEPREFIX=%s\n", getenv("WINEPREFIX"));
 	fprintf(stream, " -> WINEFSYNC=%s\n", getenv("WINEFSYNC"));
 	fprintf(stream, " -> WINEESYNC=%s\n", getenv("WINEESYNC"));
@@ -349,13 +382,13 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 		return NULL;
 	}
 
-	lunionplay_set_wine_path(wine->bin_dir);
+	lunionplay_set_wine(wine);
 
 	return wine;
 }
 
 
-void lunionplay_set_wine_env(void)
+void lunionplay_set_wine_envar(void)
 {
 	GString* buffer = NULL;
 

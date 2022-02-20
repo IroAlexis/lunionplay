@@ -57,7 +57,10 @@ void lunionplay_printf(FILE* stream,
 	vsnprintf(buffer, sizeof(buffer), format, args);
 	va_end(args);
 
-	fprintf(stream, "> %s::%s: %s", level, type, buffer);
+	if (type == NULL)
+		fprintf(stream, "> %s:: %s", level, buffer);
+	else
+		fprintf(stream, "> %s::%s: %s", level, type, buffer);
 }
 
 

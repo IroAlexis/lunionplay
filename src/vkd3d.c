@@ -21,8 +21,11 @@
 
 #include <stdlib.h>
 
-
-void lunionplay_set_vkd3d_proton_env(void)
+/* TODO Unused param for the moment, might be use when this pr is merged
+ * but I don't sure
+ * https://github.com/HansKristian-Work/vkd3d-proton/pull/973
+ */
+void lunionplay_set_vkd3d_proton_envar(const GString* path)
 {
 	if (getenv("LUNIONPLAY_LOG") != NULL)
 		setenv("VKD3D_DEBUG", "warn", 0);

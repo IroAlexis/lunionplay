@@ -27,5 +27,6 @@ sources = [
 executable(
   'lunionplay',
   sources,
-  dependencies: glib_dep
+  dependencies: glib_dep,
+  install: true
 )

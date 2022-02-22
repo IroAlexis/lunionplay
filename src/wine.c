@@ -309,6 +309,12 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 	if (lunionplay_exist_path(winedir->str, TRUE) != 0)
 		return NULL;
 
+	if (g_path_is_absolute(winedir->str) != TRUE)
+	{
+		ERR(TYPE, "%s: Not an absolute path\n", winedir->str);
+		return NULL;
+	}
+
 	wine = (LunionPlayWine*) calloc(1, sizeof(LunionPlayWine));
 	if (NULL == wine)
 	{

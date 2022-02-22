@@ -52,21 +52,6 @@ int lunionplay_exist_path(const char* path, const int boolean)
 }
 
 
-GString* lunionplay_get_absolut_path(const char* path)
-{
-	char buff[PATH_MAX];
-	char* tmp = NULL;
-
-	/* TODO More feedback about error */
-	tmp = realpath(path, buff);
-	if (tmp == NULL)
-		return NULL;
-
-	return g_string_new(tmp);
-
-}
-
-
 GString* lunionplay_get_output_cmd(const char* cmd)
 {
 	assert(cmd != NULL);

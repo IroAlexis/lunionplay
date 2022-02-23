@@ -126,7 +126,7 @@ static void lunionplay_set_wine(const LunionPlayWine* wine)
 {
 	assert (wine != NULL);
 
-	char* p_env = NULL;
+	const char* p_env = NULL;
 	GString* path = NULL;
 	GString* tmp = NULL;
 

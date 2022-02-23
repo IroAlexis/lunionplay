@@ -28,7 +28,7 @@
 
 int lunionplay_debug_mode(void)
 {
-	char* value = NULL;
+	const char* value = NULL;
 	int ret = 0;
 
 	value = getenv("LUNIONPLAY_DEBUG");

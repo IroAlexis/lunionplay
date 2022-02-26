@@ -1,4 +1,4 @@
-project('lunion-play', 'c',
+project('lunionplay', 'c',
   license: 'GPL3+',
   version: '0.4.alpha',
   meson_version: '>= 0.53.0',

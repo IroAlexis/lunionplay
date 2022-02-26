@@ -19,6 +19,7 @@
 
 #include "config.h"
 #include "debug.h"
+#include "driver.h"
 #include "game.h"
 #include "session.h"
 #include "wine.h"
@@ -35,6 +36,8 @@ int main(int argc, char* argv[])
 	g_autoptr (GKeyFile) cfg = NULL;
 	LunionPlayWine* wine = NULL;
 	LunionPlayGame* game = NULL;
+
+	lunionplay_driver_get();
 
 	status = -1;
 	bin = g_path_get_basename(argv[0]);

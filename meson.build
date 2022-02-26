@@ -11,11 +11,13 @@ project(
 ## Depedencies
 ##########
 glib_dep = dependency('glib-2.0', version: '>= 2.64.0')
+vk_dep = dependency('vulkan', method: 'pkg-config')
 
 
 sources = [
   'src/config.c',
   'src/debug.c',
+  'src/driver.c',
   'src/dxvk.c',
   'src/game.c',
   'src/main.c',
@@ -29,6 +31,6 @@ sources = [
 executable(
   'lunionplay',
   sources,
-  dependencies: glib_dep,
+  dependencies: [glib_dep, vk_dep],
   install: true
 )

@@ -394,7 +394,7 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 }
 
 
-void lunionplay_set_wine_envar(void)
+void lunionplay_setup_wine_runtime(void)
 {
 	GString* buffer = NULL;
 
@@ -427,7 +427,7 @@ void lunionplay_set_wine_envar(void)
 }
 
 
-int lunionplay_set_wine_prefix(GString* gamedir)
+int lunionplay_setup_wineprefix(GString* gamedir)
 {
 	assert(gamedir != NULL);
 
@@ -461,7 +461,7 @@ int lunionplay_set_wine_prefix(GString* gamedir)
 }
 
 
-int lunionplay_update_wine_prefix(void)
+int lunionplay_update_wineprefix(void)
 {
 	GString* dll = NULL;
 	GString* dbg = NULL;

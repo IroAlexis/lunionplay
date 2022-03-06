@@ -25,7 +25,7 @@
  * but I don't sure
  * https://github.com/HansKristian-Work/vkd3d-proton/pull/973
  */
-void lunionplay_set_vkd3d_proton_envar(const GString* path)
+void lunionplay_setup_vkd3d_proton_runtime(const GString* path)
 {
 	if (getenv("LUNIONPLAY_LOG") != NULL)
 		setenv("VKD3D_DEBUG", "warn", 0);

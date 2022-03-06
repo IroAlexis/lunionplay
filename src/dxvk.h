@@ -24,7 +24,7 @@
 #include <glib.h>
 
 
-void lunionplay_set_dxvk_envar(const GString* path);
+void lunionplay_setup_dxvk_runtime(const GString* path);
 
 
 #endif

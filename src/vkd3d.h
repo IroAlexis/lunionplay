@@ -24,7 +24,7 @@
 #include <glib.h>
 
 
-void lunionplay_set_vkd3d_proton_envar(const GString* path);
+void lunionplay_setup_vkd3d_proton_runtime(const GString* path);
 
 
 #endif

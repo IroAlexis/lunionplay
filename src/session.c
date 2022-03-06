@@ -330,7 +330,7 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 {
 	assert(session != NULL);
 
-	lunionplay_set_wine_prefix(session->gamedir);
+	lunionplay_setup_wineprefix(session->gamedir);
 
 	if (session->waiting != NULL)
 		if (g_strcmp0(session->waiting->str, "true") == 0 && getenv("LUNIONPLAY_LOG_FILE") == NULL)
@@ -341,11 +341,11 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 		INFO(NULL, "Preparing to launch %s...\n", session->gametitle->str);
 	else
 		INFO(NULL, "Preparing to launch the game...\n");
-	lunionplay_update_wine_prefix();
+	lunionplay_update_wineprefix();
 
-	lunionplay_set_wine_envar();
-	lunionplay_set_dxvk_envar(session->gamedir);
-	lunionplay_set_vkd3d_proton_envar(session->gamedir);
+	lunionplay_setup_wine_runtime();
+	lunionplay_setup_dxvk_runtime(session->gamedir);
+	lunionplay_setup_vkd3d_proton_runtime(session->gamedir);
 
 	return 0;
 }

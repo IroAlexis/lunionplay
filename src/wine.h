@@ -42,13 +42,13 @@ char* lunionplay_get_wine_bin(LunionPlayWine* wine);
 LunionPlayWine* lunionplay_init_wine(const GString* winedir);
 
 
-void lunionplay_set_wine_envar(void);
+void lunionplay_setup_wine_runtime(void);
 
 
-int lunionplay_set_wine_prefix(GString* gamedir);
+int lunionplay_setup_wineprefix(GString* gamedir);
 
 
-int lunionplay_update_wine_prefix(void);
+int lunionplay_update_wineprefix(void);
 
 
 void lunionplay_use_wineserver(const char* option);

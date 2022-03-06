@@ -314,10 +314,12 @@ GString* lunionplay_get_app_setting(GKeyFile* stream, const char* name)
 	if (value == NULL && stream != NULL)
 	{
 		tmp = lunionplay_parse_ini(stream, "lunionplay", name);
-		value = g_string_new(tmp);
-
-		free(tmp);
-		tmp = NULL;
+		if (tmp != NULL)
+		{
+			value = g_string_new(tmp);
+			free(tmp);
+			tmp = NULL;
+		}
 	}
 
 	return value;

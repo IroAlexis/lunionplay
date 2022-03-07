@@ -1,9 +1,8 @@
-# Lunion Play
+ # Introduction
 
-Wine Wrapper which allows installing and/or running Windows games on Linux.
+Lunion Play is a compatiblity tool which allows running Windows games on Linux. It is an Wine wrapper that provide also DXVK and VKD3D-Proton.
 
-The main goal is to offer an Proton alternative to launch your GOG games. You can use the Wine package of your Linux distribution (but it is not ideal for gaming) or Lutris builds or Wine GE builds or else Wine TkG builds. You can try for launch games from other platforms but I don't cover this cases.
-
+The main goal is to offer an Proton alternative to launch your GOG games. You can use the Wine package of your Linux distribution (but it is not ideal for gaming) or Lutris builds or Wine GE builds or else Wine TkG builds.
 
 
 ## Dependencies
@@ -13,31 +12,52 @@ The main goal is to offer an Proton alternative to launch your GOG games. You ca
 
 ## Installation
 
-### Build
-For clone this repository, you should run :
-```bash
-git clone https://github.com/IroAlexis/lunion-play.git && cd lunion-play
+For obtaining the source, you can clone the repository https://github.com/IroAlexis/lunionplay:
+```
+git clone --recursive https://github.com/IroAlexis/lunionplay.git && cd lunionplay
 ```
 
-### Install
-#### Source
-To install it, run this :
-```bash
+Else without dxvk and vkd3d-proton submodules:
+```
+git clone https://github.com/IroAlexis/lunionplay.git && cd lunionplay
+```
+
+Note: Be sure to update submodules when switching between branches:
+```
+git checkout <branchname>
+git submodule update --init --recursive
+```
+
+### Building Lunion Play
+#### Simple way
+Inside the Lunion Play directory, run:
+```
+./makebuild.sh /path/to/target/dest --no-package [--with-dxvk] [--with-vkd3d]
+```
+
+#### Compiling manually
+```
 meson build
 ninja -C build
 ```
-
-Note : Don't use `PKGBUILD`, he is **out-of-date** for moment.
-
 
 
 ## Configuration
 Lunion Play comes with a config file which can be used to set configuration options `$HOME/.config/lunionplay/config.ini`.
 
+## How to use
 
+Launch a game like this:
+```
+lunionplay gameid /path/to/game.exe
+```
 
-## Usage
-A correct local game installation with Lunion Play should look like this:
+If you have generate a `gamestart` file, you can launch the game like this:
+```
+lunionplay gameid
+```
+
+A local game installation with Lunion should look similar to this:
 ```
      <path>/gameid/      |     <path>/gameid/
      ├── gamedata/       |     ├── pfx/
@@ -52,16 +72,6 @@ A correct local game installation with Lunion Play should look like this:
 `gamedata` folder is only present when you choose the game installation outside wine prefix. However, you can't install patchs, you will have to re download entirelly the game at each updates/patchs.
 
 `gamestart` file is used to indicate the path to the game `.exe` file.
-
-
-If you have `gamestart` file, you can launch the game like this :
-```bash
-lunionplay gameid
-```
-Else, you have to launch the game like this: 
-```bash
-lunionplay gameid /path/to/game.exe
-```
 
 
 
@@ -79,15 +89,16 @@ All of the below are runtime options. You can use normally the runtime options o
 
 
 ## Acknowledgements
-* [Wine](https://winehq.org)
-* Valve for [Proton](https://github.com/ValveSoftware/Proton)
 * [Etienne Juvigny](https://github.com/Tk-Glitch)
+* [GloriousEggroll](https://github.com/GloriousEggroll)
 * [Hans-Kristian Arntzen](https://github.com/HansKristian-Work)
-* [Philip Rebohle](https://github.com/doitsujin)
 * [Joshua Ashton](https://github.com/Joshua-Ashton)
-* [Torge Matthies ](https://github.com/openglfreak)
 * [Lutris](https://github.com/lutris)
 * [MangoHUD](https://github.com/flightlessmango/MangoHud)
+* [Philip Rebohle](https://github.com/doitsujin)
+* [Torge Matthies ](https://github.com/openglfreak)
+* Valve for [Proton](https://github.com/ValveSoftware/Proton)
+* [Wine](https://winehq.org)
 
 
 

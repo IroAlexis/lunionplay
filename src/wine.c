@@ -190,6 +190,29 @@ static void lunionplay_set_wine_lib_dir(LunionPlayWine* wine)
 }
 
 
+static void lunionplay_setup_gst_runtime(const char* lib)
+{
+	assert(lib != NULL);
+
+	const char* env;
+	char* gstenv = "GST_PLUGIN_SYSTEM_PATH_1_0";
+	GString* gst = NULL;
+
+	env = getenv(gstenv);
+	if (NULL == env)
+		gst = g_string_new(lib);
+	else
+	{
+		g_string_append(gst, "/gstreamer-1.0");
+	}
+
+	if (lunionplay_exist_path(gst->str, FALSE) == 0)
+		setenv("GST_PLUGIN_SYSTEM_PATH_1_0", gst->str, 0);
+
+	g_string_free(gst, TRUE);
+}
+
+
 static int lunionplay_valid_wine_prefix(GString* winepfx)
 {
 	assert(winepfx != NULL);
@@ -394,7 +417,7 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 }
 
 
-void lunionplay_setup_wine_runtime(void)
+void lunionplay_setup_wine_runtime(const LunionPlayWine* wine)
 {
 	GString* buffer = NULL;
 
@@ -424,6 +447,9 @@ void lunionplay_setup_wine_runtime(void)
 		else if (strcmp(getenv("LUNIONPLAY_LOG"), "3") == 0)
 			setenv("WINEDEBUG", "+timestamp,+pid,+tid,+seh,+debugstr,+loaddll,+mscoree", 0);
 	}
+
+	lunionplay_setup_gst_runtime(wine->lib64_dir);
+	lunionplay_setup_gst_runtime(wine->lib32_dir);
 }
 
 

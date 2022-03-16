@@ -268,7 +268,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 	}
 	else
 	{
-		ERR(TYPE, "No games directory detected.\n");
+		ERR(TYPE, "No games location detected.\n");
 		lunionplay_free_session(session);
 		return NULL;
 	}

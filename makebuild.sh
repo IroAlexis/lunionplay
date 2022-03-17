@@ -83,7 +83,7 @@ rm -rf "$BUILD_DIR"
 
 compile_dxvk()
 {
-	if [ $dxvk = true ] && [ -f "$SRC_DIR/dxvk/.git" ]
+	if [ $dxvk = true ] && [ -f "$SRC_DIR/dxvk/.git" ] && [ -f "$SRC_DIR/dxvk/meson.build" ]
 	then
 		cd "$SRC_DIR/dxvk"
 
@@ -116,7 +116,7 @@ compile_dxvk()
 
 compile_vkd3d_proton()
 {
-	if [ $vkd3d = true ] && [ -f "$SRC_DIR/vkd3d-proton/.git" ]
+	if [ $vkd3d = true ] && [ -f "$SRC_DIR/vkd3d-proton/.git" ] && [ -f "$SRC_DIR/vkd3d-proton/meson.build" ]
 	then
 		cd "$SRC_DIR/vkd3d-proton"
 

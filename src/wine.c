@@ -99,7 +99,7 @@ static GString* lunionplay_set_wine_version(const GString* winebin)
 }
 
 
-static void lunionplay_set_wine(const LunionPlayWine* wine)
+static void lunionplay_setup_path(const LunionPlayWine* wine)
 {
 	assert (wine != NULL);
 
@@ -365,7 +365,7 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 		return NULL;
 	}
 
-	lunionplay_set_wine(wine);
+	lunionplay_setup_path(wine);
 
 	return wine;
 }

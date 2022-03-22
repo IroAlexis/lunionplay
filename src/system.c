@@ -149,3 +149,29 @@ int lunionplay_run_process(const char* cmd, char* argv[])
 	waitpid(child, &status, 0);
 	return 0;
 }
+
+
+GString* lunionplay_valid_path(const char* path, const char* str)
+{
+	assert(path != NULL);
+
+	GString* new = NULL;
+
+	new = g_string_new(path);
+	if (NULL == new)
+	{
+		ERR(TYPE, "Allocation problem.\n");
+		return NULL;
+	}
+
+	if (str != NULL)
+		g_string_append(new, str);
+
+	if (lunionplay_exist_path(new->str, FALSE) != 0)
+	{
+		g_string_free(new, TRUE);
+		return NULL;
+	}
+
+	return new;
+}

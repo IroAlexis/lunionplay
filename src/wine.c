@@ -46,29 +46,6 @@ struct _lunion_play_wine
 };
 
 
-static GString* lunionplay_compose_wine_path(const char* path, const char* str)
-{
-	assert(path != NULL);
-
-	GString* new = NULL;
-
-	new = g_string_new(path);
-	if (NULL == new)
-	{
-		ERR(TYPE, "Allocation problem.\n");
-		return NULL;
-	}
-	g_string_append(new, str);
-	if (lunionplay_exist_path(new->str, FALSE) != 0)
-	{
-		g_string_free(new, TRUE);
-		return NULL;
-	}
-
-	return new;
-}
-
-
 static void lunionplay_display_wine_struct(const char* name, const GString* value)
 {
 	assert(name != NULL);
@@ -180,13 +157,13 @@ static void lunionplay_set_wine(const LunionPlayWine* wine)
 
 static void lunionplay_set_wine_lib_dir(LunionPlayWine* wine)
 {
-	wine->lib32_dir = lunionplay_compose_wine_path(wine->base_dir->str, "/lib32");
-	wine->lib64_dir = lunionplay_compose_wine_path(wine->base_dir->str, "/lib64");
+	wine->lib32_dir = lunionplay_valid_path(wine->base_dir->str, "/lib32");
+	wine->lib64_dir = lunionplay_valid_path(wine->base_dir->str, "/lib64");
 
 	if (wine->lib64_dir == NULL && wine->lib32_dir != NULL)
-		wine->lib64_dir = lunionplay_compose_wine_path(wine->base_dir->str, "/lib");
+		wine->lib64_dir = lunionplay_valid_path(wine->base_dir->str, "/lib");
 	else if (wine->lib64_dir != NULL && wine->lib32_dir == NULL)
-		wine->lib32_dir = lunionplay_compose_wine_path(wine->base_dir->str, "/lib");
+		wine->lib32_dir = lunionplay_valid_path(wine->base_dir->str, "/lib");
 }
 
 
@@ -334,7 +311,7 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 	}
 
 	/* binaries directory */
-	wine->bin_dir = lunionplay_compose_wine_path(wine->base_dir->str, "/bin");
+	wine->bin_dir = lunionplay_valid_path(wine->base_dir->str, "/bin");
 	if (NULL == wine->bin_dir)
 	{
 		ERR(TYPE, "Invalid Wine directory.\n");
@@ -363,10 +340,10 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 	}
 
 	/* wine binary */
-	wine->bin = lunionplay_compose_wine_path(wine->bin_dir->str, "/wine");
+	wine->bin = lunionplay_valid_path(wine->bin_dir->str, "/wine");
 
 	/* wine64 binary */
-	wine->bin64 = lunionplay_compose_wine_path(wine->bin_dir->str, "/wine64");
+	wine->bin64 = lunionplay_valid_path(wine->bin_dir->str, "/wine64");
 	if (NULL == wine->bin64)
 	{
 		ERR(TYPE, "Invalid Wine directory.\n");

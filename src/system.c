@@ -52,6 +52,32 @@ int lunionplay_exist_path(const char* path, const int boolean)
 }
 
 
+GString* lunionplay_get_new_path(const char* path, const char* val)
+{
+	assert(path != NULL);
+	assert(val != NULL);
+
+	GString* tmp = NULL;
+
+	tmp = g_string_new(path);
+	if (tmp != NULL)
+	{
+		g_string_append(tmp, val);
+		if (NULL == tmp)
+			ERR(TYPE, "Allocation problem.\n");
+		else if (lunionplay_exist_path(tmp->str, FALSE) != 0)
+		{
+			g_string_free(tmp, TRUE);
+			tmp = NULL;
+		}
+	}
+	else
+		ERR(TYPE, "Allocation problem.\n");
+
+	return tmp;
+}
+
+
 GString* lunionplay_get_output_cmd(const char* cmd)
 {
 	assert(cmd != NULL);
@@ -148,30 +174,4 @@ int lunionplay_run_process(const char* cmd, char* argv[])
 
 	waitpid(child, &status, 0);
 	return 0;
-}
-
-
-GString* lunionplay_valid_path(const char* path, const char* str)
-{
-	assert(path != NULL);
-
-	GString* new = NULL;
-
-	new = g_string_new(path);
-	if (NULL == new)
-	{
-		ERR(TYPE, "Allocation problem.\n");
-		return NULL;
-	}
-
-	if (str != NULL)
-		g_string_append(new, str);
-
-	if (lunionplay_exist_path(new->str, FALSE) != 0)
-	{
-		g_string_free(new, TRUE);
-		return NULL;
-	}
-
-	return new;
 }

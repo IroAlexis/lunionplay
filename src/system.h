@@ -30,6 +30,9 @@
 int lunionplay_exist_path(const char* path, const int boolean);
 
 
+GString* lunionplay_get_new_path(const char* path, const char* str);
+
+
 GString* lunionplay_get_output_cmd(const char* cmd);
 
 
@@ -37,9 +40,6 @@ GString* lunionplay_get_uname(void);
 
 
 int lunionplay_run_process(const char* cmd, char* argv[]);
-
-
-GString* lunionplay_valid_path(const char* path, const char* str);
 
 
 #endif

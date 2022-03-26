@@ -57,18 +57,63 @@ static void lunionplay_display_wine_struct(const char* name, const GString* valu
 }
 
 
-static int lunionplay_exist_wineboot(const GString* path)
+/*
+ * Pure 64-bit Wine (non Wow64) requries skipping 32-bit steps.
+ * In such case, wine64 and winebooot will be present, but wine binary will be missing,
+ * however it can be present in other PATHs, so it shouldn't be used, to avoid versions mixing.static
+ */
+int lunionplay_set_wine_binaries(LunionPlayWine* wine)
 {
-	assert (path != NULL);
+	assert(wine != NULL);
 
-	int ret;
+	int ret = 0;
 	GString* wineboot = NULL;
 
-	wineboot = g_string_new(path->str);
-	g_string_append(wineboot, "/wineboot");
+	wine->wow64 = TRUE;
 
-	ret = lunionplay_exist_path(wineboot->str, TRUE);
+	wineboot = lunionplay_get_new_path(wine->bin_dir->str, "/wineboot");
+	if (wineboot != NULL && lunionplay_exist_path(wineboot->str, FALSE) == 0)
+	{
+		wine->bin = lunionplay_get_new_path(wine->bin_dir->str, "/wine");
+		wine->bin64 = lunionplay_get_new_path(wine->bin_dir->str, "/wine64");
+
+		if (wine->bin64 != NULL && NULL == wine->bin)
+		{
+			wine->bin = wine->bin64;
+			wine->wow64 = FALSE;
+		}
+		else if (NULL == wine->bin && NULL == wine->bin64)
+		{
+			ERR(TYPE, "Not valid wine directory.\n");
+			ret = 1;
+		}
+	}
+	else
+		ret = 1;
+
 	g_string_free(wineboot, TRUE);
+	return ret;
+}
+
+
+static int lunionplay_set_wine_lib_dir(LunionPlayWine* wine)
+{
+	assert(wine != NULL);
+
+	int ret = 0;
+
+	wine->lib32_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib32");
+	wine->lib64_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib64");
+
+	if (NULL == wine->lib64_dir && wine->lib32_dir != NULL)
+		wine->lib64_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib");
+	else if (wine->lib64_dir != NULL && NULL == wine->lib32_dir)
+		wine->lib32_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib");
+	else
+	{
+		ERR(TYPE, "Not valid wine directory.\n");
+		ret = 1;
+	}
 
 	return ret;
 }
@@ -152,18 +197,6 @@ static void lunionplay_setup_path(const LunionPlayWine* wine)
 
 		g_string_free(tmp, TRUE);
 	}
-}
-
-
-static void lunionplay_set_wine_lib_dir(LunionPlayWine* wine)
-{
-	wine->lib32_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib32");
-	wine->lib64_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib64");
-
-	if (wine->lib64_dir == NULL && wine->lib32_dir != NULL)
-		wine->lib64_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib");
-	else if (wine->lib64_dir != NULL && wine->lib32_dir == NULL)
-		wine->lib32_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib");
 }
 
 
@@ -299,8 +332,6 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 		return NULL;
 	}
 
-	wine->wow64 = TRUE;
-
 	/* base directory */
 	wine->base_dir = g_string_new(winedir->str);
 	if (NULL == wine->base_dir)
@@ -314,46 +345,23 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 	wine->bin_dir = lunionplay_get_new_path(wine->base_dir->str, "/bin");
 	if (NULL == wine->bin_dir)
 	{
-		ERR(TYPE, "Invalid Wine directory.\n");
+		ERR(TYPE, "Not valid wine directory\n");
 		lunionplay_free_wine(wine);
 		return NULL;
 	}
 
 	/* libraries directory */
-	lunionplay_set_wine_lib_dir(wine);
-	if (wine->lib32_dir == NULL && wine->lib64_dir == NULL)
+	if (lunionplay_set_wine_lib_dir(wine) != 0)
 	{
-		ERR(TYPE, "Invalid Wine directory.\n");
 		lunionplay_free_wine(wine);
 		return NULL;
 	}
 
-	/*
-	 * In such case, winebooot and wine64 will be present,
-	 * but wine binary will be missing
-	 */
-	if (lunionplay_exist_wineboot(wine->bin_dir) != 0)
+	/* wine binaries */
+	if (lunionplay_set_wine_binaries(wine) != 0)
 	{
-		ERR(TYPE, "Invalid Wine directory.\n");
 		lunionplay_free_wine(wine);
 		return NULL;
-	}
-
-	/* wine binary */
-	wine->bin = lunionplay_get_new_path(wine->bin_dir->str, "/wine");
-
-	/* wine64 binary */
-	wine->bin64 = lunionplay_get_new_path(wine->bin_dir->str, "/wine64");
-	if (NULL == wine->bin64)
-	{
-		ERR(TYPE, "Invalid Wine directory.\n");
-		lunionplay_free_wine(wine);
-		return NULL;
-	}
-	if (wine->bin == NULL)
-	{
-		wine->bin = wine->bin64;
-		wine->wow64 = FALSE;
 	}
 
 	/* wine version */

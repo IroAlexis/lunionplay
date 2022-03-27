@@ -35,6 +35,17 @@
 #define TYPE "system"
 
 
+GString* lunionplay_clear_path(GString* path)
+{
+	assert(path != NULL);
+
+	if (path->str[path->len - 1] == '/')
+		g_string_truncate(path, path->len - 1);
+
+	return path;
+}
+
+
 int lunionplay_exist_path(const char* path, const int boolean)
 {
 	assert (path != NULL);

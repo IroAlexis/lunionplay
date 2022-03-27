@@ -148,55 +148,34 @@ static void lunionplay_setup_path(const LunionPlayWine* wine)
 {
 	assert (wine != NULL);
 
-	const char* p_env = NULL;
-	GString* path = NULL;
-	GString* tmp = NULL;
+	GString* env = NULL;
 
-	p_env = getenv("PATH");
+	/* PATH */
+	env = g_string_new(getenv("PATH"));
 
-	if (p_env != NULL)
-	{
-		path = g_string_new(p_env);
-		tmp = g_string_new(wine->bin_dir->str);
+	if (env->len != 0)
+		g_string_prepend(env, ":");
+	g_string_prepend(env, wine->bin_dir->str);
 
-		g_string_append(tmp, ":");
-		g_string_append(tmp, path->str);
-		setenv("PATH", tmp->str, 1);
-
-		g_string_free(tmp, TRUE);
-		g_string_free(path, TRUE);
-	}
+	if (env != NULL)
+		setenv("PATH", env->str, 1);
 	else
-		ERR(TYPE, "No $PATH detected.\n");
+		ERR(TYPE, "Allocation problem.\n");
 
-	p_env = getenv("LD_LIBRARY_PATH");
+	g_string_free(env, TRUE);
 
-	if (p_env != NULL)
-	{
-		path = g_string_new(p_env);
-		tmp = g_string_new(wine->lib64_dir->str);
+	/* LD_LIBRARY_PATH */
+	env = g_string_new(getenv("LD_LIBRARY_PATH"));
 
-		g_string_append(tmp, ":");
-		g_string_append(tmp, wine->lib32_dir->str);
-		g_string_append(tmp, ":");
-		g_string_append(tmp, path->str);
+	if (env->len != 0)
+		g_string_prepend(env, ":");
+	g_string_prepend(env, wine->lib32_dir->str);
+	g_string_prepend(env, ":");
+	g_string_prepend(env, wine->lib64_dir->str);
 
-		setenv("LD_LIBRARY_PATH", tmp->str, 1);
+	setenv("LD_LIBRARY_PATH", env->str, 1);
 
-		g_string_free(tmp, TRUE);
-		g_string_free(path, TRUE);
-	}
-	else
-	{
-		tmp = g_string_new(wine->lib64_dir->str);
-
-		g_string_append(tmp, ":");
-		g_string_append(tmp, wine->lib32_dir->str);
-
-		setenv("LD_LIBRARY_PATH", tmp->str, 1);
-
-		g_string_free(tmp, TRUE);
-	}
+	g_string_free(env, TRUE);
 }
 
 

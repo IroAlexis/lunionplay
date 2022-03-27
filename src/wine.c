@@ -415,10 +415,10 @@ int lunionplay_setup_wineprefix(GString* gamedir)
 	else
 		winepfx = g_string_new(env);
 
-	if (lunionplay_valid_wine_prefix(winepfx) == 0)
-		INFO(TYPE, "prefix: %s\n", winepfx->str);
-	else
-		ERR(TYPE, "%s: Not a valid wine prefix.\n", winepfx->str);
+	if (lunionplay_valid_wine_prefix(winepfx) != 0)
+		setenv("LUNIONPLAY_WAITING", "true", 1);
+
+	INFO(TYPE, "prefix: %s\n", winepfx->str);
 
 	g_string_free(winepfx, TRUE);
 	return 0;

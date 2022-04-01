@@ -150,13 +150,10 @@ static void lunionplay_setup_path(const LunionPlayWine* wine)
 
 	GString* env = NULL;
 
-	/* PATH */
 	env = g_string_new(getenv("PATH"));
-
-	if (env->len != 0)
+	if (env != NULL && env->len != 0)
 		g_string_prepend(env, ":");
 	g_string_prepend(env, wine->bin_dir->str);
-
 	if (env != NULL)
 		setenv("PATH", env->str, 1);
 	else
@@ -164,18 +161,20 @@ static void lunionplay_setup_path(const LunionPlayWine* wine)
 
 	g_string_free(env, TRUE);
 
-	/* LD_LIBRARY_PATH */
 	env = g_string_new(getenv("LD_LIBRARY_PATH"));
-
-	if (env->len != 0)
+	if (env != NULL && env->len != 0)
 		g_string_prepend(env, ":");
 	g_string_prepend(env, wine->lib32_dir->str);
-	g_string_prepend(env, ":");
-	g_string_prepend(env, wine->lib64_dir->str);
-
-	setenv("LD_LIBRARY_PATH", env->str, 1);
-
-	g_string_free(env, TRUE);
+	if (env != NULL)
+	{
+		g_string_prepend(env, ":");
+		g_string_prepend(env, wine->lib64_dir->str);
+		if (env != NULL)
+		{
+			setenv("LD_LIBRARY_PATH", env->str, 1);
+			g_string_free(env, TRUE);
+		}
+	}
 }
 
 
@@ -191,7 +190,7 @@ static int lunionplay_valid_wine_prefix(GString* winepfx)
 	{
 		s_reg = g_string_new(winepfx->str);
 
-		if (s_reg->str[s_reg->len - 1] != '/')
+		if (s_reg != NULL && s_reg->str[s_reg->len - 1] != '/')
 			g_string_append(s_reg, "/");
 		g_string_append(s_reg, "system.reg");
 
@@ -360,19 +359,26 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 
 void lunionplay_setup_wine_runtime(void)
 {
-	GString* buffer = NULL;
-
 	setenv("WINEFSYNC", "1", 0);
 	/* fallback when fsync don't support */
 	setenv("WINEESYNC", "1", 0);
 
 	if (getenv("WINEDLLOVERRIDES") != NULL)
 	{
-		buffer = g_string_new(getenv("WINEDLLOVERRIDES"));
-		g_string_append(buffer, ";winemenubuilder.exe=");
-
-		setenv("WINEDLLOVERRIDES", buffer->str, 1);
-		g_string_free(buffer, TRUE);
+		GString* buffer = g_string_new(getenv("WINEDLLOVERRIDES"));
+		if (buffer != NULL)
+		{
+			g_string_append(buffer, ";winemenubuilder.exe=");
+			if (buffer != NULL)
+			{
+				setenv("WINEDLLOVERRIDES", buffer->str, 1);
+				g_string_free(buffer, TRUE);
+			}
+			else
+				ERR(TYPE, "Allocation problem.\n");
+		}
+		else
+			ERR(TYPE, "Allocation problem.\n");
 	}
 	else
 		setenv("WINEDLLOVERRIDES", "winemenubuilder.exe=", 0);
@@ -399,26 +405,39 @@ int lunionplay_setup_wineprefix(GString* gamedir)
 	GString* winepfx = NULL;
 
 	env = getenv("WINEPREFIX");
-	if (env == NULL)
+	if (NULL == env)
 	{
 		winepfx = g_string_new(gamedir->str);
-		if (winepfx == NULL)
+		if (winepfx != NULL)
+		{
+			g_string_append(winepfx, "/pfx");
+			if (winepfx != NULL)
+				setenv("WINEPREFIX", winepfx->str, 1);
+			else
+				return 1;
+		}
+		else
 			return 1;
 
-		if (winepfx->str[winepfx->len - 1] != '/')
-			g_string_append(winepfx, "/");
-
-		g_string_append(winepfx, "pfx");
-		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", winepfx->str, winepfx->len);
-		setenv("WINEPREFIX", winepfx->str, 1);
 	}
 	else
+	{
 		winepfx = g_string_new(env);
+		if (winepfx != NULL)
+			lunionplay_clear_path(winepfx);
+		else
+			return 1;
+	}
 
-	if (lunionplay_valid_wine_prefix(winepfx) != 0)
-		setenv("LUNIONPLAY_WAITING", "true", 1);
+	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", winepfx->str, winepfx->len);
 
 	INFO(TYPE, "prefix: %s\n", winepfx->str);
+
+	if (lunionplay_valid_wine_prefix(winepfx) != 0)
+	{
+		WARN(TYPE, "Creating a new wine prefix.\n");
+		setenv("LUNIONPLAY_WAITING", "true", 1);
+	}
 
 	g_string_free(winepfx, TRUE);
 	return 0;
@@ -480,7 +499,6 @@ void lunionplay_use_wineserver(const char* option)
 
 		free(cmd[1]);
 		free(cmd[0]);
+		free(cmd);
 	}
-
-	free(cmd);
 }

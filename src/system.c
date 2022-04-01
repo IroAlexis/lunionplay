@@ -39,7 +39,10 @@ GString* lunionplay_clear_path(GString* path)
 {
 	assert(path != NULL);
 
-	if (path->str[path->len - 1] == '/')
+	if (path->str[path->len - 1] == '\n')
+		g_string_truncate(path, path->len - 1);
+
+	if (path != NULL && path->str[path->len - 1] == '/')
 		g_string_truncate(path, path->len - 1);
 
 	return path;

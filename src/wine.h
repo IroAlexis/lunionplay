@@ -27,31 +27,43 @@
 typedef struct _lunion_play_wine LunionPlayWine;
 
 
-void lunionplay_display_env_wine(FILE* stream);
+void lunionplay_wine_print_runtime(FILE* stream);
 
 
-void lunionplay_display_wine(const LunionPlayWine* wine);
+void lunionplay_wine_print(const LunionPlayWine* wine);
 
 
-void lunionplay_free_wine(LunionPlayWine* wine);
+void lunionplay_wine_free(LunionPlayWine* wine);
 
 
-char* lunionplay_get_wine_bin(LunionPlayWine* wine);
+const gchar* lunionplay_wine_get_bin(const LunionPlayWine* self);
 
 
-LunionPlayWine* lunionplay_init_wine(const GString* winedir);
+const gchar* lunionplay_wine_get_bin64(const LunionPlayWine* self);
 
 
-void lunionplay_setup_wine_runtime(void);
+const gchar* lunionplay_wine_get_server(const LunionPlayWine* self);
 
 
-int lunionplay_setup_wineprefix(GString* gamedir);
+const gchar* lunionplay_wine_get_version(const LunionPlayWine* self);
 
 
-int lunionplay_update_wineprefix(void);
+LunionPlayWine* lunionplay_wine_create(const GString* winedir);
 
 
-void lunionplay_use_wineserver(const char* option);
+LunionPlayWine* lunionplay_wine_create_system(void);
+
+
+void lunionplay_wine_setup_runtime(const LunionPlayWine* self);
+
+
+void lunionplay_wine_setup_prefix(GString* dir);
+
+
+void lunionplay_wine_update_prefix(const LunionPlayWine* self);
+
+
+void lunionplay_wine_use_server(const LunionPlayWine* self, const gchar* option);
 
 
 #endif

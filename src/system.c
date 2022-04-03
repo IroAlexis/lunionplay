@@ -81,9 +81,6 @@ GString* lunionplay_clear_path(GString* path)
 {
 	assert(path != NULL);
 
-	if (path->str[path->len - 1] == '\n')
-		g_string_truncate(path, path->len - 1);
-
 	if (path != NULL && path->str[path->len - 1] == '/')
 		g_string_truncate(path, path->len - 1);
 
@@ -226,6 +223,7 @@ int lunionplay_run_process(const char* cmd, char* argv[])
 	int status;
 	pid_t child;
 
+	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", cmd);
 	for (char** tmp = argv; *tmp != NULL; tmp++)
 		TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", *tmp);
 

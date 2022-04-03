@@ -69,17 +69,24 @@ static GString* lunionplay_set_gamedir(const char* path, const char* gameid)
 	GString* gamedir = NULL;
 
 	gamedir = g_string_new(path);
-	if (gamedir->str[gamedir->len - 1] != '/')
-		g_string_append(gamedir, "/");
+	if (NULL == gamedir)
+		return NULL;
+
+	g_string_append(gamedir, "/");
+	if (NULL == gamedir)
+		return NULL;
+
 	g_string_append(gamedir, gameid);
-
-	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamedir->str, gamedir->len);
-
-	if (lunionplay_exist_path(gamedir->str, FALSE) != 0)
+	if (gamedir != NULL)
 	{
-		ERR(TYPE, "%s: No such game id.\n", gameid);
-		g_string_free(gamedir, TRUE);
-		gamedir = NULL;
+		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamedir->str, gamedir->len);
+
+		if (lunionplay_exist_path(gamedir->str, FALSE) != 0)
+		{
+			ERR(TYPE, "%s: No such game id.\n", gameid);
+			g_string_free(gamedir, TRUE);
+			gamedir = NULL;
+		}
 	}
 
 	return gamedir;
@@ -90,30 +97,32 @@ static GString* lunionplay_set_command(const GString* gamedir, const char* exec)
 {
 	assert(gamedir != NULL);
 
-	char* file = "gamestart";
-	GString* gamestart = NULL;
 	GString* bin = NULL;
 
 	if (exec == NULL)
 	{
-		gamestart = g_string_new(gamedir->str);
-
-		if (gamestart->str[gamestart->len - 1] != '/')
+		GString* gamestart = g_string_new(gamedir->str);
+		if (gamestart != NULL)
+		{
 			g_string_append(gamestart, "/");
-		g_string_append(gamestart, file);
+			if (gamestart != NULL)
+				g_string_append(gamestart, "gamestart");
+		}
 
 		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamestart->str, gamestart->len);
-		if (lunionplay_exist_path(gamestart->str, FALSE) == 0)
+		if (gamestart != NULL && lunionplay_exist_path(gamestart->str, FALSE) == 0)
 		{
 			char buffer[BUFFSIZE];
 			FILE* stream = fopen(gamestart->str, "r");
+			if (NULL == stream)
+				return NULL;
 
-			fgets(buffer, 4096, stream);
+			fgets(buffer, BUFFSIZE, stream);
 			fclose(stream);
 
 			bin = g_string_new(buffer);
-			if (bin->str[bin->len - 1] == '\n')
-				g_string_truncate(bin, bin->len - 1);
+			if (bin != NULL)
+				lunionplay_clear_path(bin);
 		}
 
 		g_string_free(gamestart, TRUE);
@@ -234,8 +243,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 			return NULL;
 		}
 	}
-	if (dir->str[dir->len - 1] == '/')
-		g_string_truncate(dir, dir->len - 1);
+	lunionplay_clear_path(dir);
 
 	session->wine = lunionplay_init_wine(dir);
 	g_string_free(dir, TRUE);
@@ -251,14 +259,15 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 	dir = lunionplay_get_app_setting(session->stream, "default_dir");
 	if (dir != NULL)
 	{
-		if (dir->str[dir->len - 1] == '/')
-			g_string_truncate(dir, dir->len - 1);
+		lunionplay_clear_path(dir);
+		if (dir != NULL)
+		{
+			session->gamedir = lunionplay_set_gamedir(dir->str, gameid);
+			if (session->gamedir != NULL)
+				session->command = lunionplay_set_command(session->gamedir, exec);
 
-		session->gamedir = lunionplay_set_gamedir(dir->str, gameid);
-		if (session->gamedir != NULL)
-			session->command = lunionplay_set_command(session->gamedir, exec);
-
-		g_string_free(dir, TRUE);
+			g_string_free(dir, TRUE);
+		}
 
 		if (session->gamedir == NULL || session->command == NULL)
 		{

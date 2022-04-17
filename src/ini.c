@@ -27,7 +27,6 @@
 
 
 #define TYPE "ini"
-#define HOME_PATH_FILE "/.config/lunionplay/config.ini"
 
 
 GKeyFile* lunionplay_open_ini(const char* pathname)
@@ -38,8 +37,8 @@ GKeyFile* lunionplay_open_ini(const char* pathname)
 
 	if (NULL == pathname)
 	{
-		cfg = g_string_new(getenv("HOME"));
-		g_string_append(cfg, HOME_PATH_FILE);
+		cfg = g_string_new(lunionplay_get_user_config_dir());
+		g_string_append(cfg, "/lunionplay/config.ini");
 	}
 	else
 		cfg = g_string_new(pathname);

@@ -42,6 +42,9 @@ GString* lunionplay_get_output_cmd(const char* cmd);
 GString* lunionplay_get_uname(void);
 
 
+const gchar* lunionplay_get_user_config_dir(void);
+
+
 int lunionplay_run_process(const char* cmd, char* argv[]);
 
 

@@ -27,4 +27,7 @@
 void lunionplay_setup_vkd3d_proton_runtime(const GString* path);
 
 
+gboolean lunionplay_vkd3d_proton_installed(void);
+
+
 #endif

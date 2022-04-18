@@ -27,4 +27,7 @@
 void lunionplay_setup_dxvk_runtime(const GString* path);
 
 
+gboolean lunionplay_dxvk_installed(void);
+
+
 #endif

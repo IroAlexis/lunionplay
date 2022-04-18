@@ -22,6 +22,31 @@
 #include <sys/stat.h>
 
 
+static gboolean lunionplay_check_dll_file(const GString* path, const char* file)
+{
+	g_assert(path != NULL);
+
+	GString* dll = NULL;
+	GString* old = NULL;
+	gboolean rslt;
+
+	dll = g_string_new(path->str);
+	g_string_append(dll, "/");
+	g_string_append(dll, file);
+
+	old = g_string_new(dll->str);
+	g_string_append(old, ".old");
+
+	rslt = g_file_test(dll->str, G_FILE_TEST_IS_REGULAR)
+	       && g_file_test(old->str, G_FILE_TEST_IS_REGULAR);
+
+	g_string_free(dll, TRUE);
+	g_string_free(old, TRUE);
+
+	return rslt;
+}
+
+
 void lunionplay_setup_dxvk_runtime(const GString* path)
 {
 	GString* dir = NULL;
@@ -38,4 +63,26 @@ void lunionplay_setup_dxvk_runtime(const GString* path)
 		g_setenv("DXVK_LOG_LEVEL", "none", FALSE);
 
 	g_string_free(dir, TRUE);
+}
+
+
+gboolean lunionplay_dxvk_installed(void)
+{
+	gboolean dll64;
+	gboolean dll32;
+	GString* path = NULL;
+	gchar* dxvk_file[] = {"d3d9.dll", "d3d10_core", "d3d11.dll", NULL};
+
+	path = g_string_new(g_getenv("WINEPREFIX"));
+	g_string_append(path, "/drive_c/windows/system32");
+
+	for (gchar** tmp = dxvk_file; *tmp != NULL; tmp++)
+		dll64 = dll64 && lunionplay_check_dll_file(path, *dxvk_file);
+
+	g_string_truncate(path, path->len - strlen("/system32"));
+	g_string_append(path, "/syswow64");
+	for (gchar** tmp = dxvk_file; *tmp != NULL; tmp++)
+		dll32 = dll32 && lunionplay_check_dll_file(path, *dxvk_file);
+
+	return dll64 || dll32;
 }

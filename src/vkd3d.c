@@ -19,16 +19,23 @@
 
 #include "vkd3d.h"
 
-#include <stdlib.h>
+#include <sys/stat.h>
 
-/* TODO Unused param for the moment, might be use when this pr is merged
- * but I don't sure
- * https://github.com/HansKristian-Work/vkd3d-proton/pull/973
- */
+
 void lunionplay_setup_vkd3d_proton_runtime(const GString* path)
 {
-	if (getenv("LUNIONPLAY_LOG") != NULL)
-		setenv("VKD3D_DEBUG", "warn", 0);
+	GString* dir = NULL;
+
+	dir = g_string_new(path->str);
+	g_string_append(dir, "/shadercache/vkd3d_proton_shader_cache");
+	g_mkdir_with_parents(dir->str, S_IRWXU);
+
+	g_setenv("VKD3D_SHADER_CACHE_PATH", dir->str, TRUE);
+
+	if (g_getenv("LUNIONPLAY_LOG") != NULL)
+		g_setenv("VKD3D_DEBUG", "warn", FALSE);
 	else
-		setenv("VKD3D_DEBUG", "none", 0);
+		g_setenv("VKD3D_DEBUG", "none", FALSE);
+
+	g_string_free(dir, TRUE);
 }

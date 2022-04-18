@@ -19,7 +19,6 @@
 
 #include "dxvk.h"
 
-#include <stdlib.h>
 #include <sys/stat.h>
 
 
@@ -31,12 +30,12 @@ void lunionplay_setup_dxvk_runtime(const GString* path)
 	g_string_append(dir, "/shadercache/dxvk_state_cache");
 	g_mkdir_with_parents(dir->str, S_IRWXU);
 
-	setenv("DXVK_STATE_CACHE_PATH", dir->str, 0);
+	g_setenv("DXVK_STATE_CACHE_PATH", dir->str, TRUE);
 
-	if (getenv("LUNIONPLAY_LOG") != NULL)
-		setenv("DXVK_LOG_LEVEL", "info", 0);
+	if (g_getenv("LUNIONPLAY_LOG") != NULL)
+		g_setenv("DXVK_LOG_LEVEL", "info", FALSE);
 	else
-		setenv("DXVK_LOG_LEVEL", "none", 0);
+		g_setenv("DXVK_LOG_LEVEL", "none", FALSE);
 
 	g_string_free(dir, TRUE);
 }

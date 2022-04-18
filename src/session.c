@@ -350,11 +350,16 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 		INFO(NULL, "Preparing to launch %s...\n", session->gametitle->str);
 	else
 		INFO(NULL, "Preparing to launch the game...\n");
+
 	lunionplay_update_wineprefix();
 
 	lunionplay_setup_wine_runtime();
-	lunionplay_setup_dxvk_runtime(session->gamedir);
-	lunionplay_setup_vkd3d_proton_runtime(session->gamedir);
+
+	if (lunionplay_dxvk_installed())
+		lunionplay_setup_dxvk_runtime(session->gamedir);
+
+	if (lunionplay_vkd3d_proton_installed())
+		lunionplay_setup_vkd3d_proton_runtime(session->gamedir);
 
 	return 0;
 }

@@ -84,5 +84,7 @@ gboolean lunionplay_dxvk_installed(void)
 	for (gchar** tmp = dxvk_file; *tmp != NULL; tmp++)
 		dll32 = dll32 && lunionplay_check_dll_file(path, *dxvk_file);
 
+	g_string_free(path, TRUE);
+
 	return dll64 || dll32;
 }

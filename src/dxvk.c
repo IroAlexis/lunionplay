@@ -68,21 +68,21 @@ void lunionplay_setup_dxvk_runtime(const GString* path)
 
 gboolean lunionplay_dxvk_installed(void)
 {
-	gboolean dll64;
-	gboolean dll32;
+	gboolean dll64 = TRUE;
+	gboolean dll32 = TRUE;
 	GString* path = NULL;
-	gchar* dxvk_file[] = {"d3d9.dll", "d3d10_core", "d3d11.dll", NULL};
+	gchar* dxvk_file[] = {"d3d9.dll", "d3d10core.dll", "d3d11.dll", NULL};
 
 	path = g_string_new(g_getenv("WINEPREFIX"));
 	g_string_append(path, "/drive_c/windows/system32");
 
 	for (gchar** tmp = dxvk_file; *tmp != NULL; tmp++)
-		dll64 = dll64 && lunionplay_check_dll_file(path, *dxvk_file);
+		dll64 = dll64 && lunionplay_check_dll_file(path, *tmp);
 
 	g_string_truncate(path, path->len - strlen("/system32"));
 	g_string_append(path, "/syswow64");
 	for (gchar** tmp = dxvk_file; *tmp != NULL; tmp++)
-		dll32 = dll32 && lunionplay_check_dll_file(path, *dxvk_file);
+		dll32 = dll32 && lunionplay_check_dll_file(path, *tmp);
 
 	g_string_free(path, TRUE);
 

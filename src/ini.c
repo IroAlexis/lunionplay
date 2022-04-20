@@ -46,7 +46,7 @@ GKeyFile* lunionplay_open_ini(const char* pathname)
 	TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", cfg->str, cfg->len);
 
 	/* Prevent memory leak with g_key_file_load_from_file */
-	if (lunionplay_exist_path(cfg->str, FALSE) == 0)
+	if (g_file_test(cfg->str, G_FILE_TEST_EXISTS))
 	{
 		INFO(TYPE, "%s\n", cfg->str);
 

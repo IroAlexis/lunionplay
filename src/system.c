@@ -49,23 +49,6 @@ GString* lunionplay_clear_path(GString* path)
 }
 
 
-int lunionplay_exist_path(const char* path, const int boolean)
-{
-	assert (path != NULL);
-
-	int ret;
-	struct stat statbuf;
-
-	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", path);
-
-	ret = stat(path, &statbuf);
-	if (ret != 0 && boolean == TRUE)
-		ERR(TYPE, "%s: No such file or directory.\n", path);
-
-	return ret;
-}
-
-
 GString* lunionplay_get_new_path(const char* path, const char* val)
 {
 	assert(path != NULL);
@@ -79,7 +62,7 @@ GString* lunionplay_get_new_path(const char* path, const char* val)
 		g_string_append(tmp, val);
 		if (NULL == tmp)
 			ERR(TYPE, "Allocation problem.\n");
-		else if (lunionplay_exist_path(tmp->str, FALSE) != 0)
+		else if (! g_file_test(tmp->str, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
 		{
 			g_string_free(tmp, TRUE);
 			tmp = NULL;

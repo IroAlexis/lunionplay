@@ -72,7 +72,7 @@ int lunionplay_set_wine_binaries(LunionPlayWine* wine)
 	wine->wow64 = TRUE;
 
 	wineboot = lunionplay_get_new_path(wine->bin_dir->str, "/wineboot");
-	if (wineboot != NULL && lunionplay_exist_path(wineboot->str, FALSE) == 0)
+	if (wineboot != NULL && g_file_test(wineboot->str, G_FILE_TEST_EXISTS))
 	{
 		wine->bin = lunionplay_get_new_path(wine->bin_dir->str, "/wine");
 		wine->bin64 = lunionplay_get_new_path(wine->bin_dir->str, "/wine64");
@@ -178,15 +178,15 @@ static void lunionplay_setup_path(const LunionPlayWine* wine)
 }
 
 
-static int lunionplay_valid_wine_prefix(GString* winepfx)
+static gboolean lunionplay_valid_wine_prefix(GString* winepfx)
 {
 	assert(winepfx != NULL);
 
-	int ret;
+	gboolean ret;
 	GString* s_reg = NULL;
 
-	ret = lunionplay_exist_path(winepfx->str, FALSE);
-	if (ret == 0)
+	ret = g_file_test(winepfx->str, G_FILE_TEST_IS_DIR);
+	if (ret == TRUE)
 	{
 		s_reg = g_string_new(winepfx->str);
 
@@ -196,7 +196,7 @@ static int lunionplay_valid_wine_prefix(GString* winepfx)
 
 		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", s_reg->str, s_reg->len);
 
-		ret = lunionplay_exist_path(s_reg->str, FALSE);
+		ret = g_file_test(s_reg->str, G_FILE_TEST_EXISTS);
 		g_string_free(s_reg, TRUE);
 	}
 
@@ -294,7 +294,7 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 
 	LunionPlayWine* wine = NULL;
 
-	if (lunionplay_exist_path(winedir->str, TRUE) != 0)
+	if (! g_file_test(winedir->str, G_FILE_TEST_IS_DIR))
 		return NULL;
 
 	if (g_path_is_absolute(winedir->str) != TRUE)
@@ -433,7 +433,7 @@ int lunionplay_setup_wineprefix(GString* gamedir)
 
 	INFO(TYPE, "prefix: %s\n", winepfx->str);
 
-	if (lunionplay_valid_wine_prefix(winepfx) != 0)
+	if (! lunionplay_valid_wine_prefix(winepfx))
 	{
 		WARN(TYPE, "Creating a new wine prefix.\n");
 		setenv("LUNIONPLAY_WAITING", "true", 1);

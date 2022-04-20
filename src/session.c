@@ -81,7 +81,7 @@ static GString* lunionplay_set_gamedir(const char* path, const char* gameid)
 	{
 		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamedir->str, gamedir->len);
 
-		if (lunionplay_exist_path(gamedir->str, FALSE) != 0)
+		if (! g_file_test(gamedir->str, G_FILE_TEST_IS_DIR))
 		{
 			ERR(TYPE, "%s: No such game id.\n", gameid);
 			g_string_free(gamedir, TRUE);
@@ -110,7 +110,7 @@ static GString* lunionplay_set_command(const GString* gamedir, const char* exec)
 		}
 
 		TRACE(__FILE__, __FUNCTION__, "GString [ \"%s\", %d ]\n", gamestart->str, gamestart->len);
-		if (gamestart != NULL && lunionplay_exist_path(gamestart->str, FALSE) == 0)
+		if (gamestart != NULL && g_file_test(gamestart->str, G_FILE_TEST_EXISTS))
 		{
 			char buffer[BUFFSIZE];
 			FILE* stream = fopen(gamestart->str, "r");
@@ -235,7 +235,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 		}
 
 		g_string_append(dir, "/dist");
-		if (lunionplay_exist_path(dir->str, FALSE) != 0)
+		if (! g_file_test(dir->str, G_FILE_TEST_IS_DIR))
 		{
 			ERR(TYPE, "No Wine directory detected.\n");
 			g_string_free(dir, TRUE);

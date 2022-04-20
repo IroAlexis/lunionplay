@@ -30,9 +30,6 @@
 GString* lunionplay_clear_path(GString* path);
 
 
-int lunionplay_exist_path(const char* path, const int boolean);
-
-
 GString* lunionplay_get_new_path(const char* path, const char* str);
 
 

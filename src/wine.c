@@ -71,11 +71,11 @@ int lunionplay_set_wine_binaries(LunionPlayWine* wine)
 
 	wine->wow64 = TRUE;
 
-	wineboot = lunionplay_get_new_path(wine->bin_dir->str, "/wineboot");
+	wineboot = lunionplay_concat_path(wine->bin_dir, "/wineboot");
 	if (wineboot != NULL && g_file_test(wineboot->str, G_FILE_TEST_EXISTS))
 	{
-		wine->bin = lunionplay_get_new_path(wine->bin_dir->str, "/wine");
-		wine->bin64 = lunionplay_get_new_path(wine->bin_dir->str, "/wine64");
+		wine->bin = lunionplay_concat_path(wine->bin_dir, "/wine");
+		wine->bin64 = lunionplay_concat_path(wine->bin_dir, "/wine64");
 
 		if (wine->bin64 != NULL && NULL == wine->bin)
 		{
@@ -102,13 +102,13 @@ static int lunionplay_set_wine_lib_dir(LunionPlayWine* wine)
 
 	int ret = 0;
 
-	wine->lib32_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib32");
-	wine->lib64_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib64");
+	wine->lib32_dir = lunionplay_concat_path(wine->base_dir, "/lib32");
+	wine->lib64_dir = lunionplay_concat_path(wine->base_dir, "/lib64");
 
 	if (NULL == wine->lib64_dir && wine->lib32_dir != NULL)
-		wine->lib64_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib");
+		wine->lib64_dir = lunionplay_concat_path(wine->base_dir, "/lib");
 	else if (wine->lib64_dir != NULL && NULL == wine->lib32_dir)
-		wine->lib32_dir = lunionplay_get_new_path(wine->base_dir->str, "/lib");
+		wine->lib32_dir = lunionplay_concat_path(wine->base_dir, "/lib");
 	else
 	{
 		ERR(TYPE, "Not valid wine directory.\n");
@@ -320,7 +320,7 @@ LunionPlayWine* lunionplay_init_wine(const GString* winedir)
 	}
 
 	/* binaries directory */
-	wine->bin_dir = lunionplay_get_new_path(wine->base_dir->str, "/bin");
+	wine->bin_dir = lunionplay_concat_path(wine->base_dir, "/bin");
 	if (NULL == wine->bin_dir)
 	{
 		ERR(TYPE, "Not valid wine directory\n");

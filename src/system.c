@@ -49,27 +49,21 @@ GString* lunionplay_clear_path(GString* path)
 }
 
 
-GString* lunionplay_get_new_path(const char* path, const char* val)
+GString* lunionplay_concat_path(const GString* path, const char* val)
 {
-	assert(path != NULL);
-	assert(val != NULL);
+	g_assert(path != NULL);
+	g_assert(val != NULL);
 
 	GString* tmp = NULL;
 
-	tmp = g_string_new(path);
-	if (tmp != NULL)
+	tmp = g_string_new(path->str);
+	g_string_append(tmp, val);
+
+	if (! g_file_test(tmp->str, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
 	{
-		g_string_append(tmp, val);
-		if (NULL == tmp)
-			ERR(TYPE, "Allocation problem.\n");
-		else if (! g_file_test(tmp->str, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
-		{
-			g_string_free(tmp, TRUE);
-			tmp = NULL;
-		}
+		g_string_free(tmp, TRUE);
+		tmp = NULL;
 	}
-	else
-		ERR(TYPE, "Allocation problem.\n");
 
 	return tmp;
 }

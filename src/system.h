@@ -30,7 +30,7 @@
 GString* lunionplay_clear_path(GString* path);
 
 
-GString* lunionplay_get_new_path(const char* path, const char* str);
+GString* lunionplay_concat_path(const GString* path, const char* val);
 
 
 GString* lunionplay_get_output_cmd(const char* cmd);

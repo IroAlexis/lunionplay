@@ -98,7 +98,7 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 
 	char buffer[BUFFSIZE];
 	FILE* fp = NULL;
-	GString* output = NULL;
+	GString* out = NULL;
 
 	fp = popen(cmd, "r");
 	if (fp == NULL)
@@ -110,12 +110,18 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 	fgets(buffer, BUFFSIZE, fp);
 	pclose(fp);
 
-	output = g_string_new(buffer);
+	out = g_string_new(buffer);
 
-	if (output->str[output->len - 1] == '\n')
-		g_string_truncate(output, output->len - 1);
+	if (out->str[out->len - 1] == '\n')
+		g_string_truncate(out, out->len - 1);
 
-	return output;
+	if (out->len <= 1)
+	{
+		g_string_free(out, TRUE);
+		out = NULL;
+	}
+
+	return out;
 }
 
 

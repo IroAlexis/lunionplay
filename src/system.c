@@ -209,6 +209,15 @@ static void lunionplay_log_file(const char* logfile)
 }
 
 
+void lunionplay_prepend_env(const char* name, const char* value, const char* separator)
+{
+	g_assert(name != NULL);
+	g_assert(value != NULL);
+
+	lunionplay_insert_env(name, value, separator, -1);
+}
+
+
 int lunionplay_run_process(const char* cmd, char* argv[])
 {
 	assert(cmd != NULL);

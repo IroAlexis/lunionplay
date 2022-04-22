@@ -75,20 +75,13 @@ char* lunionplay_parse_ini(GKeyFile* stream, const char* group, const char* name
 	char* value = NULL;
 	GError* error = NULL;
 
-	if (g_key_file_has_key(stream, group, name, &error) == TRUE)
-	{
+	if (g_key_file_has_group (stream, group) && g_key_file_has_key(stream, group, name, &error))
 		value = g_key_file_get_string(stream, group, name, &error);
-		if (NULL == value && error != NULL)
-		{
-			if (error->code ==  G_KEY_FILE_ERROR_GROUP_NOT_FOUND)
-				ERR(TYPE, "\"%s\" group not found\n", group);
-			else if (error->code == G_KEY_FILE_ERROR_KEY_NOT_FOUND)
-				TRACE(__FILE__, __FUNCTION__, "\"%s\" key not found\n", name);
-			else
-				ERR(TYPE, "%s\n", error->message);
-		}
-	}
-	g_clear_error(&error);
+	else
+		ERR(TYPE, "No such group or key in configuration file.\n");
+
+	if (error != NULL)
+		g_clear_error(&error);
 
 	return value;
 }

@@ -68,6 +68,15 @@ static void lunionplay_insert_env(const char* name, const char* value, const cha
 }
 
 
+void lunionplay_append_env(const char* name, const char* value, const char* separator)
+{
+	g_assert(name != NULL);
+	g_assert(value != NULL);
+
+	lunionplay_insert_env(name, value, separator, 1);
+}
+
+
 GString* lunionplay_clear_path(GString* path)
 {
 	assert(path != NULL);

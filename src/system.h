@@ -27,6 +27,9 @@
 #define BUFFSIZE 4096
 
 
+void lunionplay_append_env(const char* name, const char* value, const char* separator);
+
+
 GString* lunionplay_clear_path(GString* path);
 
 
@@ -40,6 +43,9 @@ GString* lunionplay_get_uname(void);
 
 
 const gchar* lunionplay_get_user_config_dir(void);
+
+
+void lunionplay_prepend_env(const char* name, const char* value, const char* separator);
 
 
 int lunionplay_run_process(const char* cmd, char* argv[]);

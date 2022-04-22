@@ -35,6 +35,39 @@
 #define TYPE "system"
 
 
+static void lunionplay_insert_env(const char* name, const char* value, const char* separator, const int pos)
+{
+	g_assert(name != NULL);
+	g_assert(value != NULL);
+
+	const char* pt = NULL;
+
+	pt = g_getenv(name);
+	if (pt != NULL)
+	{
+		GString* tmp = g_string_new(pt);
+		switch (pos)
+		{
+			case 1:
+				if (separator != NULL)
+					g_string_append(tmp, separator);
+				g_string_append(tmp, value);
+				break;
+			case -1:
+				if (separator != NULL)
+					g_string_prepend(tmp, separator);
+				g_string_prepend(tmp, value);
+				break;
+		}
+
+		if (g_setenv(name, tmp->str, TRUE) == FALSE)
+			ERR(TYPE, "$%s Couldn't be set.\n", name);
+
+		g_string_free(tmp, TRUE);
+	}
+}
+
+
 GString* lunionplay_clear_path(GString* path)
 {
 	assert(path != NULL);

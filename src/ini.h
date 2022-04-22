@@ -24,15 +24,10 @@
 #include <glib.h>
 
 
-/* DEPRECATED (for now)
-void lunionplay_close_config(GKeyFile** stream);
-*/
+GKeyFile* lunionplay_open_ini(const gchar* pathname);
 
 
-GKeyFile* lunionplay_open_ini(const char* pathname);
-
-
-char* lunionplay_parse_ini(GKeyFile* stream, const char* group, const char* name);
+gchar* lunionplay_parse_ini(GKeyFile* stream, const gchar* group, const gchar* name);
 
 
 #endif

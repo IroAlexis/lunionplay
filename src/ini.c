@@ -29,7 +29,7 @@
 #define TYPE "ini"
 
 
-GKeyFile* lunionplay_open_ini(const char* pathname)
+GKeyFile* lunionplay_open_ini(const gchar* pathname)
 {
 	GKeyFile* stream = NULL;
 	GString* cfg = NULL;
@@ -51,7 +51,7 @@ GKeyFile* lunionplay_open_ini(const char* pathname)
 		INFO(TYPE, "%s\n", cfg->str);
 
 		stream = g_key_file_new();
-		if (g_key_file_load_from_file(stream, cfg->str, G_KEY_FILE_NONE, &error) == FALSE)
+		if (! g_key_file_load_from_file(stream, cfg->str, G_KEY_FILE_NONE, &error))
 		{
 			g_clear_error(&error);
 			g_clear_pointer(&stream, g_key_file_free);
@@ -66,13 +66,13 @@ GKeyFile* lunionplay_open_ini(const char* pathname)
 }
 
 
-char* lunionplay_parse_ini(GKeyFile* stream, const char* group, const char* name)
+gchar* lunionplay_parse_ini(GKeyFile* stream, const gchar* group, const gchar* name)
 {
 	assert(stream != NULL);
 	assert(group != NULL);
 	assert(name != NULL);
 
-	char* value = NULL;
+	gchar* value = NULL;
 	GError* error = NULL;
 
 	if (g_key_file_has_group(stream, group))

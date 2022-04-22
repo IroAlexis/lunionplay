@@ -19,9 +19,6 @@
 
 #include "ini.h"
 
-#include <stdio.h>
-#include <assert.h>
-
 #include "system.h"
 #include "debug.h"
 
@@ -68,9 +65,9 @@ GKeyFile* lunionplay_open_ini(const gchar* pathname)
 
 gchar* lunionplay_parse_ini(GKeyFile* stream, const gchar* group, const gchar* name)
 {
-	assert(stream != NULL);
-	assert(group != NULL);
-	assert(name != NULL);
+	g_assert(stream != NULL);
+	g_assert(group != NULL);
+	g_assert(name != NULL);
 
 	gchar* value = NULL;
 	GError* error = NULL;

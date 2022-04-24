@@ -77,12 +77,9 @@ void lunionplay_append_env(const char* name, const char* value, const char* sepa
 }
 
 
-GString* lunionplay_clear_path(GString* path)
+GString* lunionplay_clean_path(GString* path)
 {
 	assert(path != NULL);
-
-	if (path->str[path->len - 1] == '\n')
-		g_string_truncate(path, path->len - 1);
 
 	if (path != NULL && path->str[path->len - 1] == '/')
 		g_string_truncate(path, path->len - 1);

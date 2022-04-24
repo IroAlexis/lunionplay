@@ -424,7 +424,7 @@ int lunionplay_setup_wineprefix(GString* gamedir)
 	{
 		winepfx = g_string_new(env);
 		if (winepfx != NULL)
-			lunionplay_clear_path(winepfx);
+			lunionplay_clean_path(winepfx);
 		else
 			return 1;
 	}

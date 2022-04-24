@@ -30,7 +30,7 @@
 void lunionplay_append_env(const char* name, const char* value, const char* separator);
 
 
-GString* lunionplay_clear_path(GString* path);
+GString* lunionplay_clean_path(GString* path);
 
 
 GString* lunionplay_concat_path(const GString* path, const char* val);

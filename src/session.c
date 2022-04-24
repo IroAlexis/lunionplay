@@ -122,7 +122,8 @@ static GString* lunionplay_set_command(const GString* gamedir, const char* exec)
 
 			bin = g_string_new(buffer);
 			if (bin != NULL)
-				lunionplay_clear_path(bin);
+				if (bin->str[bin->len - 1] == '\n')
+					g_string_truncate(bin, bin->len - 1);
 		}
 
 		g_string_free(gamestart, TRUE);
@@ -243,7 +244,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 			return NULL;
 		}
 	}
-	lunionplay_clear_path(dir);
+	lunionplay_clean_path(dir);
 
 	session->wine = lunionplay_init_wine(dir);
 	g_string_free(dir, TRUE);
@@ -259,7 +260,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 	dir = lunionplay_get_app_setting(session->stream, "default_dir");
 	if (dir != NULL)
 	{
-		lunionplay_clear_path(dir);
+		lunionplay_clean_path(dir);
 		if (dir != NULL)
 		{
 			session->gamedir = lunionplay_set_gamedir(dir->str, gameid);

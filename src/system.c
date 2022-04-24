@@ -106,7 +106,7 @@ GString* lunionplay_concat_path(const GString* path, const char* val)
 		tmp = NULL;
 	}
 
-	TRACE(__FILE__, __FUNCTION__, "[ \"%s\", %d\n ]", tmp->str, tmp->len);
+	TRACE(__FILE__, __FUNCTION__, "[ \"%s\", %d ]\n", tmp->str, tmp->len);
 
 	return tmp;
 }

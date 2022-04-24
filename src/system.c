@@ -100,13 +100,13 @@ GString* lunionplay_concat_path(const GString* path, const char* val)
 		g_string_append (tmp, "/");
 	g_string_append(tmp, val);
 
-	if (! g_file_test(tmp->str, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+	if (g_file_test(tmp->str, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+		TRACE(__FILE__, __FUNCTION__, "[ \"%s\", %d ]\n", tmp->str, tmp->len);
+	else
 	{
 		g_string_free(tmp, TRUE);
 		tmp = NULL;
 	}
-
-	TRACE(__FILE__, __FUNCTION__, "[ \"%s\", %d ]\n", tmp->str, tmp->len);
 
 	return tmp;
 }

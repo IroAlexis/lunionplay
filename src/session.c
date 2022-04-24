@@ -239,7 +239,6 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 			return NULL;
 		}
 	}
-	lunionplay_clean_path(dir);
 
 	session->wine = lunionplay_init_wine(dir);
 	g_string_free(dir, TRUE);

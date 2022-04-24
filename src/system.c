@@ -227,6 +227,7 @@ int lunionplay_run_process(const char* cmd, char* argv[])
 	int status;
 	pid_t child;
 
+	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", cmd);
 	for (char** tmp = argv; *tmp != NULL; tmp++)
 		TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", *tmp);
 

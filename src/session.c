@@ -131,11 +131,6 @@ static GString* lunionplay_set_command(const GString* gamedir, const char* exec)
 	else
 		bin = g_string_new(exec);
 
-	if (bin != NULL)
-		INFO(TYPE, "command: %s\n", bin->str);
-	else
-		ERR(TYPE, "No such executable game.\n");
-
 	return bin;
 }
 

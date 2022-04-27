@@ -353,6 +353,8 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 
 	lunionplay_wine_setup_runtime(session->wine);
 
+	lunionplay_wine_use_damavand(session->wine);
+
 	if (lunionplay_dxvk_installed())
 		lunionplay_setup_dxvk_runtime(session->gamedir);
 

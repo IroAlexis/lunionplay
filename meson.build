@@ -17,7 +17,7 @@ sources = [
   'src/session.c',
   'src/ini.c',
   'src/debug.c',
-  'src/system.c',
+  'src/utils.c',
   'src/wine.c',
   'src/dxvk.c',
   'src/vkd3d.c'

@@ -26,7 +26,7 @@
 #include <assert.h>
 
 #include "ini.h"
-#include "system.h"
+#include "utils.h"
 #include "wine.h"
 #include "dxvk.h"
 #include "vkd3d.h"

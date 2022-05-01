@@ -1,5 +1,5 @@
 /*
- * system.c
+ * utils.c
  * Copyright (C) 2021-2022 IroAlexis <iroalexis@outlook.fr>
  *
  * lunionplay is free software: you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
  */
 
 
-#include "system.h"
+#include "utils.h"
 
 #include <limits.h>
 #include <stdlib.h>
@@ -30,9 +30,6 @@
 #include <fcntl.h>
 
 #include "debug.h"
-
-
-#define TYPE "system"
 
 
 static void lunionplay_insert_env(const char* name, const char* value, const char* separator, const int pos)
@@ -61,7 +58,7 @@ static void lunionplay_insert_env(const char* name, const char* value, const cha
 		}
 
 		if (g_setenv(name, tmp->str, TRUE) == FALSE)
-			ERR(TYPE, "$%s Couldn't be set.\n", name);
+			ERR(NULL, "$%s Couldn't be set.\n", name);
 
 		g_string_free(tmp, TRUE);
 	}
@@ -123,7 +120,7 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 	fp = popen(cmd, "r");
 	if (fp == NULL)
 	{
-		ERR(TYPE, "Error to open a pipe stream.\n");
+		ERR(NULL, "Error to open a pipe stream.\n");
 		return NULL;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * system.h
+ * utils.h
  * Copyright (C) 2021-2022 IroAlexis <iroalexis@outlook.fr>
  *
  * lunionplay is free software: you can redistribute it and/or modify it
@@ -17,8 +17,8 @@
  */
 
 
-#ifndef __SYSTEM__
-#define __SYSTEM__
+#ifndef __UTILS__
+#define __UTILS__
 
 
 #include <glib.h>

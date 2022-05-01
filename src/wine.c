@@ -435,7 +435,7 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 	g_setenv("WINEDLLOVERRIDES", "mscoree,mshtml,winemenubuilder.exe=", TRUE);
 	g_setenv("WINEDEBUG", "-all", TRUE);
 
-	lunionplay_run_process(self->bin, cmdline);
+	lunionplay_run_proc(NULL, cmdline, FALSE, FALSE);
 	lunionplay_wine_use_server(self, "-w");
 
 	if (NULL == dll)
@@ -465,11 +465,11 @@ void lunionplay_wine_use_server(const LunionPlayWine* self, const gchar* option)
 	if (NULL == cmd)
 		return;
 
-	cmd[0] = g_path_get_basename(self->server);
+	cmd[0] = g_strdup(self->server);
 	cmd[1] = g_strdup(option);
 	cmd[2] = NULL;
 
-	lunionplay_run_process(self->server, cmd);
+	lunionplay_run_proc(NULL, cmd, FALSE, FALSE);
 
 	g_free(cmd[1]);
 	g_free(cmd[0]);

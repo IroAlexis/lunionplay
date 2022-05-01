@@ -101,43 +101,21 @@ GString* lunionplay_concat_path(const GString* path, const gchar* val)
 }
 
 
-gchar* lunionplay_get_output_cmd(const gchar* cmd)
+gchar* lunionplay_get_stdout(const gchar* cmd)
 {
-	assert(cmd != NULL);
+	g_assert(cmd != NULL);
 
-	gchar buffer[BUFFSIZE];
+	gint wait_status;
+	gchar* buffer = NULL;
 	gchar* str = NULL;
-	FILE* fp = NULL;
-	GString* contents = NULL;
+	g_autoptr (GError) error = NULL;
 
-	/* TODO Need use glib function */
-	fp = popen(cmd, "r");
-	if (fp == NULL)
-	{
-		ERR(NULL, "Error to open a pipe stream.\n");
-		return NULL;
-	}
+	g_spawn_command_line_sync(cmd, &buffer, NULL, &wait_status, &error);
 
-	fgets(buffer, BUFFSIZE, fp);
-	pclose(fp);
+	str = g_strndup(buffer, (gsize) strlen(buffer) - 1)
+	g_free(buffer);
 
-	/* TODO Don't use GString */
-	contents = g_string_new(buffer);
-
-	if (contents->str[contents->len - 1] == '\n')
-		g_string_truncate(contents, contents->len - 1);
-
-	if (contents->len <= 1)
-	{
-		g_string_free(contents, TRUE);
-		contents = NULL;
-	}
-	else
-	{
-		str = g_string_free(contents, FALSE);
-	}
-
-	return str;
+	return rslt;
 }
 
 
@@ -191,33 +169,32 @@ void lunionplay_prepend_env(const char* name, const char* value, const char* sep
 }
 
 
-int lunionplay_run_process(const char* cmd, char* argv[])
+gboolean lunionplay_run_proc(const gchar* workdir, gchar** argv, const gboolean s_out, const gboolean s_err)
 {
-	assert(cmd != NULL);
-	assert(argv != NULL);
+	g_assert(argv != NULL);
 
-	int status;
-	pid_t child;
+	gint wait_status;
+	gboolean ret;
+	GSpawnFlags flags;
+	g_autoptr (GError) err = NULL;
 
-	TRACE(__FILE__, __func__, "char* \"%s\"\n", cmd);
+	/* TODO For later need rework log application
 	for (char** tmp = argv; *tmp != NULL; tmp++)
-		TRACE(__FILE__, __func__, "char* \"%s\"\n", *tmp);
+		TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", *tmp);
+	*/
 
+	flags = G_SPAWN_SEARCH_PATH_FROM_ENVP;
 
-	child = fork();
-	switch(child)
-	{
-		case -1:
-			perror("fork");
-			return -1;
-		case 0:
-			lunionplay_log_file(getenv("LUNIONPLAY_LOG_FILE"));
-			execvp(cmd, argv);
-			exit(EXIT_FAILURE);
-		default:
-			break;
-	}
+	if (! s_out)
+		flags = flags | G_SPAWN_STDOUT_TO_DEV_NULL;
+	if (! s_err)
+	flags = flags | G_SPAWN_STDERR_TO_DEV_NULL;
 
-	waitpid(child, &status, 0);
-	return 0;
+	ret = g_spawn_sync(workdir, argv, NULL,
+	                   flags, NULL, NULL,
+	                   NULL, NULL,
+	                   &wait_status, &err);
+
+	return ret;
 }
+

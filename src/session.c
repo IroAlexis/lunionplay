@@ -83,11 +83,11 @@ gint lunionplay_run_session(const LunionPlayWine* wine,
 	g_assert(wine != NULL);
 	g_assert(game != NULL);
 
-	char* dir = NULL;
-	char* exec = NULL;
-	char** argv = NULL;
+	gchar* dir = NULL;
+	gchar* exec = NULL;
+	gchar** argv = NULL;
 
-	argv = (char**) calloc(3, sizeof(char*));
+	argv = (gchar**) g_malloc0(sizeof(gchar*) * 3);
 	if (NULL == argv)
 		return -1;
 
@@ -103,16 +103,15 @@ gint lunionplay_run_session(const LunionPlayWine* wine,
 
 	INFO(NULL, "Starting...\n");
 
-	g_chdir(dir);
-	lunionplay_run_process(lunionplay_wine_get_bin(wine), argv);
+	lunionplay_run_proc(dir, argv, TRUE, TRUE);
 	lunionplay_wine_use_server(wine, "-w");
 
 	for (char** tmp = argv; *tmp != NULL; tmp++)
-		free(*tmp);
-	free(argv);
+		g_free(*tmp);
+	g_free(argv);
 
-	free(dir);
-	free(exec);
+	g_free(dir);
+	g_free(exec);
 
 	return 0;
 }

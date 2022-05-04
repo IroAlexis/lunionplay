@@ -165,30 +165,6 @@ GString* lunionplay_get_uname(void)
 }
 
 
-/*
- * Need our own function for get XDG_CONFIG_HOME
- * because g_get_user_config_dir() leak *sigh*
- */
-const gchar* lunionplay_get_user_config_dir(void)
-{
-	const gchar* home = NULL;
-
-	home = g_getenv("XDG_CONFIG_HOME");
-	if (NULL == home)
-	{
-		GString* config = g_string_new(g_getenv("HOME"));
-
-		g_string_append(config, "/.config");
-		g_setenv("XDG_CONFIG_HOME", config->str, FALSE);
-		g_string_free(config, TRUE);
-
-		home = g_getenv("XDG_CONFIG_HOME");
-	}
-
-	return home;
-}
-
-
 static void lunionplay_log_file(const char* logfile)
 {
 	if (logfile != NULL)

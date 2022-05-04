@@ -34,7 +34,7 @@ GKeyFile* lunionplay_open_ini(const gchar* pathname)
 
 	if (NULL == pathname)
 	{
-		cfg = g_string_new(lunionplay_get_user_config_dir());
+		cfg = g_string_new(g_get_user_config_dir());
 		g_string_append(cfg, "/lunionplay/config.ini");
 	}
 	else

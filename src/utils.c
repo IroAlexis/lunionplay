@@ -24,6 +24,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <assert.h>
+#include <glib/gstdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/utsname.h>
@@ -63,6 +64,33 @@ static void lunionplay_insert_env(const char* name, const char* value, const cha
 
 		g_string_free(tmp, TRUE);
 	}
+}
+
+
+static gboolean lunionplay_redirect_log()
+{
+	gboolean ret = FALSE;
+	const gchar* filename = g_getenv("LUNIONPLAY_LOG_FILE");
+
+	if (filename != NULL)
+	{
+		GError* err = NULL;
+		gint fd = g_open(filename, O_RDWR | O_APPEND | O_CREAT, S_IRUSR | S_IWUSR);
+
+		if (fd != -1)
+		{
+			dup2(fd, 1);
+			dup2(fd, 2);
+
+			g_close(fd, &err);
+			if (err != NULL)
+				g_error_free(err);
+
+			ret = TRUE;
+		}
+	}
+
+	return ret;
 }
 
 
@@ -139,24 +167,6 @@ GString* lunionplay_get_uname(void)
 	g_string_append(kernel, buffer.machine);
 
 	return kernel;
-}
-
-
-static void lunionplay_log_file(const char* logfile)
-{
-	if (logfile != NULL)
-	{
-		TRACE(__FILE__, __func__, "\"%s\"\n", logfile);
-
-		int fd = open(logfile, O_RDWR | O_APPEND | O_CREAT, S_IRUSR | S_IWUSR);
-
-		if (fd != -1)
-		{
-			dup2(fd, 1);
-			dup2(fd, 2);
-			close(fd);
-		}
-	}
 }
 
 

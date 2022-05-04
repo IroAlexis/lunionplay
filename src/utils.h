@@ -36,6 +36,9 @@ GString* lunionplay_clean_path(GString* path);
 GString* lunionplay_concat_path(const GString* path, const char* val);
 
 
+gchar* lunionplay_get_param(GKeyFile* stream, const gchar* key);
+
+
 GString* lunionplay_get_output_cmd(const char* cmd);
 
 

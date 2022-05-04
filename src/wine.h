@@ -48,7 +48,7 @@ const gchar* lunionplay_wine_get_server(const LunionPlayWine* self);
 const gchar* lunionplay_wine_get_version(const LunionPlayWine* self);
 
 
-LunionPlayWine* lunionplay_wine_create(const GString* winedir);
+LunionPlayWine* lunionplay_wine_create(const gchar* winedir);
 
 
 LunionPlayWine* lunionplay_wine_system_create(void);

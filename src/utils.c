@@ -29,6 +29,7 @@
 #include <sys/utsname.h>
 #include <fcntl.h>
 
+#include "ini.h"
 #include "debug.h"
 
 
@@ -106,6 +107,37 @@ GString* lunionplay_concat_path(const GString* path, const char* val)
 	}
 
 	return tmp;
+}
+
+
+gchar* lunionplay_get_param(GKeyFile* stream, const gchar* key)
+{
+	g_assert(key != NULL);
+
+	const gchar* value;
+	gchar* tmp = NULL;
+	gchar* ret = NULL;
+	gchar* name = NULL;
+
+	tmp = g_ascii_strup(key, strnlen(key, 1024));
+
+	name = g_strconcat("LUNIONPLAY_", tmp, NULL);
+	if (NULL == name)
+		return NULL;
+
+	value = g_getenv(name);
+	TRACE(__FILE__, __FUNCTION__, "%s=%s\n", name, value);
+
+	g_free(tmp);
+	g_free(name);
+
+	if (value != NULL)
+		ret = g_strdup(value);
+
+	if (ret == NULL && stream != NULL)
+		ret = lunionplay_parse_ini(stream, "lunionplay", key);
+
+	return ret;
 }
 
 

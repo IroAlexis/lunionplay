@@ -187,7 +187,7 @@ void lunionplay_wine_debug_runtime(FILE* stream)
 /*
  * factory method
  */
-LunionPlayWine* lunionplay_wine_create(const GString* path)
+LunionPlayWine* lunionplay_wine_create(const gchar* path)
 {
 	GString* base_dir = NULL;
 	GString* lib32_dir = NULL;
@@ -199,7 +199,7 @@ LunionPlayWine* lunionplay_wine_create(const GString* path)
 	GString* version = NULL;
 	gboolean wow64 = TRUE;
 
-	base_dir = g_string_new(path->str);
+	base_dir = g_string_new(path);
 	if (NULL == base_dir)
 		return NULL;
 

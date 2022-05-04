@@ -39,7 +39,7 @@
 struct _lunion_play_session
 {
 	GKeyFile* stream;
-	GString* waiting;
+	gchar* waiting;
 
 	LunionPlayWine* wine;
 
@@ -156,7 +156,7 @@ void lunionplay_free_session(LunionPlaySession* session)
 	g_clear_pointer(&(session->stream), g_key_file_free);
 
 	if (session->waiting != NULL)
-		g_string_free(session->waiting, TRUE);
+		g_free(session->waiting);
 
 	if (session->wine != NULL)
 		lunionplay_wine_free(session->wine);
@@ -192,7 +192,7 @@ void lunionplay_display_session(const LunionPlaySession* session)
 		else
 			fprintf(stderr, " ->  * stream: %p\n", NULL);
 
-		lunionplay_display_session_struct("waiting", session->waiting);
+		fprintf(stderr, " ->  * waiting: %s\n", session->waiting);
 		lunionplay_wine_print(session->wine);
 		lunionplay_display_session_struct("gametitle", session->gametitle);
 		lunionplay_display_session_struct("gameid", session->gameid);
@@ -206,7 +206,7 @@ void lunionplay_display_session(const LunionPlaySession* session)
 
 LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 {
-	GString* dir = NULL;
+	gchar* dir = NULL;
 	LunionPlaySession* session = NULL;
 
 	session = (LunionPlaySession*) calloc(1, sizeof(LunionPlaySession));
@@ -216,24 +216,20 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 	session->stream = lunionplay_open_ini(getenv("LUNIONPLAY_CONFIGFILE"));
 
 	/* Search Wine */
-	dir = lunionplay_get_app_setting(session->stream, "wine");
+	dir = lunionplay_get_param(session->stream, "wine");
 	if (dir == NULL)
 	{
-		char* pwd = g_get_current_dir();
-
-		dir = g_string_new(pwd);
-		free(pwd);
-
+		dir = g_get_current_dir();
 		if (dir == NULL)
 		{
 			lunionplay_free_session(session);
 			return NULL;
 		}
 
-		g_string_append(dir, "/dist");
-		if (! g_file_test(dir->str, G_FILE_TEST_IS_DIR))
+		g_strconcat(dir, "/dist", NULL);
+		if (! g_file_test(dir, G_FILE_TEST_IS_DIR))
 		{
-			g_string_free(dir, TRUE);
+			g_free(dir);
 			dir = NULL;
 		}
 	}
@@ -241,7 +237,7 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 	if (dir != NULL)
 	{
 		session->wine = lunionplay_wine_create(dir);
-		g_string_free(dir, TRUE);
+		g_free(dir);
 		dir = NULL;
 	}
 	else
@@ -255,18 +251,14 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 
 
 	/* Search directory */
-	dir = lunionplay_get_app_setting(session->stream, "default_dir");
+	dir = lunionplay_get_param(session->stream, "default_dir");
 	if (dir != NULL)
 	{
-		lunionplay_clean_path(dir);
-		if (dir != NULL)
-		{
-			session->gamedir = lunionplay_set_gamedir(dir->str, gameid);
-			if (session->gamedir != NULL)
-				session->command = lunionplay_set_command(session->gamedir, exec);
+		session->gamedir = lunionplay_set_gamedir(dir, gameid);
+		if (session->gamedir != NULL)
+			session->command = lunionplay_set_command(session->gamedir, exec);
 
-			g_string_free(dir, TRUE);
-		}
+		g_free(dir);
 
 		if (session->gamedir == NULL || session->command == NULL)
 		{
@@ -285,52 +277,10 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 	session->gameid = g_string_new(gameid);
 
 	/* For waiting confirmation */
-	session->waiting = lunionplay_get_app_setting(session->stream, "waiting");
+	session->waiting = lunionplay_get_param(session->stream, "waiting");
 
 	lunionplay_display_session(session);
 	return session;
-}
-
-
-GString* lunionplay_get_app_setting(GKeyFile* stream, const char* name)
-{
-	assert(name != NULL);
-
-	char* tmp = NULL;
-	GString* value = NULL;
-	GString* env = NULL;
-
-	env = g_string_new("LUNIONPLAY_");
-	if (env != NULL)
-	{
-		tmp = g_ascii_strup(name, strnlen(name, 1024));
-
-		env = g_string_append(env, tmp);
-		TRACE(__FILE__, __FUNCTION__, "%s=%s\n", env->str, getenv(env->str));
-
-		if (getenv(env->str) != NULL)
-			value = g_string_new(getenv(env->str));
-
-		free(tmp);
-		tmp = NULL;
-	}
-	else
-		ERR(TYPE, "Allocation problem.");
-
-	g_string_free(env, TRUE);
-
-	if (value == NULL && stream != NULL)
-	{
-		tmp = lunionplay_parse_ini(stream, "lunionplay", name);
-		if (tmp != NULL)
-		{
-			value = g_string_new(tmp);
-			free(tmp);
-			tmp = NULL;
-		}
-	}
-
-	return value;
 }
 
 
@@ -341,7 +291,7 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 	lunionplay_wine_setup_prefix(session->gamedir);
 
 	if (session->waiting != NULL)
-		if (g_strcmp0(session->waiting->str, "true") == 0 && getenv("LUNIONPLAY_LOG_FILE") == NULL)
+		if (g_strcmp0(session->waiting, "true") == 0 && getenv("LUNIONPLAY_LOG_FILE") == NULL)
 			if (lunionplay_wait_continue() == 1)
 				return -1;
 

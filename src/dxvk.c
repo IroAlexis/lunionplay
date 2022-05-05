@@ -37,8 +37,8 @@ static gboolean lunionplay_check_dll_file(const GString* path, const char* file)
 	old = g_string_new(dll->str);
 	g_string_append(old, ".old");
 
-	rslt = g_file_test(dll->str, G_FILE_TEST_IS_REGULAR)
-	       && g_file_test(old->str, G_FILE_TEST_IS_REGULAR);
+	rslt = g_file_test(dll->str, G_FILE_TEST_IS_REGULAR) &&
+	       g_file_test(old->str, G_FILE_TEST_IS_REGULAR);
 
 	g_string_free(dll, TRUE);
 	g_string_free(old, TRUE);

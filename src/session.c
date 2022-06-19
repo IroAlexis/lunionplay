@@ -217,22 +217,6 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 
 	/* Search Wine */
 	dir = lunionplay_get_param(session->stream, "wine");
-	if (dir == NULL)
-	{
-		dir = g_get_current_dir();
-		if (dir == NULL)
-		{
-			lunionplay_free_session(session);
-			return NULL;
-		}
-
-		g_strconcat(dir, "/dist", NULL);
-		if (! g_file_test(dir, G_FILE_TEST_IS_DIR))
-		{
-			g_free(dir);
-			dir = NULL;
-		}
-	}
 
 	if (dir != NULL)
 	{
@@ -241,7 +225,9 @@ LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec)
 		dir = NULL;
 	}
 	else
+	{
 		session->wine = lunionplay_wine_system_create();
+	}
 
 	if (session->wine == NULL)
 	{

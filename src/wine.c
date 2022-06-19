@@ -68,7 +68,7 @@ static GString* lunionplay_wine_find_in_path()
 	dir = g_path_get_dirname(tmp);
 	g_free(tmp);
 
-	if (tmp != NULL)
+	if (dir != NULL)
 	{
 		rslt = g_string_new(dir);
 		g_free(dir);

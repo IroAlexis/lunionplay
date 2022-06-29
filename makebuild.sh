@@ -44,21 +44,21 @@ LUNIONPLAY_ARCHIVE_PATH="$DEST_DIR.tar.zst"
 # Control other arguments
 shift 1
 
-package=true
-dxvk=false
-vkd3d=false
+opt_package=true
+opt_dxvk=false
+opt_vkd3d=false
 
 while [ $# -gt 0 ]
 do
 	case "$1" in
 	"--no-package")
-		package=false
+		opt_package=false
 		;;
 	"--with-dxvk")
-		dxvk=true
+		opt_dxvk=true
 		;;
 	"--with-vkd3d")
-		vkd3d=true
+		opt_vkd3d=true
 		;;
 	esac
 	shift
@@ -83,7 +83,7 @@ rm -rf "$BUILD_DIR"
 
 compile_dxvk()
 {
-	if [ $dxvk = true ] && [ -f "$SRC_DIR/dxvk/.git" ] && [ -f "$SRC_DIR/dxvk/meson.build" ]
+	if [ $opt_dxvk = true ] && [ -f "$SRC_DIR/dxvk/.git" ] && [ -f "$SRC_DIR/dxvk/meson.build" ]
 	then
 		cd "$SRC_DIR/dxvk"
 
@@ -116,7 +116,7 @@ compile_dxvk()
 
 compile_vkd3d_proton()
 {
-	if [ $vkd3d = true ] && [ -f "$SRC_DIR/vkd3d-proton/.git" ] && [ -f "$SRC_DIR/vkd3d-proton/meson.build" ]
+	if [ $opt_vkd3d = true ] && [ -f "$SRC_DIR/vkd3d-proton/.git" ] && [ -f "$SRC_DIR/vkd3d-proton/meson.build" ]
 	then
 		cd "$SRC_DIR/vkd3d-proton"
 
@@ -157,7 +157,7 @@ create_package()
 compile_dxvk
 compile_vkd3d_proton
 
-if [ $package = true ]
+if [ $opt_package = true ]
 then
 	create_package
 fi

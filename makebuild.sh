@@ -145,7 +145,7 @@ integrate_vkd3d_proton()
 create_package()
 {
   tar -C "$DEST_DIR/.." --zstd -cf "$LUNIONPLAY_ARCHIVE_PATH" "$(basename "$DEST_DIR")"
-  rm -R "$(basename "$DEST_DIR")"
+  rm -rf "$DEST_DIR"
 }
 
 integrate_dxvk

@@ -16,16 +16,12 @@ fi
 
 # Found source directory
 SRC_DIR=$(dirname "$(readlink -f "$0")")
-if [[ $PWD != "$SRC_DIR" ]]
-then
-    cd "$SRC_DIR"
-fi
 
 # Init version
-GIT_BRANCH=$(git branch --show-current)
+GIT_BRANCH=$(git -C "$SRC_DIR" branch --show-current)
 if [[ $GIT_BRANCH =~ master ]]
 then
-    LUNIONPLAY_VERSION=$(git describe --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/v//g')
+    LUNIONPLAY_VERSION=$(git -C "$SRC_DIR" describe --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/v//g')
 else
     LUNIONPLAY_VERSION=$(echo "$GIT_BRANCH" | sed 's/\//-/g')
 fi
@@ -65,28 +61,25 @@ do
 done
 
 # Compile and install lunionplay
-cd "$SRC_DIR"
-
-BUILD_DIR="_build"
+BUILD_DIR="$SRC_DIR/_build"
 if [ ! -d "$BUILD_DIR" ]
 then
     meson --buildtype "release" \
           --prefix "$DEST_DIR" \
           --bindir "$DEST_DIR" \
-          "$BUILD_DIR"
+          "$BUILD_DIR" \
+          "$SRC_DIR"
 fi
 ninja -C "$BUILD_DIR"
 
 install -v -Dm755 "$BUILD_DIR/lunionplay" "$DEST_DIR"
-install -v -Dm644 "LICENSE" "$DEST_DIR"
+install -v -Dm644 "$SRC_DIR/LICENSE" "$DEST_DIR"
 rm -rf "$BUILD_DIR"
 
-compile_dxvk()
+integrate_dxvk()
 {
     if [ $opt_dxvk = true ] && [ -f "$SRC_DIR/dxvk/.git" ] && [ -f "$SRC_DIR/dxvk/meson.build" ]
     then
-        cd "$SRC_DIR/dxvk"
-
         DXVK_BUILDDIR="_build.64"
         DXVK_DEST_DIR="$DEST_DIR/runtime/dxvk"
 
@@ -95,7 +88,8 @@ compile_dxvk()
               --prefix "$DXVK_DEST_DIR" \
               --bindir "x64" \
               --libdir "x64" \
-              "$DXVK_BUILDDIR"
+              "$DXVK_BUILDDIR" \
+              "$SRC_DIR/dxvk"
         ninja -C "$DXVK_BUILDDIR" install
         rm -rf "$DXVK_BUILDDIR"
 
@@ -105,7 +99,8 @@ compile_dxvk()
               --prefix "$DXVK_DEST_DIR" \
               --bindir "x32" \
               --libdir "x32" \
-              "$DXVK_BUILDDIR"
+              "$DXVK_BUILDDIR" \
+              "$SRC_DIR/dxvk"
         ninja -C "$DXVK_BUILDDIR" install
         rm -rf "$DXVK_BUILDDIR"
 
@@ -114,12 +109,10 @@ compile_dxvk()
     fi
 }
 
-compile_vkd3d_proton()
+integrate_vkd3d_proton()
 {
     if [ $opt_vkd3d = true ] && [ -f "$SRC_DIR/vkd3d-proton/.git" ] && [ -f "$SRC_DIR/vkd3d-proton/meson.build" ]
     then
-        cd "$SRC_DIR/vkd3d-proton"
-
         VKD3D_BUILDDIR="_build.64"
         VKD3D_DEST_DIR="$DEST_DIR/runtime/vkd3d-proton"
 
@@ -128,7 +121,8 @@ compile_vkd3d_proton()
               --prefix "$VKD3D_DEST_DIR" \
               --bindir "x64" \
               --libdir "x64" \
-              "$VKD3D_BUILDDIR"
+              "$VKD3D_BUILDDIR" \
+              "$SRC_DIR/vkd3d-proton"
         ninja -C "$VKD3D_BUILDDIR" install
         rm -rf "$VKD3D_BUILDDIR"
 
@@ -138,7 +132,8 @@ compile_vkd3d_proton()
               --prefix "$VKD3D_DEST_DIR" \
               --bindir "x86" \
               --libdir "x86" \
-              "$VKD3D_BUILDDIR"
+              "$VKD3D_BUILDDIR" \
+              "$SRC_DIR/vkd3d-proton"
         ninja -C "$VKD3D_BUILDDIR" install
         rm -rf "$VKD3D_BUILDDIR"
 
@@ -149,16 +144,15 @@ compile_vkd3d_proton()
 
 create_package()
 {
-    cd "$DEST_DIR/.."
-    tar --zstd -cf "$LUNIONPLAY_ARCHIVE_PATH" "$(basename "$DEST_DIR")"
+    tar -C "$DEST_DIR/.." --zstd -cf "$LUNIONPLAY_ARCHIVE_PATH" "$(basename "$DEST_DIR")"
     rm -R "$(basename "$DEST_DIR")"
 }
 
-compile_dxvk
-compile_vkd3d_proton
+integrate_dxvk
+integrate_vkd3d_proton
 
 if [ $opt_package = true ]
 then
-    create_package
+    (cd "$DEST_DIR/.." && create_package)
 fi
 

@@ -80,9 +80,10 @@ integrate_dxvk()
 {
   if [ $opt_dxvk = true ] && [ -f "$SRC_DIR/dxvk/.git" ] && [ -f "$SRC_DIR/dxvk/meson.build" ]
   then
-    DXVK_BUILDDIR="_build.64"
     DXVK_DEST_DIR="$DEST_DIR/runtime/dxvk"
 
+    # DXVK 64bits
+    DXVK_BUILDDIR="$SRC_DIR/dxvk/_build.64"
     meson --cross "build-win64.txt" \
           --buildtype "release" \
           --prefix "$DXVK_DEST_DIR" \
@@ -93,7 +94,8 @@ integrate_dxvk()
     ninja -C "$DXVK_BUILDDIR" install
     rm -rf "$DXVK_BUILDDIR"
 
-    DXVK_BUILDDIR="_build.32"
+    # DXVK 32bits
+    DXVK_BUILDDIR="$SRC_DIR/dxvk/_build.32"
     meson --cross "build-win32.txt" \
           --buildtype "release" \
           --prefix "$DXVK_DEST_DIR" \
@@ -113,9 +115,10 @@ integrate_vkd3d_proton()
 {
   if [ $opt_vkd3d = true ] && [ -f "$SRC_DIR/vkd3d-proton/.git" ] && [ -f "$SRC_DIR/vkd3d-proton/meson.build" ]
   then
-    VKD3D_BUILDDIR="_build.64"
     VKD3D_DEST_DIR="$DEST_DIR/runtime/vkd3d-proton"
 
+    # VKD3D-Proton 64bits
+    VKD3D_BUILDDIR="$SRC_DIR/vkd3d-proton/_build.64"
     meson --cross "build-win64.txt" \
           --buildtype "release" \
           --prefix "$VKD3D_DEST_DIR" \
@@ -126,7 +129,8 @@ integrate_vkd3d_proton()
     ninja -C "$VKD3D_BUILDDIR" install
     rm -rf "$VKD3D_BUILDDIR"
 
-    VKD3D_BUILDDIR="_build.86"
+    # VKD3D-Proton 32bits
+    VKD3D_BUILDDIR="$SRC_DIR/vkd3d-proton/_build.86"
     meson --cross "build-win32.txt" \
           --buildtype "release" \
           --prefix "$VKD3D_DEST_DIR" \

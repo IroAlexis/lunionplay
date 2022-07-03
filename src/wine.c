@@ -78,6 +78,16 @@ static GString* lunionplay_wine_find_in_path()
 }
 
 
+static void lunionplay_wine_free_param(GString* param)
+{
+	if (param != NULL)
+	{
+		g_string_free(param, TRUE);
+		param = NULL;
+	}
+}
+
+
 /*
  * In such case, there are only lib/lib64 or lib/lib32
  */
@@ -101,7 +111,6 @@ static void lunionplay_wine_print_property(const gchar* name, const GString* val
 	else
 		fprintf(stderr, " ->  * %s: %p\n", name, NULL);
 }
-
 
 
 static LunionPlayWine* lunionplay_wine_new(GString* base_dir,
@@ -275,53 +284,14 @@ void lunionplay_wine_free(LunionPlayWine* self)
 {
 	g_assert(self != NULL);
 
-	if (self->base_dir != NULL)
-	{
-		g_string_free(self->base_dir, TRUE);
-		self->base_dir = NULL;
-	}
-
-	if (self->lib32_dir != NULL)
-	{
-		g_string_free(self->lib32_dir, TRUE);
-		self->lib32_dir = NULL;
-	}
-
-	if (self->lib64_dir != NULL)
-	{
-		g_string_free(self->lib64_dir, TRUE);
-		self->lib64_dir = NULL;
-	}
-
-	if (self->bin_dir != NULL)
-	{
-		g_string_free(self->bin_dir, TRUE);
-		self->bin_dir = NULL;
-	}
-
-	if (self->bin != NULL)
-	{
-		g_string_free(self->bin, TRUE);
-		self->bin = NULL;
-	}
-
-	if (self->bin64 != NULL)
-	{
-		g_string_free(self->bin64, TRUE);
-		self->bin64 = NULL;
-	}
-
-	if (self->server != NULL)
-	{
-		g_string_free(self->server, TRUE);
-		self->server = NULL;
-	}
-
-	if (self->version != NULL)
-	{
-		g_string_free(self->version, TRUE);
-		self->version = NULL;
-	}
+	lunionplay_wine_free_param(self->base_dir);
+	lunionplay_wine_free_param(self->lib32_dir);
+	lunionplay_wine_free_param(self->lib64_dir);
+	lunionplay_wine_free_param(self->bin_dir);
+	lunionplay_wine_free_param(self->bin);
+	lunionplay_wine_free_param(self->bin64);
+	lunionplay_wine_free_param(self->server);
+	lunionplay_wine_free_param(self->version);
 
 	g_free(self);
 	self = NULL;

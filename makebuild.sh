@@ -84,6 +84,10 @@ integrate_dxvk()
   then
     local DXVK_DEST_DIR="$DEST_DIR/runtime/dxvk"
 
+    # Used in DXVK's package-release.sh
+    export WINEARCH="win64"
+    export WINEPREFIX="$DXVK_DEST_DIR/wine.64"
+
     # DXVK 64bits
     local DXVK_BUILDDIR="$DXVK_SRC_DIR/_build.64"
     meson --cross "$DXVK_SRC_DIR/build-win64.txt" \
@@ -95,6 +99,10 @@ integrate_dxvk()
           "$DXVK_SRC_DIR"
     ninja -C "$DXVK_BUILDDIR" install
     rm -rf "$DXVK_BUILDDIR"
+
+    # Used in DXVK's package-release.sh
+    export WINEARCH="win32"
+    export WINEPREFIX="$DXVK_DEST_DIR/wine.32"
 
     # DXVK 32bits
     local DXVK_BUILDDIR="$DXVK_SRC_DIR/_build.32"
@@ -110,6 +118,9 @@ integrate_dxvk()
 
     rm "$DXVK_DEST_DIR"/x64/*.a
     rm "$DXVK_DEST_DIR"/x32/*.a
+
+    unset WINEARCH
+    unset WINEPREFIX
   fi
 }
 

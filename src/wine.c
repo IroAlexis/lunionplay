@@ -41,16 +41,22 @@ struct _lunion_play_wine
 
 /*
  * Pure 64-bit Wine (non Wow64) requries skipping 32-bit steps.
- * In such case, wine64 and winebooot will be present, but wine binary will be missing,
+ * In such case, wine64 and wineboot will be present, but wine binary will be missing,
  * however it can be present in other PATHs, so it shouldn't be used, to avoid versions mixing.static
  */
-static void lunionplay_wine_bin(GString** bin, GString** bin64, gboolean* wow64)
+static gboolean lunionplay_wine_is_wow64(GString** bin64, GString** bin)
 {
-	if (*bin64 != NULL && NULL == *bin)
+	g_assert(*bin64 != NULL);
+
+	gboolean wow64 = TRUE;
+
+	if (NULL == *bin)
 	{
-		*wow64 = FALSE;
 		*bin = *bin64;
+		wow64 = FALSE;
 	}
+
+	return wow64;
 }
 
 
@@ -220,7 +226,7 @@ LunionPlayWine* lunionplay_wine_create(const gchar* path)
 	bin = lunionplay_concat_path(bin_dir, "wine");
 	bin64 = lunionplay_concat_path(bin_dir, "wine64");
 	server = lunionplay_concat_path(bin_dir, "wineserver");
-	lunionplay_wine_bin(&bin, &bin64, &wow64);
+	wow64 = lunionplay_wine_is_wow64(&bin64, &bin);
 
 	version = lunionplay_wine_set_version(bin);
 
@@ -242,7 +248,7 @@ LunionPlayWine* lunionplay_wine_system_create(void)
 	bin = lunionplay_concat_path(bin_dir, "wine");
 	bin64 = lunionplay_concat_path(bin_dir, "wine64");
 	server = lunionplay_concat_path(bin_dir, "wineserver");
-	lunionplay_wine_bin(&bin, &bin64, &wow64);
+	wow64 = lunionplay_wine_is_wow64(&bin64, &bin);
 
 	version = lunionplay_wine_set_version(bin);
 

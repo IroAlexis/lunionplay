@@ -80,22 +80,23 @@ GString* lunionplay_concat_path(const GString* path, const char* val)
 	g_assert(path != NULL);
 	g_assert(val != NULL);
 
-	GString* tmp = NULL;
+	gchar* tmp = NULL;
+	GString* npath = NULL;
 
-	tmp = g_string_new(path->str);
-	if (tmp->str[tmp->len - 1] != '/')
-		g_string_append (tmp, "/");
-	g_string_append(tmp, val);
+	tmp = g_build_path("/", path->str, val, NULL);
+	TRACE(__FILE__, __FUNCTION__, "gchar \"%s\"\n", tmp);
 
-	if (g_file_test(tmp->str, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
-		TRACE(__FILE__, __FUNCTION__, "[ \"%s\", %d ]\n", tmp->str, tmp->len);
-	else
+	if (tmp != NULL)
 	{
-		g_string_free(tmp, TRUE);
-		tmp = NULL;
+		if (g_file_test(tmp, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+		{
+			npath = g_string_new(tmp);
+		}
+
+		g_free(tmp);
 	}
 
-	return tmp;
+	return npath;
 }
 
 

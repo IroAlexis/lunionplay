@@ -55,25 +55,27 @@ static gboolean lunionplay_check_dll_file(const GString* path, const char* file)
 }
 
 
-void lunionplay_setup_vkd3d_proton_runtime(const GString* path)
+void lunionplay_setup_vkd3d_proton_runtime(const gchar* path)
 {
-	GString* dir = NULL;
+	gchar* dir = NULL;
 
-	dir = g_string_new(path->str);
-	g_string_append(dir, "/shadercache/vkd3d_proton_shader_cache");
-	g_mkdir_with_parents(dir->str, S_IRWXU);
+	dir = g_build_path("/", path, "shadercache", "vkd3d_proton_shader_cache", NULL);
+	g_mkdir_with_parents(dir, S_IRWXU);
 
-	g_setenv("VKD3D_SHADER_CACHE_PATH", dir->str, TRUE);
+	g_setenv("VKD3D_SHADER_CACHE_PATH", dir, TRUE);
 
 	if (g_getenv("LUNIONPLAY_LOG") != NULL)
 		g_setenv("VKD3D_DEBUG", "warn", FALSE);
 	else
 		g_setenv("VKD3D_DEBUG", "none", FALSE);
 
-	g_string_free(dir, TRUE);
+	g_free(dir);
 }
 
 
+/*
+ * TODO Merge with dxvk.c (maybe runtime.c)
+ */
 gboolean lunionplay_vkd3d_proton_installed(void)
 {
 	gboolean dll64;

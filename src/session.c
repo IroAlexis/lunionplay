@@ -274,7 +274,7 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 {
 	assert(session != NULL);
 
-	lunionplay_wine_setup_prefix(session->gamedir);
+	lunionplay_wine_setup_prefix(session->gamedir->str);
 
 	if (session->waiting != NULL)
 		if (g_strcmp0(session->waiting, "true") == 0 && getenv("LUNIONPLAY_LOG_FILE") == NULL)
@@ -290,10 +290,10 @@ int lunionplay_prepare_session(const LunionPlaySession* session)
 	lunionplay_wine_setup_runtime(session->wine);
 
 	if (lunionplay_dxvk_installed())
-		lunionplay_setup_dxvk_runtime(session->gamedir);
+		lunionplay_setup_dxvk_runtime(session->gamedir->str);
 
 	if (lunionplay_vkd3d_proton_installed())
-		lunionplay_setup_vkd3d_proton_runtime(session->gamedir);
+		lunionplay_setup_vkd3d_proton_runtime(session->gamedir->str);
 
 	return 0;
 }

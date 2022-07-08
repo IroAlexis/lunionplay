@@ -24,7 +24,7 @@
 #include <glib.h>
 
 
-void lunionplay_setup_dxvk_runtime(const GString* path);
+void lunionplay_setup_dxvk_runtime(const gchar* path);
 
 
 gboolean lunionplay_dxvk_installed(void);

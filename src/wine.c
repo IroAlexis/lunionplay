@@ -364,27 +364,26 @@ void lunionplay_wine_setup_runtime(const LunionPlayWine* self)
 }
 
 
-void lunionplay_wine_setup_prefix(GString* dir)
+void lunionplay_wine_setup_prefix(gchar* path)
 {
-	g_assert(dir != NULL);
+	g_assert(path != NULL);
 
 	const char* env = NULL;
 
 	env = getenv("WINEPREFIX");
 	if (NULL == env)
 	{
-		GString* winepfx = g_string_new(dir->str);
-		g_string_append(winepfx, "/pfx");
+		gchar* pfx = g_build_path("/", path, "pfx", NULL);
 
-		g_setenv("WINEPREFIX", winepfx->str, FALSE);
-		g_string_free(winepfx, TRUE);
+		g_setenv("WINEPREFIX", pfx, FALSE);
+		g_free(pfx);
 
 		env = g_getenv("WINEPREFIX");
 	}
 
 	if (! g_file_test(env, G_FILE_TEST_IS_DIR))
 	{
-		WARN(TYPE, "Creating a new wine prefix.\n");
+		WARN(TYPE, "Creating a new wine prefix: %s\n", env);
 		g_setenv("LUNIONPLAY_WAITING", "true", TRUE);
 	}
 }

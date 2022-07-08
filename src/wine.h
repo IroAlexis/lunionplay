@@ -57,7 +57,7 @@ LunionPlayWine* lunionplay_wine_system_create(void);
 void lunionplay_wine_setup_runtime(const LunionPlayWine* self);
 
 
-void lunionplay_wine_setup_prefix(GString* dir);
+void lunionplay_wine_setup_prefix(gchar* path);
 
 
 void lunionplay_wine_update_prefix(const LunionPlayWine* self);

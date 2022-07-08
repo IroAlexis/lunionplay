@@ -26,46 +26,45 @@ static gboolean lunionplay_check_dll_file(const GString* path, const char* file)
 {
 	g_assert(path != NULL);
 
-	GString* dll = NULL;
-	GString* old = NULL;
+	gchar* dll = NULL;
+	gchar* old = NULL;
 	gboolean rslt;
 
-	dll = g_string_new(path->str);
-	g_string_append(dll, "/");
-	g_string_append(dll, file);
+	dll = g_build_path("/", path->str, file, NULL);
+	old = g_strconcat(dll, ".old", NULL);
 
-	old = g_string_new(dll->str);
-	g_string_append(old, ".old");
+	rslt = g_file_test(dll, G_FILE_TEST_IS_REGULAR) &&
+	       g_file_test(old, G_FILE_TEST_IS_REGULAR);
 
-	rslt = g_file_test(dll->str, G_FILE_TEST_IS_REGULAR) &&
-	       g_file_test(old->str, G_FILE_TEST_IS_REGULAR);
-
-	g_string_free(dll, TRUE);
-	g_string_free(old, TRUE);
+	g_free(dll);
+	g_free(old);
 
 	return rslt;
 }
 
 
-void lunionplay_setup_dxvk_runtime(const GString* path)
+void lunionplay_setup_dxvk_runtime(const gchar* path)
 {
-	GString* dir = NULL;
+	g_assert(path != NULL);
 
-	dir = g_string_new(path->str);
-	g_string_append(dir, "/shadercache/dxvk_state_cache");
-	g_mkdir_with_parents(dir->str, S_IRWXU);
+	gchar* dir = NULL;
 
-	g_setenv("DXVK_STATE_CACHE_PATH", dir->str, TRUE);
+	dir = g_build_path("/", path, "shadercache", "dxvk_state_cache", NULL);
+	g_mkdir_with_parents(dir, S_IRWXU);
+
+	g_setenv("DXVK_STATE_CACHE_PATH", dir, TRUE);
 
 	if (g_getenv("LUNIONPLAY_LOG") != NULL)
 		g_setenv("DXVK_LOG_LEVEL", "info", FALSE);
 	else
 		g_setenv("DXVK_LOG_LEVEL", "none", FALSE);
 
-	g_string_free(dir, TRUE);
+	g_free(dir);
 }
 
-
+/*
+ * TODO Merge with vkd3d.c (maybe runtime.c)
+ */
 gboolean lunionplay_dxvk_installed(void)
 {
 	gboolean dll64 = TRUE;
@@ -88,3 +87,4 @@ gboolean lunionplay_dxvk_installed(void)
 
 	return dll64 || dll32;
 }
+

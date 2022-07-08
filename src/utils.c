@@ -38,12 +38,12 @@ static void lunionplay_insert_env(const char* name, const char* value, const cha
 	g_assert(name != NULL);
 	g_assert(value != NULL);
 
-	const char* pt = NULL;
+	const char* env = NULL;
 
-	pt = g_getenv(name);
-	if (pt != NULL)
+	env = g_getenv(name);
+	if (env != NULL)
 	{
-		GString* tmp = g_string_new(pt);
+		GString* tmp = g_string_new(env);
 		switch (pos)
 		{
 			case 1:

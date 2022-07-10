@@ -368,6 +368,8 @@ const gchar* lunionplay_wine_get_version(const LunionPlayWine* self)
 
 void lunionplay_wine_setup_runtime(const LunionPlayWine* self)
 {
+	const char* env =NULL;
+
 	if (self->lib32_dir != NULL && self->lib64_dir != NULL)
 		lunionplay_wine_setup_library_path(self);
 
@@ -376,20 +378,34 @@ void lunionplay_wine_setup_runtime(const LunionPlayWine* self)
 	g_setenv("WINEESYNC", "1", FALSE);
 
 	if (g_getenv("WINEDLLOVERRIDES") != NULL)
+	{
 		lunionplay_append_env("WINEDLLOVERRIDES", "winemenubuilder.exe=", ";");
-	else
-		g_setenv("WINEDLLOVERRIDES", "winemenubuilder.exe=", TRUE);
-
-	if (g_getenv("LUNIONPLAY_LOG") == NULL)
-		g_setenv("WINEDEBUG", "-all", TRUE);
+	}
 	else
 	{
-		if (g_strcmp0(g_getenv("LUNIONPLAY_LOG"), "1") == 0)
-			g_setenv("WINEDEBUG", "fixme-all", TRUE);
-		else if (g_strcmp0(g_getenv("LUNIONPLAY_LOG"), "2") == 0)
-			setenv("WINEDEBUG", "warn+seh", 0);
-		else if (g_strcmp0(g_getenv("LUNIONPLAY_LOG"), "3") == 0)
-			setenv("WINEDEBUG", "+timestamp,+pid,+tid,+seh,+debugstr,+loaddll,+mscoree", 0);
+		g_setenv("WINEDLLOVERRIDES", "winemenubuilder.exe=", TRUE);
+	}
+
+	env = g_getenv("LUNIONPLAY_LOG");
+
+	if (env == NULL)
+	{
+		g_setenv("WINEDEBUG", "-all", TRUE);
+	}
+	else
+	{
+		if (g_strcmp0(env, "1") == 0)
+		{
+			g_setenv("WINEDEBUG", "fixme-all", FALSE);
+		}
+		else if (g_strcmp0(env, "3") == 0)
+		{
+			g_setenv("WINEDEBUG", "warn+seh", FALSE);
+		}
+		else if (g_strcmp0(env, "all") == 0)
+		{
+			g_setenv("WINEDEBUG", "+timestamp,+pid,+tid,+seh,+debugstr,+loaddll,+mscoree", TRUE);
+		}
 	}
 }
 

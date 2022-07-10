@@ -78,17 +78,22 @@ static gchar* lunionplay_game_set_command(const gchar* path)
 	if (file != NULL && g_file_test(file, G_FILE_TEST_EXISTS))
 	{
 		gsize size;
-		g_autofree gchar* contents;
+		gchar* contents;
 		g_autoptr (GError) error = NULL;
 
 		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", file);
-
 		g_file_get_contents(file, &contents, &size, &error);
+
 		exec = g_strndup(contents, size - 1);
+		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", exec);
+
+		g_free(contents);
 	}
 
-	TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", exec);
-	g_free(file);
+	if (file != NULL)
+	{
+		g_free(file);
+	}
 
 	return exec;
 }

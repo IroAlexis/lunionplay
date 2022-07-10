@@ -101,14 +101,16 @@ GString* lunionplay_concat_path(const GString* path, const gchar* val)
 }
 
 
-GString* lunionplay_get_output_cmd(const char* cmd)
+gchar* lunionplay_get_output_cmd(const gchar* cmd)
 {
 	assert(cmd != NULL);
 
-	char buffer[BUFFSIZE];
+	gchar buffer[BUFFSIZE];
+	gchar* str = NULL;
 	FILE* fp = NULL;
-	GString* out = NULL;
+	GString* contents = NULL;
 
+	/* TODO Need use glib function */
 	fp = popen(cmd, "r");
 	if (fp == NULL)
 	{
@@ -119,18 +121,23 @@ GString* lunionplay_get_output_cmd(const char* cmd)
 	fgets(buffer, BUFFSIZE, fp);
 	pclose(fp);
 
-	out = g_string_new(buffer);
+	/* TODO Don't use GString */
+	contents = g_string_new(buffer);
 
-	if (out->str[out->len - 1] == '\n')
-		g_string_truncate(out, out->len - 1);
+	if (contents->str[contents->len - 1] == '\n')
+		g_string_truncate(contents, contents->len - 1);
 
-	if (out->len <= 1)
+	if (contents->len <= 1)
 	{
-		g_string_free(out, TRUE);
-		out = NULL;
+		g_string_free(contents, TRUE);
+		contents = NULL;
+	}
+	else
+	{
+		str = g_string_free(contents, FALSE);
 	}
 
-	return out;
+	return str;
 }
 
 

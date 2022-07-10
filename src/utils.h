@@ -33,7 +33,7 @@ void lunionplay_append_env(const char* name, const char* value, const char* sepa
 GString* lunionplay_concat_path(const GString* path, const gchar* val);
 
 
-GString* lunionplay_get_output_cmd(const char* cmd);
+gchar* lunionplay_get_output_cmd(const gchar* cmd);
 
 
 GString* lunionplay_get_uname(void);

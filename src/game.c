@@ -53,7 +53,7 @@ static LunionPlayGame* lunionplay_game_new(GString* title,
 
 	LunionPlayGame* self = NULL;
 
-	self = (LunionPlayGame*) calloc(1, sizeof(LunionPlayGame));
+	self = (LunionPlayGame*) g_malloc0(sizeof(LunionPlayGame));
 	if (self != NULL)
 	{
 		self->title = title;

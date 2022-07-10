@@ -135,7 +135,7 @@ static LunionPlayWine* lunionplay_wine_new(GString* base_dir,
 
 	LunionPlayWine* self = NULL;
 
-	self = (LunionPlayWine*) calloc(1, sizeof(LunionPlayWine));
+	self = (LunionPlayWine*) g_malloc0(sizeof(LunionPlayWine));
 	if (self != NULL)
 	{
 		self->base_dir = base_dir;

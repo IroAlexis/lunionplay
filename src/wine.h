@@ -63,6 +63,9 @@ void lunionplay_wine_setup_prefix(gchar* path);
 void lunionplay_wine_update_prefix(const LunionPlayWine* self);
 
 
+gboolean lunionplay_wine_use_damavand(const LunionPlayWine* self);
+
+
 void lunionplay_wine_use_server(const LunionPlayWine* self, const gchar* option);
 
 

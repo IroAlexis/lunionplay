@@ -431,6 +431,44 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 }
 
 
+gboolean lunionplay_wine_use_damavand(const LunionPlayWine* self)
+{
+	g_assert(self != NULL);
+
+	gchar** dmvd = NULL;
+
+	dmvd = (gchar**) calloc (11, sizeof(gchar*));
+	if (NULL == dmvd)
+		return FALSE;
+
+	dmvd[0] = g_path_get_basename(self->bin->str);
+	dmvd[1] = g_strdup("reg");
+	dmvd[2] = g_strdup("add");
+	dmvd[3] = g_strdup("HKCU\\Software\\Wine\\Direct3D");
+	dmvd[4] = g_strdup("/v");
+	dmvd[5] = g_strdup("renderer");
+	dmvd[6] = g_strdup("/d");
+	dmvd[7] = g_strdup("vulkan");
+	dmvd[8] = g_strdup("/f");
+	dmvd[9] = NULL;
+
+	//for (char** tmp = dmvd; *tmp != NULL; tmp++)
+		//fprintf(stderr, "%s ", *tmp);
+	//fprintf(stderr, "\n");
+
+	/*
+	 * TODO Need passing an argument for don't have stdout/stderr
+	 */
+	lunionplay_run_process(self->bin->str, dmvd);
+
+	for (gint id = 10; id >= 0; id--)
+		g_free(dmvd[id]);
+	g_free(dmvd);
+
+	return TRUE;
+}
+
+
 void lunionplay_wine_use_server(const LunionPlayWine* self, const gchar* option)
 {
 	g_assert(self != NULL);

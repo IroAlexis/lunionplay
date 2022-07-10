@@ -1,6 +1,6 @@
  # Introduction
 
-Lunion Play is a compatiblity tool which allows running Windows games on Linux. It is an Wine wrapper that provide also DXVK and VKD3D-Proton.
+LunionPlay is a compatiblity tool which allows running Windows games on Linux. It is an Wine wrapper that provide also DXVK and VKD3D-Proton.
 
 The main goal is to offer an Proton alternative to launch your GOG games. You can use the Wine package of your Linux distribution (but it is not ideal for gaming) or Lutris builds or Wine GE builds or else Wine TkG builds.
 
@@ -28,9 +28,9 @@ git checkout <branchname>
 git submodule update --init --recursive
 ```
 
-### Building Lunion Play
+### Building LunionPlay
 #### Simple way
-Inside the Lunion Play directory, run:
+Inside the LunionPlay directory, run:
 ```
 ./makebuild.sh /path/to/target/dest --no-package [--with-dxvk] [--with-vkd3d]
 ```
@@ -43,7 +43,7 @@ ninja -C build
 
 
 ## Configuration
-Lunion Play comes with a config file which can be used to set configuration options `$HOME/.config/lunionplay/config.ini`.
+LunionPlay comes with a config file which can be used to set configuration options `$HOME/.config/lunionplay/config.ini`.
 
 ## How to use
 
@@ -97,7 +97,7 @@ All of the below are runtime options. You can use normally the runtime options o
 * [MangoHUD](https://github.com/flightlessmango/MangoHud)
 * [Philip Rebohle](https://github.com/doitsujin)
 * [Torge Matthies ](https://github.com/openglfreak)
-* Valve for [Proton](https://github.com/ValveSoftware/Proton)
+* [Valve](https://github.com/ValveSoftware/Proton)
 * [Wine](https://winehq.org)
 
 

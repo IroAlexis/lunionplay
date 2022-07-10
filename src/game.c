@@ -25,28 +25,28 @@
 
 struct _lunion_play_game
 {
-	GString* title;
-	GString* dir;
-	GString* command;
+	gchar* title;
+	gchar* dir;
+	gchar* command;
 };
 
 
 /*
  * Free member per member
  */
-static void lunionplay_game_free_param(GString* param)
+static void lunionplay_game_free_param(gchar* param)
 {
 	if (param != NULL)
 	{
-		g_string_free(param, TRUE);
+		g_free(param);
 		param = NULL;
 	}
 }
 
 
-static LunionPlayGame* lunionplay_game_new(GString* title,
-                                           GString* dir,
-                                           GString* command)
+static LunionPlayGame* lunionplay_game_new(gchar* title,
+                                           gchar* dir,
+                                           gchar* command)
 {
 	g_assert(dir != NULL);
 	g_assert(command != NULL);
@@ -65,11 +65,11 @@ static LunionPlayGame* lunionplay_game_new(GString* title,
 }
 
 
-static GString* lunionplay_game_set_command(const gchar* path)
+static gchar* lunionplay_game_set_command(const gchar* path)
 {
 	g_assert(path != NULL);
 
-	GString* exec = NULL;
+	gchar* exec = NULL;
 	gchar* file = NULL;
 
 	/* TODO Need read the second argument */
@@ -84,22 +84,17 @@ static GString* lunionplay_game_set_command(const gchar* path)
 		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", file);
 
 		g_file_get_contents(file, &contents, &size, &error);
-
-		exec = g_string_new(contents);
-		if (exec != NULL)
-		{
-			g_string_truncate(exec, exec->len - 1);
-		}
+		exec = g_strndup(contents, size - 1);
 	}
 
-	TRACE(__FILE__, __func__, "GString [ \"%s\" (%d) ]\n", exec->str, exec->len);
+	TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", exec);
 	g_free(file);
 
 	return exec;
 }
 
 
-static GString* lunionplay_game_set_title(const gchar* path)
+static gchar* lunionplay_game_set_title(const gchar* path)
 {
 	g_assert(path != NULL);
 
@@ -110,21 +105,12 @@ static GString* lunionplay_game_set_title(const gchar* path)
 LunionPlayGame* lunionplay_game_create(GKeyFile* cfg, const gchar* id)
 {
 	gchar key[] = "install_dir";
-	g_autofree gchar* path =NULL;
-	GString* title = NULL;
-	GString* dir = NULL;
-	GString* command = NULL;
+	gchar* title = NULL;
+	gchar* path = NULL;
+	gchar* command = NULL;
 	LunionPlayGame* self = NULL;
 
-	if (cfg != NULL)
-	{
-		path = lunionplay_config_get(cfg, key);
-	}
-	else
-	{
-		path = lunionplay_config_get_env(key);
-	}
-
+	path = lunionplay_config_get(cfg, key);
 	if (path != NULL)
 	{
 		gchar* new = NULL;
@@ -142,23 +128,16 @@ LunionPlayGame* lunionplay_game_create(GKeyFile* cfg, const gchar* id)
 		ERR(TYPE, "No library directory found.\n");
 		return NULL;
 	}
-	TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", path);
 
-	dir = g_string_new(path);
-	if (NULL == dir)
-	{
-		return NULL;
-	}
-
-	command = lunionplay_game_set_command(dir->str);
+	command = lunionplay_game_set_command(path);
 	if (command == NULL)
 	{
-		g_string_free(dir, TRUE);
+		g_free(path);
 		return NULL;
 	}
-	title = lunionplay_game_set_title(dir->str);
+	title = lunionplay_game_set_title(path);
 
-	self = lunionplay_game_new(title, dir, command);
+	self = lunionplay_game_new(title, path, command);
 	if (NULL == self)
 	{
 		ERR(TYPE, "No game found: %s\n", path);
@@ -185,7 +164,7 @@ const gchar* lunionplay_game_get_command(const LunionPlayGame* self)
 {
 	g_assert(self != NULL);
 
-	return self->command->str;
+	return self->command;
 }
 
 
@@ -193,7 +172,7 @@ const gchar* lunionplay_game_get_dir(const LunionPlayGame* self)
 {
 	g_assert(self != NULL);
 
-	return self->dir->str;
+	return self->dir;
 }
 
 
@@ -203,9 +182,9 @@ const gchar* lunionplay_game_get_title(const LunionPlayGame* self)
 
 	const gchar* pt = NULL;
 
-	if (self->title != NULL && self->title->str != NULL)
+	if (self->title != NULL)
 	{
-		pt = self->title->str;
+		pt = self->title;
 	}
 
 	return pt;

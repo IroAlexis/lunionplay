@@ -451,10 +451,19 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 		g_setenv("WINEDLLOVERRIDES", dll, TRUE);
 		g_free(dll);
 	}
+	else
+	{
+		g_unsetenv("WINEDLLOVERRIDES");
+	}
+
 	if (dbg != NULL)
 	{
 		g_setenv("WINEDEBUG", dbg, TRUE);
 		g_free(dbg);
+	}
+	else
+	{
+		g_unsetenv("WINEDEBUG");
 	}
 
 	g_free(wboot[1]);

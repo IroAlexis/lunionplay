@@ -25,31 +25,26 @@
 
 
 
-static gboolean lunionplay_check_dll_file(const GString* path, const char* file)
+static gboolean lunionplay_check_dll_file(const gchar* path, const char* file)
 {
 	g_assert(path != NULL);
 
-	gboolean rslt;
-	GString* dll = NULL;
-	GString* old = NULL;
-	GString* none = NULL;
+	gchar* dll = NULL;
+	gchar* old = NULL;
+	gchar* none = NULL;
+	gboolean rslt = FALSE;
 
-	dll = g_string_new(path->str);
-	g_string_append(dll, "/");
-	g_string_append(dll, file);
+	dll = g_build_path("/", path, file, NULL);
+	old = g_strconcat(dll, ".old", NULL);
+	none = g_strconcat(old, "_none", NULL);
 
-	old = g_string_new(dll->str);
-	g_string_append(old, ".old");
-	none = g_string_new(old->str);
-	g_string_append(none, "_none");
+	rslt = g_file_test(dll, G_FILE_TEST_IS_REGULAR) &&
+	       (g_file_test(old, G_FILE_TEST_IS_REGULAR) ||
+	       g_file_test(none, G_FILE_TEST_IS_REGULAR));
 
-	rslt = g_file_test(dll->str, G_FILE_TEST_IS_REGULAR) &&
-	       (g_file_test(old->str, G_FILE_TEST_IS_REGULAR) ||
-	       g_file_test(none->str, G_FILE_TEST_IS_REGULAR));
-
-	g_string_free(dll, TRUE);
-	g_string_free(old, TRUE);
-	g_string_free(none, TRUE);
+	g_free(dll);
+	g_free(old);
+	g_free(none);
 
 	return rslt;
 }
@@ -58,6 +53,11 @@ static gboolean lunionplay_check_dll_file(const GString* path, const char* file)
 void lunionplay_setup_vkd3d_proton_runtime(const gchar* path)
 {
 	gchar* dir = NULL;
+
+	if (! lunionplay_vkd3d_proton_installed())
+	{
+		return;
+	}
 
 	dir = g_build_path("/", path, "shadercache", "vkd3d_proton_shader_cache", NULL);
 	g_mkdir_with_parents(dir, S_IRWXU);
@@ -84,11 +84,12 @@ gboolean lunionplay_vkd3d_proton_installed(void)
 
 	path = g_string_new(g_getenv("WINEPREFIX"));
 	g_string_append(path, "/drive_c/windows/system32");
-	dll64 = lunionplay_check_dll_file(path, "d3d12.dll");
+	dll64 = lunionplay_check_dll_file(path->str, "d3d12.dll");
 
-	g_string_truncate(path, path->len - strlen("/system32"));
-	g_string_append(path, "/syswow64");
-	dll32 = lunionplay_check_dll_file(path, "d3d12.dll");
+	// "system32" = 9 characters
+	g_string_truncate(path, path->len - 8);
+	g_string_append(path, "syswow64");
+	dll32 = lunionplay_check_dll_file(path->str, "d3d12.dll");
 
 	g_string_free(path, TRUE);
 

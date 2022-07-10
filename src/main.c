@@ -17,49 +17,57 @@
  */
 
 
-#include <stdio.h>
-#include <libgen.h>
-#include <glib.h>
-
-#include "session.h"
+#include "config.h"
 #include "debug.h"
+#include "game.h"
+#include "session.h"
+#include "wine.h"
 
-
-#define TYPE "main"
+#include <stdio.h>
+#include <glib.h>
 
 
 int main(int argc, char* argv[])
 {
-	int ret;
-	char* bin = NULL;
-	LunionPlaySession* game = NULL;
+	gint status = 0;
+	g_autofree gchar* bin = NULL;
+	g_autofree gchar* bin_dir = NULL;
+	g_autoptr (GKeyFile) cfg = NULL;
+	LunionPlayWine* wine = NULL;
+	LunionPlayGame* game = NULL;
 
+	status = -1;
 	bin = g_path_get_basename(argv[0]);
+	bin_dir = g_path_get_dirname(argv[0]);
 
-	if (argc == 1)
+	//lunionplay_check_opts(argc, argv);
+	cfg = lunionplay_config_open();
+
+	wine = lunionplay_wine_create(cfg);
+	game = lunionplay_game_create(cfg, argv[1]);
+
+	if (game != NULL && wine != NULL)
 	{
-		fprintf(stderr, "usage: %s <gameid> [ /path/to/game.exe ]\n", bin);
-		free(bin);
-		return EXIT_FAILURE;
+		if (lunionplay_prepare_session(wine, game))
+		{
+			status = lunionplay_run_session(wine, game);
+		}
 	}
 
-	ret = 1;
+	if (status != 0)
+	{
+		ERR(bin, "There's a frog somewhere... *ribbit*\n");
+	}
 
-	game = lunionplay_init_session(argv[1], argv[2]);
 	if (game != NULL)
 	{
-		ret = lunionplay_prepare_session(game);
-		if (ret == 0)
-			lunionplay_run_session(game);
-		else if (ret != -1)
-			fprintf(stderr, "%s: There's a frog somewhere... *ribbit*\n", bin);
-
-		lunionplay_free_session(game);
+		lunionplay_game_free(game);
+	}
+	if (wine != NULL)
+	{
+		lunionplay_wine_free(wine);
 	}
 
-	free(bin);
-	if (ret != 0)
-		return EXIT_FAILURE;
-
-	return EXIT_SUCCESS;
+	return status;
 }
+

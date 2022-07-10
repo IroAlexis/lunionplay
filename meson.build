@@ -1,8 +1,9 @@
-project('lunionplay', 'c',
+project(
+  'lunionplay', 'c',
   license: 'GPL3+',
   version: '0.4.alpha',
   meson_version: '>= 0.53.0',
-  default_options: ['warning_level=2']
+  default_options: ['warning_level=3']
 )
 
 
@@ -13,14 +14,15 @@ glib_dep = dependency('glib-2.0', version: '>= 2.64.0')
 
 
 sources = [
+  'src/config.c',
+  'src/debug.c',
+  'src/dxvk.c',
+  'src/game.c',
   'src/main.c',
   'src/session.c',
-  'src/ini.c',
-  'src/debug.c',
   'src/utils.c',
-  'src/wine.c',
-  'src/dxvk.c',
-  'src/vkd3d.c'
+  'src/vkd3d.c',
+  'src/wine.c'
 ]
 
 

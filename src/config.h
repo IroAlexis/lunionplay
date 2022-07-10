@@ -1,5 +1,5 @@
 /*
- * ini.h
+ * config.h
  * Copyright (C) 2021-2022 IroAlexis <iroalexis@outlook.fr>
  *
  * lunionplay is free software: you can redistribute it and/or modify it
@@ -17,17 +17,20 @@
  */
 
 
-#ifndef __INI__
-#define __INI__
-
+#ifndef __CONFIG__
+#define __CONFIG__
 
 #include <glib.h>
 
 
-GKeyFile* lunionplay_open_ini(const gchar* pathname);
+
+gchar* lunionplay_config_get(GKeyFile* stream, const gchar* key);
 
 
-gchar* lunionplay_parse_ini(GKeyFile* stream, const gchar* group, const gchar* name);
+gchar* lunionplay_config_get_env(const gchar* param);
+
+
+GKeyFile* lunionplay_config_open(void);
 
 
 #endif

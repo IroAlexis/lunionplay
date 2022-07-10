@@ -20,14 +20,14 @@
 #ifndef __WINE__
 #define __WINE__
 
-#include <stdio.h>
+#include "config.h"
+#include "debug.h"
+#include "utils.h"
+
 #include <glib.h>
 
 
 typedef struct _lunion_play_wine LunionPlayWine;
-
-
-void lunionplay_wine_print_runtime(FILE* stream);
 
 
 void lunionplay_wine_print(const LunionPlayWine* wine);
@@ -48,7 +48,7 @@ const gchar* lunionplay_wine_get_server(const LunionPlayWine* self);
 const gchar* lunionplay_wine_get_version(const LunionPlayWine* self);
 
 
-LunionPlayWine* lunionplay_wine_create(const gchar* winedir);
+LunionPlayWine* lunionplay_wine_create(GKeyFile* config);
 
 
 LunionPlayWine* lunionplay_wine_system_create(void);
@@ -57,7 +57,7 @@ LunionPlayWine* lunionplay_wine_system_create(void);
 void lunionplay_wine_setup_runtime(const LunionPlayWine* self);
 
 
-void lunionplay_wine_setup_prefix(gchar* path);
+void lunionplay_wine_setup_prefix(const gchar* path);
 
 
 void lunionplay_wine_update_prefix(const LunionPlayWine* self);

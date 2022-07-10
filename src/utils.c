@@ -75,59 +75,29 @@ void lunionplay_append_env(const char* name, const char* value, const char* sepa
 }
 
 
-GString* lunionplay_concat_path(const GString* path, const char* val)
+GString* lunionplay_concat_path(const GString* path, const gchar* val)
 {
 	g_assert(path != NULL);
 	g_assert(val != NULL);
 
 	gchar* tmp = NULL;
-	GString* npath = NULL;
+	GString* rslt = NULL;
 
 	tmp = g_build_path("/", path->str, val, NULL);
-	TRACE(__FILE__, __FUNCTION__, "gchar \"%s\"\n", tmp);
+	TRACE(__FILE__, __func__, "gchar \"%s\"\n", tmp);
 
 	if (tmp != NULL)
 	{
 		if (g_file_test(tmp, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
 		{
-			npath = g_string_new(tmp);
+			rslt = g_string_new(tmp);
+			TRACE(__FILE_NAME__, __func__, "GString [ \"%s\" (%d) ]\n", rslt->str, rslt->len);
 		}
 
 		g_free(tmp);
 	}
 
-	return npath;
-}
-
-
-gchar* lunionplay_get_param(GKeyFile* stream, const gchar* key)
-{
-	g_assert(key != NULL);
-
-	const gchar* value;
-	gchar* tmp = NULL;
-	gchar* ret = NULL;
-	gchar* name = NULL;
-
-	tmp = g_ascii_strup(key, strnlen(key, 1024));
-
-	name = g_strconcat("LUNIONPLAY_", tmp, NULL);
-	if (NULL == name)
-		return NULL;
-
-	value = g_getenv(name);
-	TRACE(__FILE__, __FUNCTION__, "%s=%s\n", name, value);
-
-	g_free(tmp);
-	g_free(name);
-
-	if (value != NULL)
-		ret = g_strdup(value);
-
-	if (ret == NULL && stream != NULL)
-		ret = lunionplay_parse_ini(stream, "lunionplay", key);
-
-	return ret;
+	return rslt;
 }
 
 
@@ -191,7 +161,7 @@ static void lunionplay_log_file(const char* logfile)
 {
 	if (logfile != NULL)
 	{
-		TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", logfile);
+		TRACE(__FILE__, __func__, "\"%s\"\n", logfile);
 
 		int fd = open(logfile, O_RDWR | O_APPEND | O_CREAT, S_IRUSR | S_IWUSR);
 
@@ -222,9 +192,9 @@ int lunionplay_run_process(const char* cmd, char* argv[])
 	int status;
 	pid_t child;
 
-	TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", cmd);
+	TRACE(__FILE__, __func__, "char* \"%s\"\n", cmd);
 	for (char** tmp = argv; *tmp != NULL; tmp++)
-		TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", *tmp);
+		TRACE(__FILE__, __func__, "char* \"%s\"\n", *tmp);
 
 
 	child = fork();

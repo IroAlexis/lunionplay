@@ -21,25 +21,27 @@
 #define __SESSION__
 
 
+#include "config.h"
+#include "debug.h"
+#include "dxvk.h"
+#include "game.h"
+#include "utils.h"
+#include "vkd3d.h"
+
+#include "wine.h"
+
 #include <glib.h>
 
 
 typedef struct _lunion_play_session LunionPlaySession;
 
 
-void lunionplay_free_session(LunionPlaySession* session);
+gint lunionplay_prepare_session(const LunionPlayWine* wine,
+                                const LunionPlayGame* game);
 
 
-void lunionplay_display_session(const LunionPlaySession* session);
-
-
-LunionPlaySession* lunionplay_init_session(const char* gameid, const char* exec);
-
-
-int lunionplay_prepare_session(const LunionPlaySession* session);
-
-
-int lunionplay_run_session(const LunionPlaySession* session);
+gint lunionplay_run_session(const LunionPlayWine* wine,
+                            const LunionPlayGame* game);
 
 
 #endif

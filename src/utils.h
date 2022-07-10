@@ -30,10 +30,7 @@
 void lunionplay_append_env(const char* name, const char* value, const char* separator);
 
 
-GString* lunionplay_concat_path(const GString* path, const char* val);
-
-
-gchar* lunionplay_get_param(GKeyFile* stream, const gchar* key);
+GString* lunionplay_concat_path(const GString* path, const gchar* val);
 
 
 GString* lunionplay_get_output_cmd(const char* cmd);

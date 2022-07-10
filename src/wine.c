@@ -18,8 +18,6 @@
 
 
 #include "wine.h"
-#include "utils.h"
-#include "debug.h"
 
 
 #define TYPE "wine"
@@ -41,8 +39,9 @@ struct _lunion_play_wine
 
 /*
  * Pure 64-bit Wine (non Wow64) requries skipping 32-bit steps.
- * In such case, wine64 and wineboot will be present, but wine binary will be missing,
- * however it can be present in other PATHs, so it shouldn't be used, to avoid versions mixing.static
+ * In such case, wine64 and wineboot will be present,
+ * but wine binary will be missing, however it can be present in other PATHs,
+ * so it shouldn't be used, to avoid versions mixing.static
  */
 static gboolean lunionplay_wine_is_wow64(GString** bin64, GString** bin)
 {
@@ -129,6 +128,8 @@ static LunionPlayWine* lunionplay_wine_new(GString* base_dir,
                                            GString* version,
                                            gboolean wow64)
 {
+	g_assert(bin != NULL);
+	g_assert(bin64 != NULL);
 	g_assert(server != NULL);
 	g_assert(version != NULL);
 
@@ -202,8 +203,10 @@ void lunionplay_wine_debug_runtime(FILE* stream)
 /*
  * factory method
  */
-LunionPlayWine* lunionplay_wine_create(const gchar* path)
+LunionPlayWine* lunionplay_wine_create(GKeyFile* config)
 {
+	gchar key[] = "wine";
+	gchar* path = NULL;
 	GString* base_dir = NULL;
 	GString* lib32_dir = NULL;
 	GString* lib64_dir = NULL;
@@ -212,12 +215,24 @@ LunionPlayWine* lunionplay_wine_create(const gchar* path)
 	GString* bin64 = NULL;
 	GString* server = NULL;
 	GString* version = NULL;
-	gboolean wow64 = TRUE;
+	gboolean wow64;
+	LunionPlayWine* self = NULL;
+
+	if (config == NULL)
+	{
+		path = lunionplay_config_get_env(key);
+	}
+	else
+	{
+		path = lunionplay_config_get(config, key);
+	}
+
+	if (NULL == path)
+	{
+		return lunionplay_wine_system_create();
+	}
 
 	base_dir = g_string_new(path);
-	if (NULL == base_dir)
-		return NULL;
-
 	lib32_dir = lunionplay_concat_path(base_dir, "lib32");
 	lib64_dir = lunionplay_concat_path(base_dir, "lib64");
 	lunionplay_wine_lib_dir(base_dir, &lib32_dir, &lib64_dir);
@@ -230,8 +245,16 @@ LunionPlayWine* lunionplay_wine_create(const gchar* path)
 
 	version = lunionplay_wine_set_version(bin);
 
-	return lunionplay_wine_new(base_dir, lib32_dir, lib64_dir, bin_dir,
+	g_free(path);
+
+	self = lunionplay_wine_new(base_dir, lib32_dir, lib64_dir, bin_dir,
 	                           bin, bin64, server, version, wow64);
+	if (NULL == self)
+	{
+		ERR(TYPE, "Not a valid Wine directory.\n");
+	}
+
+	return self;
 }
 
 
@@ -243,6 +266,7 @@ LunionPlayWine* lunionplay_wine_system_create(void)
 	GString* server = NULL;
 	GString* version = NULL;
 	gboolean wow64 = TRUE;
+	LunionPlayWine* self = NULL;
 
 	bin_dir = lunionplay_wine_find_in_path();
 	bin = lunionplay_concat_path(bin_dir, "wine");
@@ -252,8 +276,14 @@ LunionPlayWine* lunionplay_wine_system_create(void)
 
 	version = lunionplay_wine_set_version(bin);
 
-	return lunionplay_wine_new(NULL, NULL, NULL, bin_dir,
+	self = lunionplay_wine_new(NULL, NULL, NULL, bin_dir,
 	                           bin, bin64, server, version, wow64);
+	if (NULL == self)
+	{
+		ERR(TYPE, "No Wine directory found or installed.\n");
+	}
+
+	return self;
 }
 
 
@@ -364,11 +394,13 @@ void lunionplay_wine_setup_runtime(const LunionPlayWine* self)
 }
 
 
-void lunionplay_wine_setup_prefix(gchar* path)
+void lunionplay_wine_setup_prefix(const gchar* path)
 {
 	g_assert(path != NULL);
 
 	const char* env = NULL;
+
+	TRACE(__FILE__, __func__, "%s\n", path);
 
 	env = getenv("WINEPREFIX");
 	if (NULL == env)

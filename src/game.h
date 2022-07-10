@@ -1,6 +1,6 @@
 /*
- * debug.h
- * Copyright (C) 2021-2022 IroAlexis <iroalexis@outlook.fr>
+ * game.h
+ * Copyright (C) 2022 IroAlexis <iroalexis@outlook.fr>
  *
  * lunionplay is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,32 +17,33 @@
  */
 
 
-#ifndef __DEBUG__
-#define __DEBUG__
+#ifndef __GAME__
+#define __GAME__
 
-#define ERR(n, ...)   lunionplay_printf(stderr, "err", n, __VA_ARGS__)
-#define INFO(n, ...)  lunionplay_printf(stdout, "info", n, __VA_ARGS__)
-#define WARN(n, ...)  lunionplay_printf(stdout, "warn", n, __VA_ARGS__)
 
-#define TRACE(n, ...) lunionplay_printf_trace(n, __VA_ARGS__)
-
+#include "config.h"
+#include "debug.h"
+#include "utils.h"
 
 #include <glib.h>
-#include <glib/gstdio.h>
 
 
-int lunionplay_debug_mode(void);
+typedef struct _lunion_play_game LunionPlayGame;
 
 
-void lunionplay_printf(FILE* stream,
-					   const gchar* level,
-					   const gchar* type,
-					   const gchar* format, ...);
+LunionPlayGame* lunionplay_game_create(GKeyFile* cfg, const gchar* id);
 
 
-void lunionplay_printf_trace(const gchar* file,
-							 const gchar* fct,
-							 const gchar* format, ...);
+void lunionplay_game_free(LunionPlayGame* self);
+
+
+const gchar* lunionplay_game_get_command(const LunionPlayGame* self);
+
+
+const gchar* lunionplay_game_get_dir(const LunionPlayGame* self);
+
+
+const gchar* lunionplay_game_get_title(const LunionPlayGame* self);
 
 
 #endif

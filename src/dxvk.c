@@ -28,7 +28,7 @@ static gboolean lunionplay_check_dll_file(const GString* path, const char* file)
 
 	gchar* dll = NULL;
 	gchar* old = NULL;
-	gboolean rslt;
+	gboolean rslt = FALSE;
 
 	dll = g_build_path("/", path->str, file, NULL);
 	old = g_strconcat(dll, ".old", NULL);
@@ -48,6 +48,11 @@ void lunionplay_setup_dxvk_runtime(const gchar* path)
 	g_assert(path != NULL);
 
 	gchar* dir = NULL;
+
+	if (! lunionplay_dxvk_installed())
+	{
+		return;
+	}
 
 	dir = g_build_path("/", path, "shadercache", "dxvk_state_cache", NULL);
 	g_mkdir_with_parents(dir, S_IRWXU);
@@ -78,8 +83,9 @@ gboolean lunionplay_dxvk_installed(void)
 	for (gchar** tmp = dxvk_file; *tmp != NULL; tmp++)
 		dll64 = dll64 && lunionplay_check_dll_file(path, *tmp);
 
-	g_string_truncate(path, path->len - strlen("/system32"));
-	g_string_append(path, "/syswow64");
+	// "/system32" = 9 characters
+	g_string_truncate(path, path->len - 8);
+	g_string_append(path, "syswow64");
 	for (gchar** tmp = dxvk_file; *tmp != NULL; tmp++)
 		dll32 = dll32 && lunionplay_check_dll_file(path, *tmp);
 

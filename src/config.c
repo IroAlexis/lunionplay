@@ -35,7 +35,7 @@ static gchar* lunionplay_config_parse(GKeyFile* stream,
 	g_assert(name != NULL);
 
 	gchar* value = NULL;
-	GError* error = NULL;
+	g_autoptr (GError) error = NULL;
 
 	if (g_key_file_has_group(stream, group))
 	{
@@ -46,9 +46,6 @@ static gchar* lunionplay_config_parse(GKeyFile* stream,
 	}
 	else
 		ERR(TYPE, "Group \"%s\" not found.\n", group);
-
-	if (error != NULL)
-		g_clear_error(&error);
 
 	TRACE(__FILE__, __func__, "%s\n", value);
 
@@ -98,11 +95,12 @@ gchar* lunionplay_config_get_env(const gchar* param)
 
 GKeyFile* lunionplay_config_open(void)
 {
-	GKeyFile* stream = NULL;
-	GError* error = NULL;
 	gchar* cfg = NULL;
-	const gchar* env = g_getenv("LUNIONPLAY_CONFIGFILE");
+	const gchar* env = NULL;
+	GKeyFile* stream = NULL;
+	g_autoptr (GError) error = NULL;
 
+	env = g_getenv("LUNIONPLAY_CONFIGFILE");
 	if (NULL == env)
 	{
 		cfg = g_build_path("/", g_get_user_config_dir(),
@@ -121,7 +119,6 @@ GKeyFile* lunionplay_config_open(void)
 		stream = g_key_file_new();
 		if (! g_key_file_load_from_file(stream, cfg, G_KEY_FILE_NONE, &error))
 		{
-			g_clear_error(&error);
 			g_clear_pointer(&stream, g_key_file_free);
 		}
 	}

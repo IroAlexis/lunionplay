@@ -204,15 +204,7 @@ LunionPlayWine* lunionplay_wine_create(GKeyFile* config)
 	gboolean wow64;
 	LunionPlayWine* self = NULL;
 
-	if (config == NULL)
-	{
-		base_dir = lunionplay_config_get_env(key);
-	}
-	else
-	{
-		base_dir = lunionplay_config_get(config, key);
-	}
-
+	base_dir = lunionplay_config_get(config, key);
 	if (NULL == base_dir)
 	{
 		return lunionplay_wine_system_create();

@@ -21,6 +21,8 @@
 #define __UTILS__
 
 
+#include "debug.h"
+
 #include <glib.h>
 
 
@@ -39,7 +41,7 @@ GString* lunionplay_concat_path(const GString* path, const char* val);
 gchar* lunionplay_get_stdout(const char* cmd);
 
 
-GString* lunionplay_get_uname(void);
+gchar* lunionplay_get_uname(void);
 
 
 const gchar* lunionplay_get_user_config_dir(void);
@@ -48,7 +50,7 @@ const gchar* lunionplay_get_user_config_dir(void);
 void lunionplay_prepend_env(const char* name, const char* value, const char* separator);
 
 
-gboolean lunionplay_run_proc(const gchar* workdir, gchar** argv, const gboolean s_out, const gboolean s_err);
+gboolean lunionplay_run_proc(const gchar* workdir, gchar** argv, const gboolean _stdout, const gboolean _stderr);
 
 
 #endif

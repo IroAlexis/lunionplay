@@ -19,19 +19,12 @@
 
 #include "utils.h"
 
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <assert.h>
 #include <glib/gstdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <sys/utsname.h>
 #include <fcntl.h>
-
-#include "ini.h"
-#include "debug.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/utsname.h>
+#include <unistd.h>
 
 
 static void lunionplay_insert_env(const char* name, const char* value, const char* separator, const int pos)
@@ -74,7 +67,7 @@ static gboolean lunionplay_redirect_log()
 
 	if (filename != NULL)
 	{
-		GError* err = NULL;
+		g_autoptr (GError) err = NULL;
 		gint fd = g_open(filename, O_RDWR | O_APPEND | O_CREAT, S_IRUSR | S_IWUSR);
 
 		if (fd != -1)
@@ -82,11 +75,7 @@ static gboolean lunionplay_redirect_log()
 			dup2(fd, 1);
 			dup2(fd, 2);
 
-			g_close(fd, &err);
-			if (err != NULL)
-				g_error_free(err);
-
-			ret = TRUE;
+			ret = g_close(fd, &err);
 		}
 	}
 
@@ -134,39 +123,34 @@ gchar* lunionplay_get_stdout(const gchar* cmd)
 	g_assert(cmd != NULL);
 
 	gint wait_status;
-	gchar* buffer = NULL;
-	gchar* str = NULL;
+	g_autofree gchar* std_out = NULL;
+	g_autofree gchar* std_err = NULL;
 	g_autoptr (GError) error = NULL;
 
-	g_spawn_command_line_sync(cmd, &buffer, NULL, &wait_status, &error);
+	g_spawn_command_line_sync(cmd, &std_out, &std_err, &wait_status, &error);
+	if (error != NULL)
+	{
+		g_error_free(error);
+	}
 
-	str = g_strndup(buffer, (gsize) strlen(buffer) - 1)
-	g_free(buffer);
+	g_spawn_check_wait_status(wait_status, &error);
 
-	return rslt;
+	return g_strndup(std_out, (gsize) strlen(std_out) - 1);
 }
 
 
-GString* lunionplay_get_uname(void)
+gchar* lunionplay_get_uname(void)
 {
 	struct utsname buffer;
-	GString* kernel = NULL;
 
 	if (uname(&buffer) != 0)
 		return NULL;
 
-	kernel = g_string_new(buffer.sysname);
-	if (NULL == kernel)
-		return NULL;
-
-	g_string_append(kernel, " ");
-	g_string_append(kernel, buffer.release);
-	g_string_append(kernel, " ");
-	g_string_append(kernel, buffer.version);
-	g_string_append(kernel, " ");
-	g_string_append(kernel, buffer.machine);
-
-	return kernel;
+	return g_strconcat(buffer.sysname,
+	                   buffer.release,
+	                   buffer.version,
+	                   buffer.machine,
+	                   NULL);
 }
 
 
@@ -179,32 +163,35 @@ void lunionplay_prepend_env(const char* name, const char* value, const char* sep
 }
 
 
-gboolean lunionplay_run_proc(const gchar* workdir, gchar** argv, const gboolean s_out, const gboolean s_err)
+gboolean lunionplay_run_proc(const gchar* workdir,
+                             gchar** argv,
+                             const gboolean _stdout,
+                             const gboolean _stderr)
 {
 	g_assert(argv != NULL);
 
 	gint wait_status;
-	gboolean ret;
 	GSpawnFlags flags;
-	g_autoptr (GError) err = NULL;
+	g_autoptr (GError) error = NULL;
 
-	/* TODO For later need rework log application
 	for (char** tmp = argv; *tmp != NULL; tmp++)
-		TRACE(__FILE__, __FUNCTION__, "\"%s\"\n", *tmp);
-	*/
+		TRACE(__FILE__, __func__, "\"%s\"\n", *tmp);
 
-	flags = G_SPAWN_SEARCH_PATH_FROM_ENVP;
+	flags = G_SPAWN_CHILD_INHERITS_STDIN;
+	if (! _stdout) flags = flags | G_SPAWN_STDOUT_TO_DEV_NULL;
+	if (! _stderr) flags = flags | G_SPAWN_STDERR_TO_DEV_NULL;
 
-	if (! s_out)
-		flags = flags | G_SPAWN_STDOUT_TO_DEV_NULL;
-	if (! s_err)
-	flags = flags | G_SPAWN_STDERR_TO_DEV_NULL;
 
-	ret = g_spawn_sync(workdir, argv, NULL,
-	                   flags, NULL, NULL,
-	                   NULL, NULL,
-	                   &wait_status, &err);
+	g_spawn_sync(workdir, argv, NULL,
+	             flags,
+	             NULL, NULL,
+	             NULL, NULL,
+	             &wait_status,
+	             &error);
 
-	return ret;
+	if (error != NULL)
+		g_error_free(error);
+
+	return g_spawn_check_wait_status(wait_status, &error);
 }
 

@@ -148,13 +148,15 @@ static gchar* lunionplay_wine_set_version(const gchar* bin)
 	g_assert(bin != NULL);
 
 	gchar* version = NULL;
-	g_autofree gchar* cmd = NULL;
+	gchar* cmd = NULL;
 
 	cmd = g_strconcat(bin, " --version", NULL);
 
-	version = lunionplay_get_output_cmd(cmd);
+	version = lunionplay_get_stdout(cmd);
 	if (NULL == version)
 		ERR(TYPE, "Not a wine executable. Check your wine.\n");
+
+	g_free(cmd);
 
 	return version;
 }

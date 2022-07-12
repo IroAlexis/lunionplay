@@ -414,18 +414,19 @@ void lunionplay_wine_setup_prefix(const gchar* path)
 
 void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 {
-	gchar* dll = NULL;
-	gchar* dbg = NULL;
-	gchar** wboot = NULL;
-	//{ "wine", "wineboot", NULL };
+	g_autofree gchar* dll = NULL;
+	g_autofree gchar* dbg = NULL;
+	gchar** cmdline = NULL;
 
-	wboot = (gchar**) calloc(3, sizeof(gchar*));
-	if (NULL == wboot)
+	cmdline = (gchar**) calloc(3, sizeof(gchar*));
+	if (NULL == cmdline)
+	{
 		return;
+	}
 
-	wboot[0] = g_path_get_basename(self->bin);
-	wboot[1] = g_strdup("wineboot");
-	wboot[2] = NULL;
+	cmdline[0] = g_strdup(self->bin);
+	cmdline[1] = g_strdup("wineboot");
+	cmdline[2] = NULL;
 
 	/* Save actual values */
 	dll = g_strdup(g_getenv("WINEDLLOVERRIDES"));
@@ -434,32 +435,22 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 	g_setenv("WINEDLLOVERRIDES", "mscoree,mshtml,winemenubuilder.exe=", TRUE);
 	g_setenv("WINEDEBUG", "-all", TRUE);
 
-	lunionplay_run_process(self->bin, wboot);
+	lunionplay_run_process(self->bin, cmdline);
 	lunionplay_wine_use_server(self, "-w");
 
-	if (dll != NULL)
-	{
-		g_setenv("WINEDLLOVERRIDES", dll, TRUE);
-		g_free(dll);
-	}
-	else
+	if (NULL == dll)
 	{
 		g_unsetenv("WINEDLLOVERRIDES");
 	}
 
-	if (dbg != NULL)
-	{
-		g_setenv("WINEDEBUG", dbg, TRUE);
-		g_free(dbg);
-	}
-	else
+	if (NULL == dbg)
 	{
 		g_unsetenv("WINEDEBUG");
 	}
 
-	g_free(wboot[1]);
-	g_free(wboot[0]);
-	g_free(wboot);
+	g_free(cmdline[1]);
+	g_free(cmdline[0]);
+	g_free(cmdline);
 }
 
 

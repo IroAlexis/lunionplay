@@ -102,7 +102,7 @@ GString* lunionplay_concat_path(const GString* path, const gchar* val)
 
 gchar* lunionplay_get_output_cmd(const gchar* cmd)
 {
-	assert(cmd != NULL);
+	g_assert(cmd != NULL);
 
 	gchar buffer[BUFFSIZE];
 	gchar* str = NULL;
@@ -204,8 +204,8 @@ void lunionplay_prepend_env(const char* name, const char* value, const char* sep
 
 int lunionplay_run_process(const char* cmd, char* argv[])
 {
-	assert(cmd != NULL);
-	assert(argv != NULL);
+	g_assert(cmd != NULL);
+	g_assert(argv != NULL);
 
 	int status;
 	pid_t child;

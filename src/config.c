@@ -103,8 +103,9 @@ GKeyFile* lunionplay_config_open(void)
 	env = g_getenv("LUNIONPLAY_CONFIGFILE");
 	if (NULL == env)
 	{
-		cfg = g_build_path("/", g_get_user_config_dir(),
-		                   "lunionplay/config.ini", NULL);
+		g_autofree gchar* path = lunionplay_get_user_config_dir();
+
+		cfg = g_build_path("/", path, "lunionplay", "config.ini", NULL);
 	}
 	else
 	{

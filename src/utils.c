@@ -164,6 +164,26 @@ GString* lunionplay_get_uname(void)
 }
 
 
+gchar* lunionplay_get_user_config_dir(void)
+{
+	gchar* path = NULL;
+	const gchar* env = g_getenv("XDG_CONFIG_HOME");
+
+	if (env != NULL)
+	{
+		path = strdup(env);
+	}
+	else
+	{
+		path = g_build_path("/", g_getenv("HOME"), ".config", NULL);
+	}
+
+	TRACE(__FILE__, __func__, "gchar* \"%s\"\n", path);
+
+	return path;
+}
+
+
 static void lunionplay_log_file(const char* logfile)
 {
 	if (logfile != NULL)

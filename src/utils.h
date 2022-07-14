@@ -39,7 +39,7 @@ gchar* lunionplay_get_output_cmd(const gchar* cmd);
 GString* lunionplay_get_uname(void);
 
 
-const gchar* lunionplay_get_user_config_dir(void);
+gchar* lunionplay_get_user_config_dir(void);
 
 
 void lunionplay_prepend_env(const char* name, const char* value, const char* separator);

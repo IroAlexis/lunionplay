@@ -3,7 +3,7 @@ project(
   license: 'GPL3+',
   version: '0.4.alpha',
   meson_version: '>= 0.53.0',
-  default_options: ['warning_level=3']
+  default_options: ['warning_level=2']
 )
 
 

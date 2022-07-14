@@ -424,7 +424,7 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 		return;
 	}
 
-	cmdline[0] = g_strdup(self->bin);
+	cmdline[0] = g_path_get_basename(self->bin);
 	cmdline[1] = g_strdup("wineboot");
 	cmdline[2] = NULL;
 

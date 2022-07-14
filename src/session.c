@@ -97,7 +97,7 @@ gint lunionplay_run_session(const LunionPlayWine* wine,
 	TRACE(__FILE__, __func__, "\"%s\"\n", dir);
 	TRACE(__FILE__, __func__, "\"%s\"\n", exec);
 
-	argv[0] = g_strdup(lunionplay_wine_get_bin(wine));
+	argv[0] = g_path_get_basename(lunionplay_wine_get_bin(wine));
 	argv[1] = g_strdup(exec);
 	argv[2] = NULL;
 

@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <assert.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/utsname.h>
@@ -141,24 +140,16 @@ gchar* lunionplay_get_output_cmd(const gchar* cmd)
 }
 
 
-GString* lunionplay_get_uname(void)
+gchar* lunionplay_get_kernel(void)
 {
+	gchar* kernel = NULL;
 	struct utsname buffer;
-	GString* kernel = NULL;
 
-	if (uname(&buffer) != 0)
-		return NULL;
-
-	kernel = g_string_new(buffer.sysname);
-	if (NULL == kernel)
-		return NULL;
-
-	g_string_append(kernel, " ");
-	g_string_append(kernel, buffer.release);
-	g_string_append(kernel, " ");
-	g_string_append(kernel, buffer.version);
-	g_string_append(kernel, " ");
-	g_string_append(kernel, buffer.machine);
+	if (uname(&buffer))
+	{
+		kernel = g_strjoin(" ", buffer.sysname, buffer.release,
+		                   buffer.version, buffer.machine, NULL);
+	}
 
 	return kernel;
 }
@@ -221,7 +212,9 @@ int lunionplay_run_process(const char* cmd, char* argv[])
 
 	TRACE(__FILE__, __func__, "char* \"%s\"\n", cmd);
 	for (char** tmp = argv; *tmp != NULL; tmp++)
+	{
 		TRACE(__FILE__, __func__, "char* \"%s\"\n", *tmp);
+	}
 
 
 	child = fork();

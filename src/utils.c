@@ -107,33 +107,22 @@ gchar* lunionplay_get_output_cmd(const gchar* cmd)
 	gchar buffer[BUFFSIZE];
 	gchar* str = NULL;
 	FILE* fp = NULL;
-	GString* contents = NULL;
 
 	/* TODO Need use glib function */
 	fp = popen(cmd, "r");
-	if (fp == NULL)
+	if (fp != NULL)
 	{
-		ERR(NULL, "Error to open a pipe stream.\n");
-		return NULL;
-	}
+		gint size;
 
-	fgets(buffer, BUFFSIZE, fp);
-	pclose(fp);
+		fgets(buffer, BUFFSIZE, fp);
+		pclose(fp);
 
-	/* TODO Don't use GString */
-	contents = g_string_new(buffer);
-
-	if (contents->str[contents->len - 1] == '\n')
-		g_string_truncate(contents, contents->len - 1);
-
-	if (contents->len <= 1)
-	{
-		g_string_free(contents, TRUE);
-		contents = NULL;
-	}
-	else
-	{
-		str = g_string_free(contents, FALSE);
+		size = strlen(buffer);
+		if (buffer[size - 1] == '\n')
+		{
+			size -= 1;
+		}
+		str = g_strndup(buffer, (gsize) size);
 	}
 
 	return str;

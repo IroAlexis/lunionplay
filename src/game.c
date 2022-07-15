@@ -70,7 +70,7 @@ static gchar* lunionplay_game_set_command(const gchar* path)
 	g_assert(path != NULL);
 
 	gchar* exec = NULL;
-	gchar* file = NULL;
+	g_autofree gchar* file = NULL;
 
 	/* TODO Need read the second argument */
 	file = g_build_path("/", path, "gamestart", NULL);
@@ -78,21 +78,18 @@ static gchar* lunionplay_game_set_command(const gchar* path)
 	if (file != NULL && g_file_test(file, G_FILE_TEST_EXISTS))
 	{
 		gsize size;
-		gchar* contents;
+		g_autofree gchar* contents;
 		g_autoptr (GError) error = NULL;
 
 		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", file);
 		g_file_get_contents(file, &contents, &size, &error);
 
-		exec = g_strndup(contents, size - 1);
+		if (contents[size] == '\n')
+		{
+			size -= 1;
+		}
+		exec = g_strndup(contents, size);
 		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", exec);
-
-		g_free(contents);
-	}
-
-	if (file != NULL)
-	{
-		g_free(file);
 	}
 
 	return exec;

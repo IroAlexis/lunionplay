@@ -132,17 +132,24 @@ LunionPlayGame* lunionplay_game_create(GKeyFile* cfg, const gchar* id)
 	}
 
 	command = lunionplay_game_set_command(path);
-	if (command == NULL)
+	if (command != NULL)
 	{
-		g_free(path);
-		return NULL;
-	}
-	title = lunionplay_game_set_title(path);
+		if (g_file_test(command, G_FILE_TEST_EXISTS))
+		{
+			title = lunionplay_game_set_title(path);
 
-	self = lunionplay_game_new(title, path, command);
-	if (NULL == self)
-	{
-		ERR(TYPE, "No game found: %s\n", path);
+			self = lunionplay_game_new(title, path, command);
+			if (NULL == self)
+			{
+				ERR(TYPE, "No game found: %s\n", path);
+			}
+		}
+		else
+		{
+			ERR(TYPE, "No such file or directory: %s\n", command);
+			g_free(command);
+			g_free(path);
+		}
 	}
 
 	return self;

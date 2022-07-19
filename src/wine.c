@@ -448,9 +448,7 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 		g_unsetenv("WINEDEBUG");
 	}
 
-	g_free(cmdline[1]);
-	g_free(cmdline[0]);
-	g_free(cmdline);
+	g_strfreev(cmdline);
 }
 
 
@@ -471,7 +469,5 @@ void lunionplay_wine_use_server(const LunionPlayWine* self, const gchar* option)
 
 	lunionplay_run_process(self->server, cmd);
 
-	g_free(cmd[1]);
-	g_free(cmd[0]);
-	g_free(cmd);
+	g_strfreev(cmd);
 }

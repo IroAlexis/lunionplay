@@ -78,18 +78,26 @@ static gchar* lunionplay_game_set_command(const gchar* path)
 	if (file != NULL && g_file_test(file, G_FILE_TEST_EXISTS))
 	{
 		gsize size;
+		gchar** split;
 		g_autofree gchar* contents;
 		g_autoptr (GError) error = NULL;
 
 		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", file);
+
 		g_file_get_contents(file, &contents, &size, &error);
 
-		if (contents[size] == '\n')
+		split = g_strsplit(contents, "\n", -1);
+		for (int id = 0; NULL == exec && split[id] != NULL; id++)
 		{
-			size -= 1;
+			if (g_str_has_suffix(split[id], ".exe") &&
+			    g_file_test(split[id], G_FILE_TEST_EXISTS))
+			{
+				exec = strdup(split[id]);
+			}
 		}
-		exec = g_strndup(contents, size);
 		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", exec);
+
+		g_strfreev(split);
 	}
 
 	return exec;
@@ -134,22 +142,19 @@ LunionPlayGame* lunionplay_game_create(GKeyFile* cfg, const gchar* id)
 	command = lunionplay_game_set_command(path);
 	if (command != NULL)
 	{
-		if (g_file_test(command, G_FILE_TEST_EXISTS))
-		{
-			title = lunionplay_game_set_title(path);
+		title = lunionplay_game_set_title(path);
 
-			self = lunionplay_game_new(title, path, command);
-			if (NULL == self)
-			{
-				ERR(TYPE, "No game found: %s\n", path);
-			}
-		}
-		else
+		self = lunionplay_game_new(title, path, command);
+		if (NULL == self)
 		{
-			ERR(TYPE, "No such file or directory: %s\n", command);
-			g_free(command);
-			g_free(path);
+			ERR(TYPE, "No game found: %s\n", path);
 		}
+	}
+	else
+	{
+		ERR(TYPE, "No such file or directory: %s\n", command);
+		g_free(command);
+		g_free(path);
 	}
 
 	return self;

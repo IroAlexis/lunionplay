@@ -28,7 +28,8 @@
 
 static gchar* lunionplay_config_parse(GKeyFile* stream,
                                       const gchar* group,
-                                      const gchar* name)
+                                      const gchar* name,
+                                      const gboolean errmsg)
 {
 	g_assert(stream != NULL);
 	g_assert(group != NULL);
@@ -40,12 +41,18 @@ static gchar* lunionplay_config_parse(GKeyFile* stream,
 	if (g_key_file_has_group(stream, group))
 	{
 		if (g_key_file_has_key(stream, group, name, &error))
+		{
 			value = g_key_file_get_string(stream, group, name, &error);
-		else
+		}
+		else if (errmsg)
+		{
 			ERR(TYPE, "Key \"%s\" not found.\n", name);
+		}
 	}
 	else
+	{
 		ERR(TYPE, "Group \"%s\" not found.\n", group);
+	}
 
 	TRACE(__FILE__, __func__, "%s\n", value);
 
@@ -53,16 +60,18 @@ static gchar* lunionplay_config_parse(GKeyFile* stream,
 }
 
 
-gchar* lunionplay_config_get(GKeyFile* stream, const gchar* key)
+gchar* lunionplay_config_get(GKeyFile* stream,
+                             const gchar* key,
+                             const gboolean errmsg)
 {
 	g_assert(key != NULL);
 
 	gchar* value = NULL;
 
 	value = lunionplay_config_get_env(key);
-	if (value == NULL && stream != NULL)
+	if (NULL == value && stream != NULL)
 	{
-		value = lunionplay_config_parse(stream, "lunionplay", key);
+		value = lunionplay_config_parse(stream, "lunionplay", key, errmsg);
 	}
 
 	return value;

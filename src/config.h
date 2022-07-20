@@ -24,7 +24,9 @@
 
 
 
-gchar* lunionplay_config_get(GKeyFile* stream, const gchar* key);
+gchar* lunionplay_config_get(GKeyFile* stream,
+                             const gchar* key,
+                             const gboolean errmsg);
 
 
 gchar* lunionplay_config_get_env(const gchar* param);

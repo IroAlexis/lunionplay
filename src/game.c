@@ -120,7 +120,7 @@ LunionPlayGame* lunionplay_game_create(GKeyFile* cfg, const gchar* id)
 	gchar* command = NULL;
 	LunionPlayGame* self = NULL;
 
-	path = lunionplay_config_get(cfg, key);
+	path = lunionplay_config_get(cfg, key, TRUE);
 	if (path != NULL)
 	{
 		gchar* new = NULL;

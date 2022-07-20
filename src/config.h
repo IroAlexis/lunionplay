@@ -25,6 +25,7 @@
 
 
 gchar* lunionplay_config_get(GKeyFile* stream,
+                             const gchar* group,
                              const gchar* key,
                              const gboolean errmsg);
 

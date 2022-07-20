@@ -61,6 +61,7 @@ static gchar* lunionplay_config_parse(GKeyFile* stream,
 
 
 gchar* lunionplay_config_get(GKeyFile* stream,
+                             const gchar* group,
                              const gchar* key,
                              const gboolean errmsg)
 {
@@ -71,7 +72,7 @@ gchar* lunionplay_config_get(GKeyFile* stream,
 	value = lunionplay_config_get_env(key);
 	if (NULL == value && stream != NULL)
 	{
-		value = lunionplay_config_parse(stream, "lunionplay", key, errmsg);
+		value = lunionplay_config_parse(stream, group, key, errmsg);
 	}
 
 	return value;

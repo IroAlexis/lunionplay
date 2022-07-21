@@ -83,8 +83,8 @@ gchar* lunionplay_config_get_env(const gchar* param)
 {
 	g_assert(param != NULL);
 
-	gchar* strup = NULL;
-	gchar* name = NULL;
+	g_autofree gchar* strup = NULL;
+	g_autofree gchar* name = NULL;
 	gchar* value = NULL;
 
 	strup = g_ascii_strup(param, strlen(param));
@@ -93,11 +93,7 @@ gchar* lunionplay_config_get_env(const gchar* param)
 	{
 		value = g_strdup(g_getenv(name));
 		TRACE(__FILE__, __func__, "%s=%s\n", name, value);
-
-		g_free(name);
 	}
-
-	g_free(strup);
 
 	return value;
 }

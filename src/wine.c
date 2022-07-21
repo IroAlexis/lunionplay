@@ -207,7 +207,7 @@ LunionPlayWine* lunionplay_wine_create(GKeyFile* config)
 	base_dir = lunionplay_config_get(config, "lunionplay", key, TRUE);
 	if (NULL == base_dir)
 	{
-		return lunionplay_wine_system_create();
+		return self;
 	}
 
 	lib32_dir = g_build_path("/", base_dir, "lib32", NULL);

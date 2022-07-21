@@ -114,13 +114,12 @@ static gchar* lunionplay_game_set_title(const gchar* path)
 
 LunionPlayGame* lunionplay_game_create(GKeyFile* cfg, const gchar* id)
 {
-	gchar key[] = "install_dir";
 	gchar* title = NULL;
 	gchar* path = NULL;
 	gchar* command = NULL;
 	LunionPlayGame* self = NULL;
 
-	path = lunionplay_config_get(cfg, "lunionplay", key, TRUE);
+	path = lunionplay_config_get(cfg, "lunionplay", "install_dir", TRUE);
 	if (path != NULL)
 	{
 		gchar* new = NULL;

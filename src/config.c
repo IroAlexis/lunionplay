@@ -49,12 +49,12 @@ static gchar* lunionplay_config_parse(GKeyFile* stream,
 			ERR(TYPE, "Key \"%s\" not found.\n", name);
 		}
 	}
-	else
+	else if (errmsg)
 	{
 		ERR(TYPE, "Group \"%s\" not found.\n", group);
 	}
 
-	TRACE(__FILE__, __func__, "%s\n", value);
+	TRACE(__FILE__, __func__, "%s => %s=%s\n", group, name, value);
 
 	return value;
 }

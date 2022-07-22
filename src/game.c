@@ -65,39 +65,45 @@ static LunionPlayGame* lunionplay_game_new(gchar* title,
 }
 
 
-static gchar* lunionplay_game_set_command(const gchar* path)
+static gchar* lunionplay_game_set_command(GKeyFile* cfg, const gchar* path)
 {
 	g_assert(path != NULL);
 
 	gchar* exec = NULL;
+	g_autofree gchar* group = NULL;
 	g_autofree gchar* file = NULL;
 
-	/* TODO Need read the second argument */
-	file = g_build_path("/", path, "gamestart", NULL);
-
-	if (file != NULL && g_file_test(file, G_FILE_TEST_EXISTS))
+	group = g_path_get_basename(path);
+	if (NULL == group)
 	{
-		gsize size;
-		gchar** split;
-		g_autofree gchar* contents;
-		g_autoptr (GError) error = NULL;
+		group = g_strndup("lunionplay", 10);
+	}
 
-		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", file);
+	exec = lunionplay_config_get(cfg, group, "override_exe", FALSE);
+	if (NULL == exec)
+	{
+		/* TODO Need read the second argument */
+		file = g_build_path("/", path, "gamestart", NULL);
 
-		g_file_get_contents(file, &contents, &size, &error);
-
-		split = g_strsplit(contents, "\n", -1);
-		for (int id = 0; NULL == exec && split[id] != NULL; id++)
+		if (file != NULL && g_file_test(file, G_FILE_TEST_EXISTS))
 		{
-			if (g_str_has_suffix(split[id], ".exe") &&
-			    g_file_test(split[id], G_FILE_TEST_EXISTS))
-			{
-				exec = strdup(split[id]);
-			}
-		}
-		TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", exec);
+			gsize size;
+			g_autofree gchar* contents;
+			g_auto (GStrv) split = NULL;
+			g_autoptr (GError) error = NULL;
 
-		g_strfreev(split);
+			g_file_get_contents(file, &contents, &size, &error);
+
+			split = g_strsplit(contents, "\n", -1);
+			for (int id = 0; NULL == exec && split[id] != NULL; id++)
+			{
+				if (g_file_test(split[id], G_FILE_TEST_EXISTS))
+				{
+					exec = strdup(split[id]);
+				}
+			}
+			TRACE(__FILE__, __func__, "gchar* [ \"%s\" ]\n", exec);
+		}
 	}
 
 	return exec;
@@ -138,7 +144,7 @@ LunionPlayGame* lunionplay_game_create(GKeyFile* cfg, const gchar* id)
 		return NULL;
 	}
 
-	command = lunionplay_game_set_command(path);
+	command = lunionplay_game_set_command(cfg, path);
 	if (command != NULL)
 	{
 		title = lunionplay_game_set_title(path);

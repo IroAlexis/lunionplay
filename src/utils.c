@@ -37,30 +37,25 @@ static void lunionplay_insert_env(const char* name, const char* value, const cha
 	g_assert(name != NULL);
 	g_assert(value != NULL);
 
-	const char* env = NULL;
+	const gchar* env = NULL;
 
-	env = g_getenv(name);
-	if (env != NULL)
+	if ((env = g_getenv(name)) != NULL)
 	{
-		GString* tmp = g_string_new(env);
+		g_autofree gchar* tmp = NULL;
 		switch (pos)
 		{
 			case 1:
-				if (separator != NULL)
-					g_string_append(tmp, separator);
-				g_string_append(tmp, value);
+				tmp = g_strconcat(value, separator, env, NULL);
+				TRACE(__FILE__, __func__, "gchar* %s\n", tmp);
 				break;
 			case -1:
-				if (separator != NULL)
-					g_string_prepend(tmp, separator);
-				g_string_prepend(tmp, value);
+				tmp = g_strconcat(env, separator, value, NULL);
+				TRACE(__FILE__, __func__, "gchar* %s\n", tmp);
 				break;
 		}
 
-		if (g_setenv(name, tmp->str, TRUE) == FALSE)
+		if (g_setenv(name, tmp, TRUE) == FALSE)
 			ERR(NULL, "$%s Couldn't be set.\n", name);
-
-		g_string_free(tmp, TRUE);
 	}
 }
 

@@ -416,9 +416,9 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 {
 	g_autofree gchar* dll = NULL;
 	g_autofree gchar* dbg = NULL;
-	gchar** cmdline = NULL;
+	g_auto (GStrv) cmdline = NULL;
 
-	cmdline = (gchar**) calloc(3, sizeof(gchar*));
+	cmdline = (GStrv) g_malloc0_n(3, sizeof(gchar*));
 	if (NULL == cmdline)
 	{
 		return;
@@ -447,8 +447,6 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 	{
 		g_unsetenv("WINEDEBUG");
 	}
-
-	g_strfreev(cmdline);
 }
 
 
@@ -457,9 +455,9 @@ void lunionplay_wine_use_server(const LunionPlayWine* self, const gchar* option)
 	g_assert(self != NULL);
 	g_assert(option != NULL);
 
-	gchar** cmd = NULL;
+	g_auto (GStrv) cmd = NULL;
 
-	cmd = (gchar**) calloc(3, sizeof(gchar*));
+	cmd = (GStrv) g_malloc0_n(3, sizeof(gchar*));
 	if (NULL == cmd)
 		return;
 
@@ -468,6 +466,4 @@ void lunionplay_wine_use_server(const LunionPlayWine* self, const gchar* option)
 	cmd[2] = NULL;
 
 	lunionplay_run_process(self->server, cmd);
-
-	g_strfreev(cmd);
 }

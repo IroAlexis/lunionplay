@@ -82,7 +82,7 @@ integrate_dxvk()
 
   if [ $opt_dxvk = true ] && [ -f "$DXVK_SRC_DIR/.git" ] && [ -f "$DXVK_SRC_DIR/meson.build" ]
   then
-    local DXVK_DEST_DIR="$DEST_DIR/runtime/dxvk"
+    local DXVK_DEST_DIR="$DEST_DIR/runtime"
 
     # Used in DXVK's package-release.sh
     export WINEARCH="win64"
@@ -130,7 +130,7 @@ integrate_vkd3d_proton()
 
   if [ $opt_vkd3d = true ] && [ -f "$VKD3D_SRC_DIR/.git" ] && [ -f "$VKD3D_SRC_DIR/meson.build" ]
   then
-    local VKD3D_DEST_DIR="$DEST_DIR/runtime/vkd3d-proton"
+    local VKD3D_DEST_DIR="$DEST_DIR/runtime"
 
     # VKD3D-Proton 64bits
     local VKD3D_BUILDDIR="$VKD3D_SRC_DIR/_build.64"
@@ -145,19 +145,19 @@ integrate_vkd3d_proton()
     rm -rf "$VKD3D_BUILDDIR"
 
     # VKD3D-Proton 32bits
-    local VKD3D_BUILDDIR="$VKD3D_SRC_DIR/_build.86"
+    local VKD3D_BUILDDIR="$VKD3D_SRC_DIR/_build.32"
     meson --cross "$VKD3D_SRC_DIR/build-win32.txt" \
           --buildtype "release" \
           --prefix "$VKD3D_DEST_DIR" \
-          --bindir "x86" \
-          --libdir "x86" \
+          --bindir "x32" \
+          --libdir "x32" \
           "$VKD3D_BUILDDIR" \
           "$VKD3D_SRC_DIR"
     ninja -C "$VKD3D_BUILDDIR" install
     rm -rf "$VKD3D_BUILDDIR"
 
     rm "$VKD3D_DEST_DIR"/x64/*.a
-    rm "$VKD3D_DEST_DIR"/x86/*.a
+    rm "$VKD3D_DEST_DIR"/x32/*.a
   fi
 }
 
@@ -174,4 +174,3 @@ if [ $opt_package = true ]
 then
   create_package
 fi
-

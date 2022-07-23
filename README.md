@@ -43,7 +43,7 @@ ninja -C build
 
 
 ## Configuration
-LunionPlay comes with a config file which can be used to set configuration options `$HOME/.config/lunionplay/config.ini`.
+LunionPlay use config file (`$HOME/.config/lunionplay/config.ini` or `$XDG_CONFIG_HOME/lunionplay/config.ini`) which can be used to set runtime configuration options.
 
 ## How to use
 
@@ -65,7 +65,7 @@ A local game installation with Lunion should look similar to this:
      ├── shadercache/    |     └── gamestart
      └── gamestart       |
 ```
-`<path>` is determinated in order priority by the environment variable `LUNIONPLAY_DEFAULT_DIR` or the variable `default_dir` that is in `config.ini` file.
+`<path>` is determinated in order priority by the environment variable `LUNIONPLAY_INSTALL_DIR` or the variable `install_dir` that is in `config.ini` file.
 
 `gameid` is the folder name where is stored the game. This id will be used to launch the game like with Steam in command line.
 
@@ -79,7 +79,7 @@ A local game installation with Lunion should look similar to this:
 All of the below are runtime options. You can use normally the runtime options others programms (Wine, graphical driver, ...). Removing the option will revert to the previous behavior.
 ### lunionplay
 * `LUNIONPLAY_CONFIGFILE` - use an configuration file (override `$HOME/.config/lunionplay/config.ini`)
-* `LUNIONPLAY_DEFAULT_DIR=<path>` - the directory where are installed the games (override `default_dir`)
+* `LUNIONPLAY_INSTALL_DIR=<path>` - the directory where are installed the games (override `install_dir`)
 * `LUNIONPLAY_WINE=<path>` - the directory where is located custom Wine (override `wine`)
 * `LUNIONPLAY_LOG` - convenience method for dumping a useful debug log to your home directory (disable by default)
   * `1` allows to display only the error messages `fixme-all`
@@ -92,13 +92,13 @@ All of the below are runtime options. You can use normally the runtime options o
 * [Etienne Juvigny](https://github.com/Tk-Glitch)
 * [GloriousEggroll](https://github.com/GloriousEggroll)
 * [Hans-Kristian Arntzen](https://github.com/HansKristian-Work)
-* [Joshua Ashton](https://github.com/Joshua-Ashton)
-* [Lutris](https://github.com/lutris)
-* [MangoHUD](https://github.com/flightlessmango/MangoHud)
 * [Philip Rebohle](https://github.com/doitsujin)
-* [Torge Matthies ](https://github.com/openglfreak)
-* [Valve](https://github.com/ValveSoftware/Proton)
+* [Joshua Ashton](https://github.com/Joshua-Ashton)
 * [Wine](https://winehq.org)
+* [Valve](https://github.com/ValveSoftware/Proton)
+* [Torge Matthies ](https://github.com/openglfreak)
+* [Legendary](https://github.com/derrod/legendary)
+* [Lutris](https://github.com/lutris)
 
 
 

@@ -4,9 +4,9 @@
          xmlns="http://usefulinc.com/ns/doap#"
          xmlns:gnome="http://api.gnome.org/doap-extensions#">
 
-  <name xml:lang="en">Lunion Play</name>
+  <name xml:lang="en">LunionPlay</name>
   <shortdesc xml:lang="en">Wine wrapper</shortdesc>
-  <description>Wine wrapper for easily launch GOG games</description>
+  <description>Wine wrapper for running Windows games on Linux</description>
   <programming-language>C</programming-language>
 
   <maintainer>

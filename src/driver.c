@@ -20,173 +20,89 @@
 #include "driver.h"
 
 #include "debug.h"
-
-#include <vulkan/vulkan.h>
+#include "api/vulkan.h"
 
 
 #define TYPE "driver"
 
 
-static gchar* lunionplay_driver_get_vendor(guint32 vendorID);
-
-
-static VkInstance lunionplay_driver_create_vkinstance()
-{
-	const gchar layer_list[][VK_MAX_EXTENSION_NAME_SIZE] =
-	{
-		"VK_LAYER_KHRONOS_validation"
-	};
-	const gchar* layers[] = {
-		layer_list[0],
-		NULL
-	};
-	guint32 extension_number = 1;
-	const gchar* extensions[] =
-	{
-		"VK_KHR_surface",
-		NULL
-	};
-	VkApplicationInfo app_info =
-	{
-		VK_STRUCTURE_TYPE_APPLICATION_INFO,  // VkStructureType sType
-		NULL,                                // const void*     pNext
-		"LunionPlay",                        // const char*     pApplicationName
-		VK_MAKE_VERSION(0, 4, 0),            // uint32_t        applicationVersion
-		"NoEngine",                          // const char*     pEngineName
-		VK_MAKE_VERSION(1, 0, 0),            // uint32_t        engineVersion
-		VK_API_VERSION_1_0,                  // uint32_t        apiVersion
-	};
-	VkInstanceCreateInfo inst_info =
-	{
-		VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-		NULL,
-		VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR,
-		&app_info,
-		(uint32_t) 1,
-		layers,
-		extension_number,
-		extensions
-	};
-
-	VkInstance inst = VK_NULL_HANDLE;
-	VkResult result;
-
-	result = vkCreateInstance(&inst_info , NULL, &inst);
-
-	switch (result)
-	{
-		case VK_ERROR_INITIALIZATION_FAILED:
-			ERR(TYPE, "Failed to create Vulkan instance\n");
-			break;
-		case VK_ERROR_LAYER_NOT_PRESENT:
-			ERR(TYPE, "Layer not present\n");
-			break;
-		case VK_ERROR_INCOMPATIBLE_DRIVER:
-			ERR(TYPE, "Driver not compatible\n");
-			break;
-		default:
-			break;
-	}
-
-	return inst;
-}
-
-
-// TODO We cover only one gpu actually...
-static VkPhysicalDevice* lunionplay_driver_get_vkphysicaldevice(VkInstance* inst, guint32* number)
-{
-	VkPhysicalDevice* dev = VK_NULL_HANDLE;
-
-	vkEnumeratePhysicalDevices(*inst, number, VK_NULL_HANDLE);
-	TRACE(__FILE__, __func__, "deviceNumber %u\n", *number);
-
-	dev = (VkPhysicalDevice*) g_malloc0(*number * sizeof(VkPhysicalDevice));
-	vkEnumeratePhysicalDevices(*inst, number, dev);
-
-	return dev;
-}
-
-
-static LunionPlayDriver* lunionplay_driver_new(VkPhysicalDeviceProperties* props)
+static LunionPlayDriver*
+lunionplay_driver_new(const guint32 driverVersion,
+                      const guint32 vendorID,
+                      const guint32 deviceID,
+                      const gchar* deviceName)
 {
 	LunionPlayDriver* self = NULL;
 
 	self = (LunionPlayDriver*) g_malloc0(sizeof(LunionPlayDriver));
 	if (self != NULL)
 	{
-		self->versionID = props->driverVersion;
-		self->vendorID = props->vendorID;
-		self->deviceID = props->deviceID;
-		self->vendorName = lunionplay_driver_get_vendor(self->vendorID);
-		self->deviceName = g_strdup(props->deviceName);
-
-		if (g_strcmp0(self->vendorName, "nvidia") == 0)
+		self->versionID = driverVersion;
+		self->deviceID = deviceID;
+		self->deviceName = g_strdup(deviceName);
+		self->vendorName = lunionplay_vulkan_identify_vendor(vendorID);
+		if (vendorID == 0x10DE)
 		{
 			self->version = g_strdup_printf(
 				"%u.%u.%u",
-				(props->driverVersion >> 22) & 0x3ff,
-				(props->driverVersion >> 14) & 0x0ff,
-				(props->driverVersion >>  6) & 0x0ff
+				LP_VK_NV_VERSION_MAJOR(driverVersion),
+				LP_VK_NV_VERSION_MINOR(driverVersion),
+				LP_VK_NV_VERSION_PATCH(driverVersion)
 			);
 		}
-		else
+		else if (vendorID != 0)
 		{
 			self->version = g_strdup_printf(
 				"%u.%u.%u",
-				VK_VERSION_MAJOR(props->driverVersion),
-				VK_VERSION_MINOR(props->driverVersion),
-				VK_VERSION_PATCH(props->driverVersion)
+				VK_VERSION_MAJOR(driverVersion),
+				VK_VERSION_MINOR(driverVersion),
+				VK_VERSION_PATCH(driverVersion)
 			);
 		}
+		else self->version = g_strndup("n/a", 3);
 	}
 
 	return self;
 }
 
 
-static gchar* lunionplay_driver_get_vendor(guint32 vendorID)
+gboolean lunionplay_driver_get_info_via_vulkan(LunionPlayDriver** self)
 {
-	gchar* vendor = NULL;
+	guint32 count = 0;
+	VkInstance inst;
+	VkPhysicalDevice dev;
+	VkPhysicalDeviceProperties props;
 
-	switch(vendorID)
-	{
-		case VK_VENDOR_ID_MESA:
-			vendor = g_strdup("mesa");
-			break;
-		case 0x10DE:
-			vendor = g_strdup("nvidia");
-			break;
-	}
+	inst = lunionplay_vulkan_create_instance();
+	dev = lunionplay_vulkan_get_better_device(&inst, &count);
+	TRACE(__FILE__, __func__, "deviceNumber %u\n", count);
 
-	return vendor;
+	vkGetPhysicalDeviceProperties(dev, &props);
+	*self = lunionplay_driver_new(props.driverVersion,
+	                              props.vendorID,
+	                              props.deviceID,
+	                              props.deviceName);
+
+	vkDestroyInstance(inst, NULL);
+
+	return TRUE;
 }
 
 
-void lunionplay_driver_get(void)
+LunionPlayDriver* lunionplay_driver_create(void)
 {
-	guint32 number = 0;
-	VkInstance inst = VK_NULL_HANDLE;
-	VkPhysicalDevice* dev = VK_NULL_HANDLE;
-	VkPhysicalDeviceProperties* props = VK_NULL_HANDLE;
 	LunionPlayDriver* self = NULL;
 
-	inst = lunionplay_driver_create_vkinstance();
-	dev = lunionplay_driver_get_vkphysicaldevice(&inst, &number);
-
-	props = (VkPhysicalDeviceProperties*) g_malloc0(sizeof(VkPhysicalDeviceProperties));
-	vkGetPhysicalDeviceProperties(*dev, props);
-
-	self = lunionplay_driver_new(props);
-
-	free(props);
-	free(dev);
-	vkDestroyInstance(inst, NULL);
+	lunionplay_driver_get_info_via_vulkan(&self);
+	if (NULL == self)
+	{
+		//lunionplay_driver_get_via_opengl(self);
+	}
 
 	TRACE(__FILE__, __func__, "device: %s\n", self->deviceName);
-	TRACE(__FILE__, __func__, "vendor: %s\n", self->vendorName);
 	TRACE(__FILE__, __func__, "driver: %s\n", self->version);
 
-	lunionplay_driver_free(self);
+	return self;
 }
 
 

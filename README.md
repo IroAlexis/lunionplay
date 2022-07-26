@@ -6,7 +6,8 @@ The main goal is to offer an Proton alternative to launch your GOG games. You ca
 
 
 ## Dependencies
-* glib (idealy 2.70)
+* glib
+* vulkan
 
 
 

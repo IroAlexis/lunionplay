@@ -36,8 +36,7 @@ int main(int argc, char* argv[])
 	g_autoptr (GKeyFile) cfg = NULL;
 	LunionPlayWine* wine = NULL;
 	LunionPlayGame* game = NULL;
-
-	lunionplay_driver_get();
+	LunionPlayDriver* pdriver = NULL;
 
 	status = -1;
 	bin = g_path_get_basename(argv[0]);
@@ -48,6 +47,7 @@ int main(int argc, char* argv[])
 
 	wine = lunionplay_wine_create(cfg);
 	game = lunionplay_game_create(cfg, argv[1]);
+	pdriver = lunionplay_driver_create();
 
 	if (game != NULL && wine != NULL)
 	{
@@ -57,19 +57,11 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	if (status != 0)
-	{
-		ERR(bin, "There's a frog somewhere... *ribbit*\n");
-	}
+	if (status != 0) ERR(bin, "There's a frog somewhere... *ribbit*\n");
 
-	if (game != NULL)
-	{
-		lunionplay_game_free(game);
-	}
-	if (wine != NULL)
-	{
-		lunionplay_wine_free(wine);
-	}
+	lunionplay_driver_free(pdriver);
+	if (game != NULL) lunionplay_game_free(game);
+	if (wine != NULL) lunionplay_wine_free(wine);
 
 	return status;
 }

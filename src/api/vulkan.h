@@ -1,5 +1,5 @@
 /*
- * driver.h
+ * vulkan.h
  * Copyright (C) 2022 IroAlexis <iroalexis@outlook.fr>
  *
  * lunionplay is free software: you can redistribute it and/or modify it
@@ -17,31 +17,34 @@
  */
 
 
-#ifndef __DRIVER__
-#define __DRIVER__
+#ifndef __VULKAN__
+#define __VULKAN__
+
+#include <vulkan/vulkan.h>
+
+#define LP_VK_NV_VERSION_MAJOR(version) ((guint32) version >> 22) & 0x3ff
+#define LP_VK_NV_VERSION_MINOR(version) ((guint32) version >> 14) & 0x0ff
+#define LP_VK_NV_VERSION_PATCH(version) ((guint32) version >>  6) & 0x0ff
 
 
-#include <glib.h>
-
-
-typedef struct _lunion_play_driver
+typedef enum LPVkVendorId
 {
-	guint32 versionID;
-	gchar* version;
-	guint32 deviceID;
-	gchar* deviceName;
-	gchar* vendorName;
-} LunionPlayDriver;
+	LP_VK_VENDOR_ID_NVIDIA = 0x10DE,
+	LP_VK_VENDOR_ID_INTEL  = 0x8086
+} LPVkVendorId;
 
 
-LunionPlayDriver* lunionplay_driver_create();
+VkInstance lunionplay_vulkan_create_instance(void);
 
 
-void lunionplay_driver_print_version(void);
+VkPhysicalDevice
+lunionplay_vulkan_get_better_device(VkInstance* inst, uint32_t* count);
 
 
-void lunionplay_driver_free(LunionPlayDriver* self);
+char* lunionplay_vulkan_identify_vendor(uint32_t vendorID);
+
+
+VkApplicationInfo lunionplay_vulkan_init_application_info(void);
 
 
 #endif
-

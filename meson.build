@@ -15,6 +15,7 @@ vk_dep = dependency('vulkan', method: 'pkg-config')
 
 
 sources = [
+  'src/api/vulkan.c',
   'src/config.c',
   'src/debug.c',
   'src/driver.c',

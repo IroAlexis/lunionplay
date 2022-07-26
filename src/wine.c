@@ -438,15 +438,11 @@ void lunionplay_wine_update_prefix(const LunionPlayWine* self)
 	lunionplay_run_process(self->bin, cmdline);
 	lunionplay_wine_use_server(self, "-w");
 
-	if (NULL == dll)
-	{
-		g_unsetenv("WINEDLLOVERRIDES");
-	}
+	if (NULL == dll) g_unsetenv("WINEDLLOVERRIDES");
+	else g_setenv("WINEDLLOVERRIDES", dll, TRUE);
 
-	if (NULL == dbg)
-	{
-		g_unsetenv("WINEDEBUG");
-	}
+	if (NULL == dbg) g_unsetenv("WINEDEBUG");
+	else g_setenv("WINEDEBUG", dbg, TRUE);
 }
 
 
